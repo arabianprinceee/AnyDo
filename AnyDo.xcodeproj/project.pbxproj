@@ -136,7 +136,7 @@
 			isa = PBXGroup;
 			children = (
 				D9441A53266CED590019902F /* AboutViewController.swift */,
-				D9188CD626749EF700B78A42 /* ToDoViewController.swift */,
+				D9188CDF26754FF700B78A42 /* ToDoVC */,
 			);
 			path = ViewControllers;
 			sourceTree = "<group>";
@@ -156,6 +156,14 @@
 				D9441A5A266CED590019902F /* LaunchScreen.storyboard */,
 			);
 			path = Storyboards;
+			sourceTree = "<group>";
+		};
+		D9188CDF26754FF700B78A42 /* ToDoVC */ = {
+			isa = PBXGroup;
+			children = (
+				D9188CD626749EF700B78A42 /* ToDoViewController.swift */,
+			);
+			path = ToDoVC;
 			sourceTree = "<group>";
 		};
 		D929A884267223E900F575F6 /* TodoItem */ = {
