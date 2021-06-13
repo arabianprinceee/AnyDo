@@ -11,6 +11,8 @@ class ToDoViewController: UIViewController, UITextViewDelegate {
     
     // MARK: Properties
     
+    var dateOfTask: UILabel = UILabel()
+    var leftSideStack: UIStackView = UIStackView()
     var calendarSwitch: UISwitch = UISwitch()
     var taskPrioritySementedControl: UISegmentedControl = UISegmentedControl(items: [" ↘️ "," ➡️ "," ↗️ "])
     var taskTextView: UITextView = UITextView()
@@ -38,6 +40,11 @@ class ToDoViewController: UIViewController, UITextViewDelegate {
         static var taskTextViewFontSize: CGFloat { return 17 }
     }
     
+    enum CellType {
+        case calendar
+        case importance
+    }
+    
     // MARK: System methods
 
     override func viewDidLoad() {
@@ -51,8 +58,9 @@ class ToDoViewController: UIViewController, UITextViewDelegate {
         setUpTaskOptionsView()
         setUpDeleteButtonView()
         
-        self.navigationItem.title = NSLocalizedString("task", comment: "")
-        self.navigationItem.setRightBarButton(UIBarButtonItem(title: NSLocalizedString("saveButton", comment: ""), style: .done, target: nil, action: nil), animated: false)
+        setUpNavigationBar()
+        
+        datePickerView.addTarget(self, action: #selector(handlingDateChanges), for: .valueChanged)
     }
     
     func textViewDidBeginEditing(_ textView: UITextView) {
@@ -63,6 +71,11 @@ class ToDoViewController: UIViewController, UITextViewDelegate {
     }
     
     // MARK: Setup & configuration methods
+    
+    private func setUpNavigationBar() {
+        self.navigationItem.title = NSLocalizedString("task", comment: "")
+        self.navigationItem.setRightBarButton(UIBarButtonItem(title: NSLocalizedString("saveButton", comment: ""), style: .done, target: nil, action: nil), animated: false)
+    }
     
     private func setUpTaskDescriptionView() {
         taskDescriptionView.backgroundColor = UIColor(named: "CardsBackground")
@@ -116,9 +129,10 @@ class ToDoViewController: UIViewController, UITextViewDelegate {
         // Switch value change handling
         calendarSwitch.addTarget(self, action: #selector(switchChanged), for: .valueChanged)
         
-        configureCell(leftText: NSLocalizedString("priority", comment: ""), rightView: taskPrioritySementedControl)
+        configureCell(leftText: NSLocalizedString("priority", comment: ""), rightView: taskPrioritySementedControl, cellType: .importance)
         
-        configureCell(leftText: NSLocalizedString("doUntil", comment: ""), rightView: calendarSwitch, separatorNeeded: false)
+        configureCell(leftText: NSLocalizedString("doUntil", comment: ""), rightView: calendarSwitch, separatorNeeded: true, downText: "", cellType: .calendar)
+//        configureCell(leftText: NSLocalizedString("doUntil", comment: ""), rightView: calendarSwitch, separatorNeeded: false)
         
         if calendarSwitch.isOn {
             configureCalendar()
@@ -143,37 +157,90 @@ class ToDoViewController: UIViewController, UITextViewDelegate {
         deleteButtonView.layer.cornerRadius = DesignConstants.defaultCornRadius
     }
     
-    private func configureCell(leftText: String, rightView: UIView, separatorNeeded: Bool = true) {
-        let containerView = UIView()
+    
+    @objc private func handlingDateChanges(sender: UIDatePicker) {
+        let df = DateFormatter()
+        df.dateFormat = "d MMM yyyy"
+        let date = df.string(from: sender.date)
+        dateOfTask.textColor = .systemBlue
+        dateOfTask.font = .boldSystemFont(ofSize: 13)
+        dateOfTask.text = date
+    }
+    
+    private func configureCell(leftText: String, rightView: UIView, separatorNeeded: Bool = true, downText: String = "", cellType: CellType) {
         
-        let leftLabel = UILabel()
-        leftLabel.text = leftText
-        
-        leftLabel.translatesAutoresizingMaskIntoConstraints = false
-        rightView.translatesAutoresizingMaskIntoConstraints = false
-        
-        containerView.addSubview(leftLabel)
-        containerView.addSubview(rightView)
-        
-        leftLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
-        rightView.setContentHuggingPriority(.defaultHigh, for: .horizontal)
-        
-        NSLayoutConstraint.activate( [
-            rightView.rightAnchor.constraint(equalTo: containerView.rightAnchor, constant: -DesignConstants.defaultPadding),
-            rightView.centerYAnchor.constraint(equalTo: containerView.centerYAnchor),
+        switch cellType {
+        case .calendar:
+            let hstackView = UIStackView()
+            hstackView.alignment = .center
+            hstackView.axis = .horizontal
+            leftSideStack.axis = .vertical
+            leftSideStack.alignment = .center
             
-            leftLabel.leftAnchor.constraint(equalTo: containerView.leftAnchor),
-            leftLabel.centerYAnchor.constraint(equalTo: containerView.centerYAnchor),
-            leftLabel.rightAnchor.constraint(equalTo: rightView.leftAnchor, constant: -DesignConstants.defaultPadding)
-        ])
-        
-        containerView.heightAnchor.constraint(equalToConstant: DesignConstants.taskOptionsCellHeight).isActive = true
-        
-        taskOptionsView.addArrangedSubview(containerView)
-        
-        if separatorNeeded {
-            configureSeparator()
+            let leftLabel = UILabel()
+            leftLabel.text = leftText
+            
+            dateOfTask.text = downText
+            
+            leftLabel.translatesAutoresizingMaskIntoConstraints = false
+            dateOfTask.translatesAutoresizingMaskIntoConstraints = false
+            
+            leftSideStack.addArrangedSubview(leftLabel)
+            leftSideStack.addArrangedSubview(dateOfTask)
+            
+            hstackView.addArrangedSubview(leftSideStack)
+            hstackView.addArrangedSubview(rightView)
+            
+            taskOptionsView.addArrangedSubview(hstackView)
+            
+            NSLayoutConstraint.activate([
+                hstackView.heightAnchor.constraint(equalToConstant: DesignConstants.taskOptionsCellHeight),
+                hstackView.rightAnchor.constraint(equalTo: taskOptionsView.rightAnchor, constant: -DesignConstants.defaultPadding),
+                
+                rightView.rightAnchor.constraint(equalTo: hstackView.rightAnchor, constant: -8),
+                rightView.centerYAnchor.constraint(equalTo: hstackView.centerYAnchor),
+                
+                leftSideStack.heightAnchor.constraint(equalToConstant: DesignConstants.taskOptionsCellHeight),
+                
+                leftLabel.leftAnchor.constraint(equalTo: leftSideStack.leftAnchor),
+                
+                dateOfTask.leftAnchor.constraint(equalTo: leftSideStack.leftAnchor),
+                dateOfTask.bottomAnchor.constraint(equalTo: hstackView.bottomAnchor, constant: -8)
+            ])
+            
+        case .importance:
+            let containerView = UIView()
+            
+            let leftLabel = UILabel()
+            leftLabel.text = leftText
+            
+            leftLabel.translatesAutoresizingMaskIntoConstraints = false
+            rightView.translatesAutoresizingMaskIntoConstraints = false
+            
+            containerView.addSubview(leftLabel)
+            containerView.addSubview(rightView)
+            
+            leftLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
+            rightView.setContentHuggingPriority(.defaultHigh, for: .horizontal)
+            
+            NSLayoutConstraint.activate( [
+                rightView.rightAnchor.constraint(equalTo: containerView.rightAnchor, constant: -DesignConstants.defaultPadding),
+                rightView.centerYAnchor.constraint(equalTo: containerView.centerYAnchor),
+                
+                leftLabel.leftAnchor.constraint(equalTo: containerView.leftAnchor),
+                leftLabel.centerYAnchor.constraint(equalTo: containerView.centerYAnchor),
+                leftLabel.rightAnchor.constraint(equalTo: rightView.leftAnchor, constant: -DesignConstants.defaultPadding)
+            ])
+            
+            containerView.heightAnchor.constraint(equalToConstant: DesignConstants.taskOptionsCellHeight).isActive = true
+            
+            taskOptionsView.addArrangedSubview(containerView)
+            
+            if separatorNeeded {
+                configureSeparator()
+            }
         }
+        
     }
     
     private func configureCalendar() {
@@ -212,6 +279,7 @@ class ToDoViewController: UIViewController, UITextViewDelegate {
         if (sender.isOn) {
             configureCalendar()
         } else {
+            dateOfTask.text = ""
             datePickerView.removeFromSuperview()
             calendarDivider?.removeFromSuperview()
             taskOptionsView.layoutIfNeeded()
