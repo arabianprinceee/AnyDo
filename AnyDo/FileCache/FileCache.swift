@@ -9,9 +9,9 @@ import Foundation
 
 protocol FileCache {
     
-    var toDoItems: [String: ToDoItemImplementation] { get }
+    var toDoItems: [String: ToDoItem] { get }
     
-    func addTask(toDoItem: ToDoItemImplementation)
+    func addToDoItem(toDoItem: ToDoItem)
     func deleteTask(with id: String)
     func saveAllTasks(fileName: String)
     func loadAllTasks(fileName: String)

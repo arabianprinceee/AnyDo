@@ -7,7 +7,7 @@
 
 import Foundation
 
-extension ToDoItemImplementation {
+extension ToDoItem {
     
     // MARK: Properties
     
@@ -35,11 +35,11 @@ extension ToDoItemImplementation {
     
     // MARK: Methods
     
-    static func parse(json: Any) -> ToDoItemImplementation? {
+    static func parse(json: Any) -> ToDoItem? {
         
-        var id: String
-        var text: String
-        var importance: Importance
+        let id: String
+        let text: String
+        let importance: Importance
         
         guard let dict = json as? [String : Any] else { return nil }
         
@@ -63,11 +63,8 @@ extension ToDoItemImplementation {
             importance = .standart
         }
         
-        guard let deadline = dict["deadline"] as? Double else {
-            return ToDoItemImplementation(id: id, text: text, importance: importance, deadLine: nil)
-        }
-        
-        return ToDoItemImplementation(id: id, text: text, importance: importance, deadLine: NSDate(timeIntervalSince1970: deadline) as Date)
+        let deadline = (dict["deadline"] as? Double).map { Date(timeIntervalSince1970: $0) }
+        return ToDoItem(id: id, text: text, importance: importance, deadLine: deadline)
     }
     
 }
