@@ -15,6 +15,7 @@
 			dependencies = (
 			);
 			name = SwiftLint;
+			productName = SwiftLint;
 		};
 /* End PBXAggregateTarget section */
 
@@ -65,7 +66,7 @@
 		537F4942907C692B877E47B35E4609D5 /* Pods-AnyDo.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-AnyDo.release.xcconfig"; sourceTree = "<group>"; };
 		58AB6A46E4CA02BD1EA0FAA81B27127D /* Pods-AnyDo-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-AnyDo-acknowledgements.plist"; sourceTree = "<group>"; };
 		708131DAE89343A3C0E26AEF1F744E0A /* Pods-AnyDo-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Pods-AnyDo-umbrella.h"; sourceTree = "<group>"; };
-		7179CB44094AF6D59CAC866F2D2A7D87 /* Pods_AnyDo_AnyDoUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = Pods_AnyDo_AnyDoUITests.framework; path = "Pods-AnyDo-AnyDoUITests.framework"; sourceTree = BUILT_PRODUCTS_DIR; };
+		7179CB44094AF6D59CAC866F2D2A7D87 /* Pods_AnyDo_AnyDoUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_AnyDo_AnyDoUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		73010CC983E3809BECEE5348DA1BB8C6 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS14.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
 		7EAB1DA481EDDC005A251D3A5E6BE4CD /* SwiftLint.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = SwiftLint.release.xcconfig; sourceTree = "<group>"; };
 		803096F2507B32143DE96C428917B6D7 /* Pods-AnyDo-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-AnyDo-Info.plist"; sourceTree = "<group>"; };
@@ -74,9 +75,9 @@
 		879760123310663A0092143C1B110174 /* Pods-AnyDo-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-AnyDo-dummy.m"; sourceTree = "<group>"; };
 		89B0E2A310A54D79B4042C178EAAD365 /* Pods-AnyDoTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-AnyDoTests.debug.xcconfig"; sourceTree = "<group>"; };
 		90C48A9DCE211FF98B41D0608607D0D5 /* Pods-AnyDoTests-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-AnyDoTests-dummy.m"; sourceTree = "<group>"; };
-		9804A0A8F2EB2B609AC7F1F6EA6A7310 /* Pods_AnyDoTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = Pods_AnyDoTests.framework; path = "Pods-AnyDoTests.framework"; sourceTree = BUILT_PRODUCTS_DIR; };
+		9804A0A8F2EB2B609AC7F1F6EA6A7310 /* Pods_AnyDoTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_AnyDoTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		98DE3668B2640396ECF902FF40B233C1 /* Pods-AnyDoTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-AnyDoTests.release.xcconfig"; sourceTree = "<group>"; };
-		9D940727FF8FB9C785EB98E56350EF41 /* Podfile */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; name = Podfile; path = ../Podfile; sourceTree = SOURCE_ROOT; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		9D940727FF8FB9C785EB98E56350EF41 /* Podfile */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; name = Podfile; path = ../Podfile; sourceTree = SOURCE_ROOT; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		A306409AC146D8DC9E0E7D3185B3BBB6 /* Pods-AnyDoTests-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-AnyDoTests-acknowledgements.plist"; sourceTree = "<group>"; };
 		B7A0F7C1A7C6A8C422DC4418482B3BC3 /* Pods-AnyDo-AnyDoUITests-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-AnyDo-AnyDoUITests-acknowledgements.plist"; sourceTree = "<group>"; };
 		B86E9D2D6E463D3EF59239BEA884856B /* Pods-AnyDoTests.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = "Pods-AnyDoTests.modulemap"; sourceTree = "<group>"; };
@@ -85,7 +86,7 @@
 		DD6EBED366551050C21C32C0D7A86E6E /* Pods-AnyDoTests-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-AnyDoTests-acknowledgements.markdown"; sourceTree = "<group>"; };
 		E7D5C2FC98A0C0EEC1492503FB47D580 /* Pods-AnyDo-AnyDoUITests-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-AnyDo-AnyDoUITests-Info.plist"; sourceTree = "<group>"; };
 		F6853613089960E36F2949C6C03D7E84 /* Pods-AnyDo-AnyDoUITests.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = "Pods-AnyDo-AnyDoUITests.modulemap"; sourceTree = "<group>"; };
-		FA14DEA5C16EEEE5D94007ED5367AB9D /* Pods_AnyDo.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = Pods_AnyDo.framework; path = "Pods-AnyDo.framework"; sourceTree = BUILT_PRODUCTS_DIR; };
+		FA14DEA5C16EEEE5D94007ED5367AB9D /* Pods_AnyDo.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_AnyDo.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -208,7 +209,6 @@
 			children = (
 				7FDA596DBE0337ACDFE55A210D54EF26 /* Support Files */,
 			);
-			name = SwiftLint;
 			path = SwiftLint;
 			sourceTree = "<group>";
 		};
@@ -332,7 +332,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 1100;
-				LastUpgradeCheck = 1100;
+				LastUpgradeCheck = 1250;
 			};
 			buildConfigurationList = 4821239608C13582E20E6DA73FD5F1F9 /* Build configuration list for PBXProject "Pods" */;
 			compatibilityVersion = "Xcode 9.3";
@@ -510,7 +510,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -804,7 +804,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
