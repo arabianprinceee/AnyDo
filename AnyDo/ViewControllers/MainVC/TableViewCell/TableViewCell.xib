@@ -25,7 +25,7 @@
                             <constraint firstAttribute="height" constant="24" id="Onh-d4-qXT"/>
                         </constraints>
                     </imageView>
-                    <stackView opaque="NO" contentMode="scaleToFill" fixedFrame="YES" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="Dqj-a9-2Ip">
+                    <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="Dqj-a9-2Ip">
                         <rect key="frame" x="53" y="12" width="67.5" height="38.5"/>
                         <subviews>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Задание" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="IMr-3x-F6n">
@@ -42,13 +42,15 @@
                                 <nil key="highlightedColor"/>
                             </label>
                         </subviews>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="38.5" id="SEp-11-3cA"/>
+                        </constraints>
                     </stackView>
                 </subviews>
                 <constraints>
                     <constraint firstItem="Yyx-gB-Cwe" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="21" id="BGg-07-cUV"/>
                     <constraint firstItem="IMr-3x-F6n" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="12" id="Z4y-bO-drM"/>
                     <constraint firstAttribute="bottom" secondItem="Yyx-gB-Cwe" secondAttribute="bottom" constant="21" id="dNZ-Kf-WoK"/>
-                    <constraint firstAttribute="bottom" secondItem="IMr-3x-F6n" secondAttribute="bottom" constant="33.5" id="g9X-EA-Oxu"/>
                     <constraint firstItem="HhZ-w2-WBa" firstAttribute="leading" secondItem="Yyx-gB-Cwe" secondAttribute="trailing" constant="13" id="j4P-SZ-s0z"/>
                     <constraint firstItem="Yyx-gB-Cwe" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="16" id="oXA-c7-GOa"/>
                 </constraints>

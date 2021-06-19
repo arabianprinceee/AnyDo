@@ -11,21 +11,25 @@ class MainViewController: UIViewController {
     
     // MARK: Properties
     
+    var myTasks: [ToDoItem] = [ToDoItem(text: "Задача 1", importance: .important, deadLine: nil, status: .uncompleted),
+                               ToDoItem(text: "Задача 2", importance: .standart, deadLine: Date(), status: .uncompletedImportant),
+                               ToDoItem(text: "Задача 2", importance: .standart, deadLine: Date(), status: .completed)]
+    
+    var doneTasksQuantity: Int = 0
     let addItemButton = UIButton()
     let viewTitle = UILabel()
     let doneTasksLabel = UILabel()
     let showHideTasksButton = UIButton()
     
-    lazy var contentViewSize = CGSize(width: view.frame.width, height: view.frame.height + 300) //Step One
-    
-    lazy var scrollView : UIScrollView = {
-        let view1 = UIScrollView()
-        view1.contentSize = contentViewSize
-        view1.backgroundColor = .clear
-        return view1
+    let cellIdentifier = String(describing: TableViewCell.self)
+    lazy var tableView: UITableView = {
+        let tableView = UITableView(frame: .zero, style: .insetGrouped)
+        tableView.register(UINib(nibName: String(describing: TableViewCell.self), bundle: nil), forCellReuseIdentifier: cellIdentifier)
+        tableView.delegate = self
+        tableView.dataSource = self
+        tableView.backgroundColor = UIColor(named: "BackgroundColor")
+        return tableView
     }()
-    
-    let doneTasksQuantity: Int = 0
     
     
     // MARK: Enums
@@ -47,30 +51,36 @@ class MainViewController: UIViewController {
     
     // MARK: System methods
     
-    override func viewDidLayoutSubviews() {
-        scrollView.frame = CGRect(x: 0, y: self.view.safeAreaInsets.top, width: self.view.frame.width, height: self.view.frame.height)
-    }
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = UIColor(named: "BackgroundColor")
         
-        view.addSubview(scrollView)
+        view.addSubview(viewTitle)
+        view.addSubview(doneTasksLabel)
+        view.addSubview(showHideTasksButton)
+        view.addSubview(tableView)
         view.addSubview(addItemButton)
         
-        scrollView.addSubview(viewTitle)
-        scrollView.addSubview(doneTasksLabel)
-        scrollView.addSubview(showHideTasksButton)
-        
-        setUpAddButton()
         setUpViewTitle()
         setUpDoneTasksLabel()
         setUpShowHideButton()
-        
+        setUpTableView()
+        setUpAddButton()
     }
     
     
     // MARK: Private methods
+    
+    private func setUpTableView() {
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+        
+        NSLayoutConstraint.activate([
+            tableView.topAnchor.constraint(equalTo: doneTasksLabel.bottomAnchor),
+            tableView.leftAnchor.constraint(equalTo: view.leftAnchor),
+            tableView.rightAnchor.constraint(equalTo: view.rightAnchor),
+            tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+        ])
+    }
     
     private func setUpViewTitle() {
         viewTitle.translatesAutoresizingMaskIntoConstraints = false
@@ -78,20 +88,20 @@ class MainViewController: UIViewController {
         viewTitle.font = .boldSystemFont(ofSize: FontSizes.title)
         
         NSLayoutConstraint.activate([
-            viewTitle.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: DesignConstants.titleTopConstraint),
-            viewTitle.leftAnchor.constraint(equalTo: scrollView.leftAnchor, constant: DesignConstants.titleLeftConstraint)
+            viewTitle.topAnchor.constraint(equalTo: view.layoutMarginsGuide.topAnchor, constant: DesignConstants.titleTopConstraint),
+            viewTitle.leftAnchor.constraint(equalTo: view.leftAnchor, constant: DesignConstants.titleLeftConstraint)
         ])
     }
     
     private func setUpDoneTasksLabel() {
         doneTasksLabel.translatesAutoresizingMaskIntoConstraints = false
-        doneTasksLabel.text = "\(NSLocalizedString("doneTasks", comment: "")) \(doneTasksQuantity)"
+        doneTasksLabel.text = "\(NSLocalizedString("doneTasks", comment: "")) \(myTasks.filter { $0.status == .completed }.count)"
         doneTasksLabel.font = .systemFont(ofSize: FontSizes.underTitleLabels)
         doneTasksLabel.textColor = .lightGray
         
         NSLayoutConstraint.activate([
             doneTasksLabel.topAnchor.constraint(equalTo: viewTitle.bottomAnchor, constant: DesignConstants.doneTasksToTitleConstraint),
-            doneTasksLabel.leftAnchor.constraint(equalTo: scrollView.leftAnchor, constant: DesignConstants.titleLeftConstraint)
+            doneTasksLabel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: DesignConstants.titleLeftConstraint)
         ])
     }
     
