@@ -29,6 +29,10 @@ class TableViewCell: UITableViewCell {
             self.taskDoneImageView?.image = UIImage(systemName: "circle")
             taskDoneImageView?.tintColor = .lightGray
         case .completed:
+            let attributeString = NSMutableAttributedString(string: taskName)
+            attributeString.addAttribute(NSAttributedString.Key.strikethroughStyle, value: 1, range: NSMakeRange(0, attributeString.length))
+            self.taskNameLabel?.attributedText = attributeString
+            self.taskNameLabel?.textColor = .lightGray
             self.taskDoneImageView?.image = UIImage(systemName: "checkmark.circle.fill")
             taskDoneImageView?.tintColor = .systemGreen
         case .uncompletedImportant:

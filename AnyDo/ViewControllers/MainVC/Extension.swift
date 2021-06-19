@@ -14,11 +14,19 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard
-            let cell = tableView.dequeueReusableCell(withIdentifier: cellIdentifier, for: indexPath) as? TableViewCell
-        else
-        { return UITableViewCell() }
-        cell.configure(status: myTasks[indexPath.row].status, taskName: myTasks[indexPath.row].text, deadline: myTasks[indexPath.row].deadline?.description)
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: cellIdentifier, for: indexPath) as? TableViewCell
+        else { return UITableViewCell() }
+        
+        let dateFormatterPrint = DateFormatter()
+        dateFormatterPrint.dateFormat = "dd MMM"
+        
+        if let deadline = myTasks[indexPath.row].deadline {
+            print(dateFormatterPrint.string(from: deadline))
+            cell.configure(status: myTasks[indexPath.row].status, taskName: myTasks[indexPath.row].text, deadline: dateFormatterPrint.string(from: deadline))
+            return cell
+        }
+        
+        cell.configure(status: myTasks[indexPath.row].status, taskName: myTasks[indexPath.row].text)
         return cell
     }
     
