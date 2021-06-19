@@ -24,6 +24,9 @@
 		D957C9CE2673D73E002BF395 /* FileCacheImplementation.swift in Sources */ = {isa = PBXBuildFile; fileRef = D957C9CD2673D73E002BF395 /* FileCacheImplementation.swift */; };
 		D9F276E5266E0F3100058CC8 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = D9F276E7266E0F3100058CC8 /* Localizable.strings */; };
 		D9FF1588267BA380007A581D /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9FF1587267BA380007A581D /* MainViewController.swift */; };
+		D9FF1591267E088F007A581D /* TableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9FF158F267E088F007A581D /* TableViewCell.swift */; };
+		D9FF1592267E088F007A581D /* TableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = D9FF1590267E088F007A581D /* TableViewCell.xib */; };
+		D9FF1594267E3E15007A581D /* Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9FF1593267E3E15007A581D /* Extension.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -73,6 +76,9 @@
 		D9F276E6266E0F3100058CC8 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		D9F276E8266E0F3500058CC8 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/Localizable.strings; sourceTree = "<group>"; };
 		D9FF1587267BA380007A581D /* MainViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
+		D9FF158F267E088F007A581D /* TableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableViewCell.swift; sourceTree = "<group>"; };
+		D9FF1590267E088F007A581D /* TableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = TableViewCell.xib; sourceTree = "<group>"; };
+		D9FF1593267E3E15007A581D /* Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extension.swift; sourceTree = "<group>"; };
 		F7C2FE564B324182CC34F698 /* Pods-AnyDoTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AnyDoTests.release.xcconfig"; path = "Target Support Files/Pods-AnyDoTests/Pods-AnyDoTests.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -131,7 +137,7 @@
 			isa = PBXGroup;
 			children = (
 				D9188CDF26754FF700B78A42 /* ToDoVC */,
-				D9FF1587267BA380007A581D /* MainViewController.swift */,
+				D9FF1595267E3E1D007A581D /* MainVC */,
 			);
 			path = ViewControllers;
 			sourceTree = "<group>";
@@ -243,6 +249,25 @@
 			path = LifeCycle;
 			sourceTree = "<group>";
 		};
+		D9FF1595267E3E1D007A581D /* MainVC */ = {
+			isa = PBXGroup;
+			children = (
+				D9FF1587267BA380007A581D /* MainViewController.swift */,
+				D9FF1593267E3E15007A581D /* Extension.swift */,
+				D9FF1596267E3E27007A581D /* TableViewCell */,
+			);
+			path = MainVC;
+			sourceTree = "<group>";
+		};
+		D9FF1596267E3E27007A581D /* TableViewCell */ = {
+			isa = PBXGroup;
+			children = (
+				D9FF158F267E088F007A581D /* TableViewCell.swift */,
+				D9FF1590267E088F007A581D /* TableViewCell.xib */,
+			);
+			path = TableViewCell;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -351,6 +376,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D9441A5C266CED590019902F /* LaunchScreen.storyboard in Resources */,
+				D9FF1592267E088F007A581D /* TableViewCell.xib in Resources */,
 				D9F276E5266E0F3100058CC8 /* Localizable.strings in Resources */,
 				D9441A59266CED590019902F /* Assets.xcassets in Resources */,
 			);
@@ -449,8 +475,10 @@
 				D957C9CC2673D6F3002BF395 /* ToDoItem.swift in Sources */,
 				D957C9CE2673D73E002BF395 /* FileCacheImplementation.swift in Sources */,
 				D9441A50266CED590019902F /* AppDelegate.swift in Sources */,
+				D9FF1594267E3E15007A581D /* Extension.swift in Sources */,
 				D9FF1588267BA380007A581D /* MainViewController.swift in Sources */,
 				D9188CD726749EF700B78A42 /* ToDoViewController.swift in Sources */,
+				D9FF1591267E088F007A581D /* TableViewCell.swift in Sources */,
 				D9188CDA2674C52800B78A42 /* Extensions.swift in Sources */,
 				D929A88826722AB600F575F6 /* ToDoItemExtension.swift in Sources */,
 				D929A88B2672557900F575F6 /* FileCache.swift in Sources */,
