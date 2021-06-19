@@ -20,7 +20,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             let viewController = ToDoViewController()
             navController.viewControllers = [viewController]
             
-            window.rootViewController = ToDoViewController()
+            window.rootViewController = MainViewController()
             self.window = window
             window.makeKeyAndVisible()
         }

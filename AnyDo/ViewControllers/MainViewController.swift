@@ -7,7 +7,7 @@
 
 import UIKit
 
-class MainViewController: UIViewController {
+class MainViewController: UINavigationController {
     
     let button1 = UIButton()
     let button2 = UIButton()
@@ -16,16 +16,19 @@ class MainViewController: UIViewController {
 
     lazy var scrollView : UIScrollView = {
         let view1 = UIScrollView()
-        view1.frame = self.view.bounds
         view1.contentSize = contentViewSize
         view1.backgroundColor = .clear
         return view1
     }()
     
-    
+    override func viewDidLayoutSubviews() {
+        scrollView.frame = CGRect(x: 0, y: self.view.safeAreaInsets.top, width: self.view.frame.width, height: self.view.safeAreaLayoutGuide.layoutFrame.size.height)
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        self.title = "some title"
         
         view.addSubview(scrollView)
         
@@ -39,16 +42,46 @@ class MainViewController: UIViewController {
         button1.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
         button1.heightAnchor.constraint(equalToConstant: 100).isActive = true
         
+        
+        
+        view.addSubview(button2)
+        setUpAddButton()
+        
+        
         button1.addTarget(self, action: #selector(tapped), for: .touchUpInside)
         
         scrollView.backgroundColor = .lightGray
         
-        print(scrollView.frame.height)
-        print(view.frame.height)
-
         view.backgroundColor = .white
         // Do any additional setup after loading the view.
     }
+    
+    private func setUpAddButton() {
+        button2.translatesAutoresizingMaskIntoConstraints = false
+        button2.backgroundColor = UIColor(named: "AddButtonColor")
+        
+        button2.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -54).isActive = true
+        button2.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        button2.widthAnchor.constraint(equalToConstant: 44).isActive = true
+        button2.heightAnchor.constraint(equalToConstant: 44).isActive = true
+        button2.layer.cornerRadius = 22
+        
+        button2.setImage(UIImage(systemName: "plus"), for: .normal)
+        button2.imageView?.tintColor = UIColor.white
+        button2.imageView?.contentMode = .scaleAspectFit
+//        button2.imageEdgeInsets = UIEdgeInsetsMake(15.0, 15.0, 15.0, 5.0)
+//        button2.setTitle("+", for: .normal)
+//        button2.setTitleColor(.white, for: .normal)
+//        button2.titleLabel?.font = UIFont.systemFont(ofSize: 35)
+        
+        button2.addTarget(self, action: #selector(addNewToDoItem), for: .touchUpInside)
+    }
+    
+    @objc private func addNewToDoItem() {
+        let vc = ToDoViewController()
+        self.present(vc, animated: true, completion: nil)
+    }
+    
     
     @objc private func tapped() {
         print("adwd")
