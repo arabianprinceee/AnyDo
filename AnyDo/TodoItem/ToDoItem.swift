@@ -15,7 +15,7 @@ struct ToDoItem {
     let text: String
     let importance: Importance
     let deadline: Date?
-    let status: TaskStatus
+    var status: TaskStatus
     
     // MARK: Initialization
     

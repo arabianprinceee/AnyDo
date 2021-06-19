@@ -10,7 +10,7 @@ import UIKit
 class MainViewController: UIViewController {
     
     // MARK: Properties
-    
+    var myTasksShowHideCompleted: [ToDoItem] = []
     var myTasks: [ToDoItem] = [ToDoItem(text: "Задача 1", importance: .important, deadLine: nil, status: .uncompleted),
                                ToDoItem(text: "Задача 2", importance: .standart, deadLine: Date(), status: .uncompletedImportant),
                                ToDoItem(text: "Задача 2", importance: .standart, deadLine: Date(), status: .completed)]
@@ -107,7 +107,7 @@ class MainViewController: UIViewController {
     
     private func setUpShowHideButton() {
         showHideTasksButton.translatesAutoresizingMaskIntoConstraints = false
-        showHideTasksButton.setTitle(NSLocalizedString("show", comment: ""), for: .normal)
+        showHideTasksButton.setTitle(NSLocalizedString("hide", comment: ""), for: .normal)
         showHideTasksButton.setTitleColor(.systemBlue, for: .normal)
         showHideTasksButton.titleLabel?.font = .boldSystemFont(ofSize: FontSizes.underTitleLabels)
         showHideTasksButton.addTarget(self, action: #selector(showHideTasksButtonTapped), for: .touchUpInside)
@@ -146,16 +146,16 @@ class MainViewController: UIViewController {
     }
     
     @objc private func showHideTasksButtonTapped() {
-        if showHideTasksButton.titleLabel?.text == NSLocalizedString("show", comment: "") {
-            showHideTasksButton.setTitle(NSLocalizedString("hide", comment: ""), for: .normal)
-            
-            // TODO
-        
-        } else {
+        if showHideTasksButton.titleLabel?.text == NSLocalizedString("hide", comment: "") {
             showHideTasksButton.setTitle(NSLocalizedString("show", comment: ""), for: .normal)
-            
-            // TODO
-            
+            self.myTasksShowHideCompleted = myTasks
+            myTasks = myTasks.filter { $0.status != .completed }
+            tableView.reloadData()
+        } else {
+            showHideTasksButton.setTitle(NSLocalizedString("hide", comment: ""), for: .normal)
+            myTasks = myTasksShowHideCompleted
+            myTasksShowHideCompleted = []
+            tableView.reloadData()
         }
     }
     
