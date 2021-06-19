@@ -43,6 +43,7 @@ class ToDoViewController: UIViewController, UITextViewDelegate {
         static var taskTextViewLeftRightTopConstraints: CGFloat { return 8 }
         static var deleteButtonHeight: CGFloat { return 56 }
         static var defaultCornRadius: CGFloat { return 16 }
+        static var defaultNavBarHeight: CGFloat { return 44 }
     }
     
     enum FontSizes {
@@ -85,8 +86,8 @@ class ToDoViewController: UIViewController, UITextViewDelegate {
     /// NavigationBar
     
     private func setUpNavigationBar() {
-        navigationBar = UINavigationBar(frame: CGRect(x: 0, y: self.view.safeAreaInsets.top, width: self.view.frame.width, height: 44))
-        let navigationItem = UINavigationItem(title: "Дело")
+        navigationBar = UINavigationBar(frame: CGRect(x: 0, y: self.view.safeAreaInsets.top, width: self.view.frame.width, height: DesignConstants.defaultNavBarHeight))
+        let navigationItem = UINavigationItem(title: NSLocalizedString("task", comment: ""))
         let doneBtn = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.done, target: nil, action: #selector(dismissVC))
         navigationItem.rightBarButtonItem = doneBtn
         navigationBar.setItems([navigationItem], animated: false)
@@ -151,10 +152,10 @@ class ToDoViewController: UIViewController, UITextViewDelegate {
         configureCell(leftText: NSLocalizedString("doUntil", comment: ""), rightView: calendarSwitch, separatorNeeded: true, downText: "", cellType: .calendar)
         
         if calendarSwitch.isOn {
-//            configureCalendar()
+            configureCalendar()
         }
         
-//        deleteButtonView.layoutIfNeeded()
+        deleteButtonView.layoutIfNeeded()
     }
     
     private func configureCell(leftText: String, rightView: UIView, separatorNeeded: Bool = true, downText: String = "", cellType: CellType) {
@@ -241,6 +242,7 @@ class ToDoViewController: UIViewController, UITextViewDelegate {
         
         datePickerView.datePickerMode = UIDatePicker.Mode.date
         datePickerView.preferredDatePickerStyle = .inline
+        datePickerView.minimumDate = Date()
         datePickerView.translatesAutoresizingMaskIntoConstraints = false
         
         taskOptionsView.addArrangedSubview(datePickerView)

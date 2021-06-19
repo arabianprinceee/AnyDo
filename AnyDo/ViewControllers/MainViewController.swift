@@ -7,13 +7,17 @@
 
 import UIKit
 
-class MainViewController: UINavigationController {
+class MainViewController: UIViewController {
     
-    let button1 = UIButton()
-    let button2 = UIButton()
+    // MARK: Properties
+    
+    let addItemButton = UIButton()
+    let viewTitle = UILabel()
+    let doneTasksLabel = UILabel()
+    let showHideTasksButton = UIButton()
     
     lazy var contentViewSize = CGSize(width: view.frame.width, height: view.frame.height + 300) //Step One
-
+    
     lazy var scrollView : UIScrollView = {
         let view1 = UIScrollView()
         view1.contentSize = contentViewSize
@@ -21,70 +25,128 @@ class MainViewController: UINavigationController {
         return view1
     }()
     
-    override func viewDidLayoutSubviews() {
-        scrollView.frame = CGRect(x: 0, y: self.view.safeAreaInsets.top, width: self.view.frame.width, height: self.view.safeAreaLayoutGuide.layoutFrame.size.height)
+    let doneTasksQuantity: Int = 0
+    
+    
+    // MARK: Enums
+    
+    enum DesignConstants {
+        static var titleTopConstraint: CGFloat { return 60 }
+        static var titleLeftConstraint: CGFloat { return 32 }
+        static var doneTasksToTitleConstraint: CGFloat { return 18 }
+        static var addItemButtonFrames: CGFloat { return 44 }
+        static var addItemButtonBottomConstraint: CGFloat { return -54 }
+        static var showHideButtonRightConstraing: CGFloat { return -32 }
     }
-
+    
+    enum FontSizes {
+        static var title: CGFloat { return 34 }
+        static var underTitleLabels: CGFloat { return 15 }
+    }
+    
+    
+    // MARK: System methods
+    
+    override func viewDidLayoutSubviews() {
+        scrollView.frame = CGRect(x: 0, y: self.view.safeAreaInsets.top, width: self.view.frame.width, height: self.view.frame.height)
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        self.title = "some title"
+        view.backgroundColor = UIColor(named: "BackgroundColor")
         
         view.addSubview(scrollView)
+        view.addSubview(addItemButton)
         
-        button1.translatesAutoresizingMaskIntoConstraints = false
-        button1.backgroundColor = .red
-        scrollView.addSubview(button1)
+        scrollView.addSubview(viewTitle)
+        scrollView.addSubview(doneTasksLabel)
+        scrollView.addSubview(showHideTasksButton)
         
-        button1.centerYAnchor.constraint(equalTo: scrollView.centerYAnchor).isActive = true
-        button1.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor).isActive = true
-        
-        button1.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
-        button1.heightAnchor.constraint(equalToConstant: 100).isActive = true
-        
-        
-        
-        view.addSubview(button2)
         setUpAddButton()
+        setUpViewTitle()
+        setUpDoneTasksLabel()
+        setUpShowHideButton()
         
+    }
+    
+    
+    // MARK: Private methods
+    
+    private func setUpViewTitle() {
+        viewTitle.translatesAutoresizingMaskIntoConstraints = false
+        viewTitle.text = NSLocalizedString("mainTitle", comment: "")
+        viewTitle.font = .boldSystemFont(ofSize: FontSizes.title)
         
-        button1.addTarget(self, action: #selector(tapped), for: .touchUpInside)
+        NSLayoutConstraint.activate([
+            viewTitle.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: DesignConstants.titleTopConstraint),
+            viewTitle.leftAnchor.constraint(equalTo: scrollView.leftAnchor, constant: DesignConstants.titleLeftConstraint)
+        ])
+    }
+    
+    private func setUpDoneTasksLabel() {
+        doneTasksLabel.translatesAutoresizingMaskIntoConstraints = false
+        doneTasksLabel.text = "\(NSLocalizedString("doneTasks", comment: "")) \(doneTasksQuantity)"
+        doneTasksLabel.font = .systemFont(ofSize: FontSizes.underTitleLabels)
+        doneTasksLabel.textColor = .lightGray
         
-        scrollView.backgroundColor = .lightGray
+        NSLayoutConstraint.activate([
+            doneTasksLabel.topAnchor.constraint(equalTo: viewTitle.bottomAnchor, constant: DesignConstants.doneTasksToTitleConstraint),
+            doneTasksLabel.leftAnchor.constraint(equalTo: scrollView.leftAnchor, constant: DesignConstants.titleLeftConstraint)
+        ])
+    }
+    
+    private func setUpShowHideButton() {
+        showHideTasksButton.translatesAutoresizingMaskIntoConstraints = false
+        showHideTasksButton.setTitle(NSLocalizedString("show", comment: ""), for: .normal)
+        showHideTasksButton.setTitleColor(.systemBlue, for: .normal)
+        showHideTasksButton.titleLabel?.font = .boldSystemFont(ofSize: FontSizes.underTitleLabels)
+        showHideTasksButton.addTarget(self, action: #selector(showHideTasksButtonTapped), for: .touchUpInside)
         
-        view.backgroundColor = .white
-        // Do any additional setup after loading the view.
+        NSLayoutConstraint.activate([
+            showHideTasksButton.centerYAnchor.constraint(equalTo: doneTasksLabel.centerYAnchor),
+            showHideTasksButton.rightAnchor.constraint(equalTo: self.view.rightAnchor, constant: DesignConstants.showHideButtonRightConstraing)
+        ])
     }
     
     private func setUpAddButton() {
-        button2.translatesAutoresizingMaskIntoConstraints = false
-        button2.backgroundColor = UIColor(named: "AddButtonColor")
+        addItemButton.translatesAutoresizingMaskIntoConstraints = false
+        addItemButton.backgroundColor = UIColor(named: "AddButtonColor")
+        addItemButton.layer.cornerRadius = DesignConstants.addItemButtonFrames / 2
         
-        button2.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -54).isActive = true
-        button2.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        button2.widthAnchor.constraint(equalToConstant: 44).isActive = true
-        button2.heightAnchor.constraint(equalToConstant: 44).isActive = true
-        button2.layer.cornerRadius = 22
+        addItemButton.setImage(UIImage(systemName: "plus"), for: .normal)
+        addItemButton.imageView?.tintColor = UIColor.white
+        addItemButton.imageView?.contentMode = .scaleToFill
         
-        button2.setImage(UIImage(systemName: "plus"), for: .normal)
-        button2.imageView?.tintColor = UIColor.white
-        button2.imageView?.contentMode = .scaleAspectFit
-//        button2.imageEdgeInsets = UIEdgeInsetsMake(15.0, 15.0, 15.0, 5.0)
-//        button2.setTitle("+", for: .normal)
-//        button2.setTitleColor(.white, for: .normal)
-//        button2.titleLabel?.font = UIFont.systemFont(ofSize: 35)
+        addItemButton.addTarget(self, action: #selector(addItemButtonTapped), for: .touchUpInside)
         
-        button2.addTarget(self, action: #selector(addNewToDoItem), for: .touchUpInside)
+        NSLayoutConstraint.activate([
+            addItemButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: DesignConstants.addItemButtonBottomConstraint),
+            addItemButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            addItemButton.widthAnchor.constraint(equalToConstant: DesignConstants.addItemButtonFrames),
+            addItemButton.heightAnchor.constraint(equalToConstant: DesignConstants.addItemButtonFrames)
+        ])
     }
     
-    @objc private func addNewToDoItem() {
+    
+    // MARK: Objc methods
+    
+    @objc private func addItemButtonTapped() {
         let vc = ToDoViewController()
         self.present(vc, animated: true, completion: nil)
     }
     
-    
-    @objc private func tapped() {
-        print("adwd")
+    @objc private func showHideTasksButtonTapped() {
+        if showHideTasksButton.titleLabel?.text == NSLocalizedString("show", comment: "") {
+            showHideTasksButton.setTitle(NSLocalizedString("hide", comment: ""), for: .normal)
+            
+            // TODO
+        
+        } else {
+            showHideTasksButton.setTitle(NSLocalizedString("show", comment: ""), for: .normal)
+            
+            // TODO
+            
+        }
     }
     
 }
