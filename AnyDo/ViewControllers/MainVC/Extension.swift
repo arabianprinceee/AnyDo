@@ -15,7 +15,17 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         let completeTask = UIContextualAction(style: .normal, title: nil) { (action, sourceView, _) in
-            self.myTasks[indexPath.row].status = .completed
+            
+            let item = ToDoItem(id: self.fileCacheManager.toDoItems.map { $0.value }[indexPath.row].id,
+                                text: self.fileCacheManager.toDoItems.map { $0.value }[indexPath.row].text,
+                                importance: self.fileCacheManager.toDoItems.map { $0.value }[indexPath.row].importance,
+                                deadLine: self.fileCacheManager.toDoItems.map { $0.value }[indexPath.row].deadline,
+                                status: .completed)
+            
+            self.fileCacheManager.deleteTask(with: self.fileCacheManager.toDoItems.map { $0.value }[indexPath.row].id, fileName: self.cacheFileName)
+            self.fileCacheManager.addToDoItem(toDoItem: item, fileName: self.cacheFileName)
+            
+            self.updateDoneTasksLabel()
             tableView.reloadData()
         }
         
@@ -29,8 +39,9 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         let deleteTask = UIContextualAction(style: .destructive, title: nil) { (action, sourceView, _) in
-            self.myTasks.remove(at: indexPath.row)
-            tableView.reloadData()
+            self.fileCacheManager.deleteTask(with: self.fileCacheManager.toDoItems.map { $0.value }[indexPath.row].id, fileName: self.cacheFileName)
+            self.updateDoneTasksLabel()
+            tableView.deleteRows(at: [IndexPath(row: indexPath.row, section: 0)], with: .automatic)
         }
         
         deleteTask.backgroundColor = .systemRed
@@ -42,7 +53,7 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        myTasks.count
+        self.fileCacheManager.toDoItems.map { $0.value }.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -52,13 +63,13 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
         let dateFormatterPrint = DateFormatter()
         dateFormatterPrint.dateFormat = "dd MMM"
         
-        if let deadline = myTasks[indexPath.row].deadline {
+        if let deadline = self.fileCacheManager.toDoItems.map({ $0.value })[indexPath.row].deadline {
             print(dateFormatterPrint.string(from: deadline))
-            cell.configure(status: myTasks[indexPath.row].status, taskName: myTasks[indexPath.row].text, deadline: dateFormatterPrint.string(from: deadline))
+            cell.configure(status: fileCacheManager.toDoItems.map { $0.value }[indexPath.row].status, taskName: fileCacheManager.toDoItems.map { $0.value }[indexPath.row].text, deadline: dateFormatterPrint.string(from: deadline))
             return cell
         }
         
-        cell.configure(status: myTasks[indexPath.row].status, taskName: myTasks[indexPath.row].text)
+        cell.configure(status: fileCacheManager.toDoItems.map { $0.value }[indexPath.row].status, taskName: fileCacheManager.toDoItems.map { $0.value }[indexPath.row].text)
         return cell
     }
     

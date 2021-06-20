@@ -10,12 +10,10 @@ import UIKit
 class MainViewController: UIViewController {
     
     // MARK: Properties
-    var myTasksShowHideCompleted: [ToDoItem] = []
-    var myTasks: [ToDoItem] = [ToDoItem(text: "Задача 1", importance: .important, deadLine: nil, status: .uncompleted),
-                               ToDoItem(text: "Задача 2", importance: .standart, deadLine: Date(), status: .uncompletedImportant),
-                               ToDoItem(text: "Задача 2", importance: .standart, deadLine: Date(), status: .completed)]
     
-    var doneTasksQuantity: Int = 0
+    let fileCacheManager: FileCacheImplementation = FileCacheImplementation()
+    let cacheFileName: String = "tasks"
+    
     let addItemButton = UIButton()
     let viewTitle = UILabel()
     let doneTasksLabel = UILabel()
@@ -53,6 +51,9 @@ class MainViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        fileCacheManager.loadAllTasks(fileName: cacheFileName)
+        
         view.backgroundColor = UIColor(named: "BackgroundColor")
         
         view.addSubview(viewTitle)
@@ -95,7 +96,7 @@ class MainViewController: UIViewController {
     
     private func setUpDoneTasksLabel() {
         doneTasksLabel.translatesAutoresizingMaskIntoConstraints = false
-        doneTasksLabel.text = "\(NSLocalizedString("doneTasks", comment: "")) \(myTasks.filter { $0.status == .completed }.count)"
+        doneTasksLabel.text = "\(NSLocalizedString("doneTasks", comment: "")) \(fileCacheManager.toDoItems.map { $0.value }.filter { $0.status == .completed }.count)"
         doneTasksLabel.font = .systemFont(ofSize: FontSizes.underTitleLabels)
         doneTasksLabel.textColor = .lightGray
         
@@ -103,6 +104,10 @@ class MainViewController: UIViewController {
             doneTasksLabel.topAnchor.constraint(equalTo: viewTitle.bottomAnchor, constant: DesignConstants.doneTasksToTitleConstraint),
             doneTasksLabel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: DesignConstants.titleLeftConstraint)
         ])
+    }
+    
+    func updateDoneTasksLabel() {
+        self.doneTasksLabel.text = "\(NSLocalizedString("doneTasks", comment: "")) \(fileCacheManager.toDoItems.map { $0.value }.filter { $0.status == .completed }.count)"
     }
     
     private func setUpShowHideButton() {
@@ -148,14 +153,14 @@ class MainViewController: UIViewController {
     @objc private func showHideTasksButtonTapped() {
         if showHideTasksButton.titleLabel?.text == NSLocalizedString("hide", comment: "") {
             showHideTasksButton.setTitle(NSLocalizedString("show", comment: ""), for: .normal)
-            self.myTasksShowHideCompleted = myTasks
-            myTasks = myTasks.filter { $0.status != .completed }
-            tableView.reloadData()
+            
+            // TODO
+            
         } else {
             showHideTasksButton.setTitle(NSLocalizedString("hide", comment: ""), for: .normal)
-            myTasks = myTasksShowHideCompleted
-            myTasksShowHideCompleted = []
-            tableView.reloadData()
+            
+            // TODO
+            
         }
     }
     

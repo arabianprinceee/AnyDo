@@ -11,6 +11,9 @@ class ToDoViewController: UIViewController, UITextViewDelegate {
     
     // MARK: Properties
     
+    let fileCacheManager: FileCacheImplementation = FileCacheImplementation()
+    let cacheFileName: String = "tasks"
+    
     var dateOfTask: UILabel = UILabel()
     var calendarSwitch: UISwitch = UISwitch()
     var taskPrioritySementedControl: UISegmentedControl = UISegmentedControl(items: [" ↘️ "," ➡️ "," ↗️ "])

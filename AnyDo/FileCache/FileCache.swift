@@ -11,8 +11,8 @@ protocol FileCache {
     
     var toDoItems: [String: ToDoItem] { get }
     
-    func addToDoItem(toDoItem: ToDoItem)
-    func deleteTask(with id: String)
+    func addToDoItem(toDoItem: ToDoItem, fileName: String)
+    func deleteTask(with id: String, fileName: String)
     func saveAllTasks(fileName: String)
     func loadAllTasks(fileName: String)
     

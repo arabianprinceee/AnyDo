@@ -17,12 +17,14 @@ final class FileCacheImplementation: FileCache {
     
     // MARK: Methods
     
-    func addToDoItem(toDoItem: ToDoItem) {
+    func addToDoItem(toDoItem: ToDoItem, fileName: String) {
         self.toDoItems[toDoItem.id] = toDoItem
+        saveAllTasks(fileName: fileName)
     }
     
-    func deleteTask(with id: String) {
+    func deleteTask(with id: String, fileName: String) {
         self.toDoItems[id] = nil
+        saveAllTasks(fileName: fileName)
     }
     
     func saveAllTasks(fileName: String) {
