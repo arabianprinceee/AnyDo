@@ -11,7 +11,6 @@ class AboutViewController: UIViewController {
     
     @IBOutlet weak var appIconImageView: UIImageView!
     @IBOutlet weak var appVersionLabel: UILabel!
-    
 
     override func viewDidLoad() {
         super.viewDidLoad()

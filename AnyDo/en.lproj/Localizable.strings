@@ -5,3 +5,10 @@
   Created by Анас Бен Мустафа on 6/7/21.
   
 */
+
+"saveButton" = "Save";
+"enterTaskName" = "Enter the task name";
+"task" = "Task";
+"priority" = "Priority";
+"doUntil" = "Do until";
+"delete" = "Delete";
