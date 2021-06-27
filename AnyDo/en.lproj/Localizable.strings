@@ -21,3 +21,5 @@
 "already done" = "Already done";
 "task is done" = "Task has already been done!";
 "new" = "New";
+"Create before delete" = "Create task before delete it!";
+"Nothing to delete" = "Task is not existing";

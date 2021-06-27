@@ -30,7 +30,7 @@ class ToDoViewController: UIViewController, UITextViewDelegate {
         let view = UIScrollView()
         view.insetsLayoutMarginsFromSafeArea = true
         view.contentInsetAdjustmentBehavior = .always
-        view.contentSize = CGSize(width: self.view.frame.width, height: self.view.frame.height + 115)
+        view.contentSize = CGSize(width: self.view.frame.width, height: self.view.frame.height + 450)
         view.backgroundColor = .clear
         return view
     }()
@@ -135,7 +135,17 @@ class ToDoViewController: UIViewController, UITextViewDelegate {
     }
     
     @objc func buttonTapped(sender: UIButton) {
-        print("button tapped")
+        if (isEditingItem) {
+            self.fileCacheManager.deleteTask(with: currentToDoItem!.id) // Вообще, форс - плохо, но в данной ситуации мы проверяли, что currentToDoItem не nil
+            NotificationCenter.default.post(name: .toDoListChanged, object: nil)
+            self.dismiss(animated: true, completion: nil)
+        } else {
+            let alert = UIAlertController(title: NSLocalizedString("Nothing to delete", comment: ""),
+                                          message: NSLocalizedString("Create before delete", comment: ""),
+                                          preferredStyle: UIAlertController.Style.alert)
+            alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: ""), style: UIAlertAction.Style.default, handler: nil))
+            self.present(alert, animated: true, completion: nil)
+        }
     }
     
     @objc func handlingDateChanges(sender: UIDatePicker) {
