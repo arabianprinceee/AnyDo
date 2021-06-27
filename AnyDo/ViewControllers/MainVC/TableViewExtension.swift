@@ -18,49 +18,55 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
-        let completeTask = UIContextualAction(style: .normal, title: nil) { (action, sourceView, _) in
-            if self.toDoItemsArray[indexPath.row].status != .completed {
-                let task = ToDoItem(id: self.toDoItemsArray[indexPath.row].id,
-                                    text: self.toDoItemsArray[indexPath.row].text,
-                                    importance: self.toDoItemsArray[indexPath.row].importance,
-                                    deadLine: self.toDoItemsArray[indexPath.row].deadline,
-                                    status: .completed)
+        if indexPath.row != self.tableView.numberOfRows(inSection: 0) - 1 {
+            let completeTask = UIContextualAction(style: .normal, title: nil) { (action, sourceView, _) in
+                if self.toDoItemsArray[indexPath.row].status != .completed {
+                    let task = ToDoItem(id: self.toDoItemsArray[indexPath.row].id,
+                                        text: self.toDoItemsArray[indexPath.row].text,
+                                        importance: self.toDoItemsArray[indexPath.row].importance,
+                                        deadLine: self.toDoItemsArray[indexPath.row].deadline,
+                                        status: .completed)
 
-                self.toDoItemsArray.insert(task, at: indexPath.row + 1)
-                self.toDoItemsArray.remove(at: indexPath.row)
-                self.fileCacheManager.deleteTask(with: task.id)
-                self.fileCacheManager.addToDoItem(toDoItem: task)
+                    self.toDoItemsArray.insert(task, at: indexPath.row + 1)
+                    self.toDoItemsArray.remove(at: indexPath.row)
+                    self.fileCacheManager.deleteTask(with: task.id)
+                    self.fileCacheManager.addToDoItem(toDoItem: task)
+                }
+                else {
+                    let alert = UIAlertController(title: NSLocalizedString("already done", comment: ""),
+                                                  message: NSLocalizedString("task is done", comment: ""),
+                                                  preferredStyle: UIAlertController.Style.alert)
+                    alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: ""), style: UIAlertAction.Style.default, handler: nil))
+                    self.present(alert, animated: true, completion: nil)
+                }
             }
-            else {
-                let alert = UIAlertController(title: NSLocalizedString("already done", comment: ""),
-                                              message: NSLocalizedString("task is done", comment: ""),
-                                              preferredStyle: UIAlertController.Style.alert)
-                alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: ""), style: UIAlertAction.Style.default, handler: nil))
-                self.present(alert, animated: true, completion: nil)
-            }
+
+            completeTask.backgroundColor = .systemGreen
+            completeTask.image = UIImage(systemName: "checkmark.circle.fill")?.withTintColor(.white)
+
+            let swipeActionConfig = UISwipeActionsConfiguration(actions: [completeTask])
+            swipeActionConfig.performsFirstActionWithFullSwipe = true
+            return swipeActionConfig
         }
-        
-        completeTask.backgroundColor = .systemGreen
-        completeTask.image = UIImage(systemName: "checkmark.circle.fill")?.withTintColor(.white)
-        
-        let swipeActionConfig = UISwipeActionsConfiguration(actions: [completeTask])
-        swipeActionConfig.performsFirstActionWithFullSwipe = true
-        return swipeActionConfig
+        return nil
     }
     
     func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
-        let deleteTask = UIContextualAction(style: .destructive, title: nil) { (action, sourceView, _) in
-            let id = self.toDoItemsArray[indexPath.row].id
-            self.toDoItemsArray.remove(at: indexPath.row)
-            self.fileCacheManager.deleteTask(with: id)
+        if indexPath.row != self.tableView.numberOfRows(inSection: 0) - 1 {
+            let deleteTask = UIContextualAction(style: .destructive, title: nil) { (action, sourceView, _) in
+                let id = self.toDoItemsArray[indexPath.row].id
+                self.toDoItemsArray.remove(at: indexPath.row)
+                self.fileCacheManager.deleteTask(with: id)
+            }
+
+            deleteTask.backgroundColor = .systemRed
+            deleteTask.image = UIImage(systemName: "trash")?.withTintColor(.white)
+
+            let swipeActionConfig = UISwipeActionsConfiguration(actions: [deleteTask])
+            swipeActionConfig.performsFirstActionWithFullSwipe = true
+            return swipeActionConfig
         }
-        
-        deleteTask.backgroundColor = .systemRed
-        deleteTask.image = UIImage(systemName: "trash")?.withTintColor(.white)
-        
-        let swipeActionConfig = UISwipeActionsConfiguration(actions: [deleteTask])
-        swipeActionConfig.performsFirstActionWithFullSwipe = true
-        return swipeActionConfig
+        return nil
     }
 
     // MARK: Working with cells
@@ -74,7 +80,9 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        present(ToDoViewController(fileCacheManager: fileCacheManager, currentToDoItem: toDoItemsArray[indexPath.row]), animated: true, completion: nil)
+        if indexPath.row != self.tableView.numberOfRows(inSection: 0) - 1 {
+            present(ToDoViewController(fileCacheManager: fileCacheManager, currentToDoItem: toDoItemsArray[indexPath.row]), animated: true, completion: nil)
+        }
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {

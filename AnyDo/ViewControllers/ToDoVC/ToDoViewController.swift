@@ -70,7 +70,7 @@ class ToDoViewController: UIViewController, UITextViewDelegate {
         setUpTaskOptionsView()
         setUpDeleteButtonView()
 
-        deleteButtonView.addTarget(self, action: #selector(buttonTapped), for: .touchUpInside)
+        deleteButtonView.addTarget(self, action: #selector(deleteButtonTapped), for: .touchUpInside)
         calendarSwitch.addTarget(self, action: #selector(switchChanged), for: .valueChanged)
         datePickerView.addTarget(self, action: #selector(handlingDateChanges), for: .valueChanged)
 
@@ -80,7 +80,6 @@ class ToDoViewController: UIViewController, UITextViewDelegate {
     // MARK: Methods
 
     private func setupEditScreen() {
-
         if currentToDoItem != nil {
             self.isEditingItem = true
             self.taskTextView.text = currentToDoItem?.text
@@ -134,7 +133,7 @@ class ToDoViewController: UIViewController, UITextViewDelegate {
         }
     }
     
-    @objc func buttonTapped(sender: UIButton) {
+    @objc func deleteButtonTapped(sender: UIButton) {
         if (isEditingItem) {
             self.fileCacheManager.deleteTask(with: currentToDoItem!.id) // Вообще, форс - плохо, но в данной ситуации мы проверяли, что currentToDoItem не nil
             NotificationCenter.default.post(name: .toDoListChanged, object: nil)
@@ -168,14 +167,6 @@ class ToDoViewController: UIViewController, UITextViewDelegate {
     }
 
     private func getNewToDoItem() -> ToDoItem {
-        if let currentItem = currentToDoItem {
-            let td = ToDoItem(text: taskTextView.text,
-                              importance: getPriorityOfToDo(),
-                              deadLine: self.calendarSwitch.isOn ? self.datePickerView.date : nil,
-                              status: isEditingItem ? currentItem.status : getPriorityOfToDo() == .important ? .uncompletedImportant : .uncompleted)
-            return td
-        }
-
         return ToDoItem(text: taskTextView.text,
                         importance: getPriorityOfToDo(),
                         deadLine: self.calendarSwitch.isOn ? self.datePickerView.date : nil,
