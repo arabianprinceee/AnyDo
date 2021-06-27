@@ -13,7 +13,6 @@ final class FileCacheImplementation: FileCache {
     
     weak var delegate: FileCacheDelegate?
     private(set) var toDoItems: [String: ToDoItem] = [:]
-    private(set) var toDoItemsArray: [ToDoItem] = []
     private let fileManager = FileManager()
     private let tempDir = NSTemporaryDirectory()
     var cacheFileName: String
@@ -28,14 +27,12 @@ final class FileCacheImplementation: FileCache {
     
     func addToDoItem(toDoItem: ToDoItem) {
         self.toDoItems[toDoItem.id] = toDoItem
-        self.toDoItemsArray.append(toDoItem)
         saveAllTasks()
         delegate?.arrayDidChange(self)
     }
     
     func deleteTask(with id: String) {
         self.toDoItems[id] = nil
-        self.toDoItemsArray = toDoItemsArray.filter { $0.id != id }
         saveAllTasks()
         delegate?.arrayDidChange(self)
     }
@@ -65,19 +62,13 @@ final class FileCacheImplementation: FileCache {
                     let items = json.compactMap { ToDoItem.parse(json: $0) }
                     for item in items {
                         toDoItems[item.id] = item
-                        toDoItemsArray.append(item)
                     }
                 }
-            } catch _ as NSError {
+            } catch let error as NSError {
+                print(error.localizedDescription)
                 assertionFailure("Error during loading all tasks from json")
             }
         }
-    }
-    
-    func makeTaskCompleted(with id: String) {
-        self.toDoItems[id]?.status = .completed
-        saveAllTasks()
-        delegate?.arrayDidChange(self)
     }
     
 }

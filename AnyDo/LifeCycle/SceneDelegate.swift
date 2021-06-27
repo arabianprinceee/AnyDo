@@ -16,8 +16,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         if let windowScene = scene as? UIWindowScene {
             
             let window = UIWindow(windowScene: windowScene)
-            
-            let fileCacheManager: FileCacheImplementation = FileCacheImplementation(cacheFileName: "tasksCache")
+
+            let cacheFileName = "tasksCache"
+            let fileCacheManager: FileCacheImplementation = FileCacheImplementation(cacheFileName: cacheFileName)
+            fileCacheManager.loadAllTasks(fileName: cacheFileName)
             
             window.rootViewController = MainViewController(fileCacheManager: fileCacheManager)
             self.window = window

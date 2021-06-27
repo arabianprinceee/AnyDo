@@ -7,7 +7,7 @@
 
 import Foundation
 
-class ToDoItem {
+struct ToDoItem {
     
     // MARK: Properties
     
@@ -15,7 +15,7 @@ class ToDoItem {
     let text: String
     let importance: Importance
     let deadline: Date?
-    var status: TaskStatus
+    let status: TaskStatus
     
     // MARK: Initialization
     

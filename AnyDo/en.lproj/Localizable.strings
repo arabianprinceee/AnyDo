@@ -17,3 +17,6 @@
 "doneTasks" = "Tasks completed —";
 "show" = "Show";
 "hide" = "Hide";
+"OK" = "OK";
+"already done" = "Already done";
+"task is done" = "Task has already been done!";

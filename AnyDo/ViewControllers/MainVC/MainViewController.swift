@@ -12,15 +12,15 @@ class MainViewController: UIViewController {
     // MARK: Properties
     
     let fileCacheManager: FileCacheImplementation
+    let cellIdentifier = String(describing: TableViewCell.self)
+
+    var toDoItemsArray: [ToDoItem] // Массив туду айтемов для внутреннего пользования вьюконтроллеров
     
     let addItemButton = UIButton()
     let viewTitle = UILabel()
     let doneTasksLabel = UILabel()
     let showHideTasksButton = UIButton()
-    
-    var doneTasksQuantity: Int
-    
-    let cellIdentifier = String(describing: TableViewCell.self)
+
     lazy var tableView: UITableView = {
         let tableView = UITableView(frame: .zero, style: .insetGrouped)
         tableView.register(UINib(nibName: String(describing: TableViewCell.self), bundle: nil), forCellReuseIdentifier: cellIdentifier)
@@ -30,32 +30,13 @@ class MainViewController: UIViewController {
         return tableView
     }()
     
-    
-    // MARK: Enums
-    
-    enum DesignConstants {
-        static var titleTopConstraint: CGFloat { return 60 }
-        static var titleLeftConstraint: CGFloat { return 32 }
-        static var doneTasksToTitleConstraint: CGFloat { return 18 }
-        static var addItemButtonFrames: CGFloat { return 44 }
-        static var addItemButtonBottomConstraint: CGFloat { return -54 }
-        static var showHideButtonRightConstraing: CGFloat { return -32 }
-    }
-    
-    enum FontSizes {
-        static var title: CGFloat { return 34 }
-        static var underTitleLabels: CGFloat { return 15 }
-    }
-    
     // MARK: Initialization
     
     init(fileCacheManager: FileCacheImplementation) {
         self.fileCacheManager = fileCacheManager
+        self.toDoItemsArray = fileCacheManager.toDoItems.map { $0.value }.sorted { $0.text < $1.text }
         super.init(nibName: nil, bundle: nil)
         self.fileCacheManager.delegate = self
-        self.fileCacheManager.loadAllTasks(fileName: fileCacheManager.cacheFileName)
-        
-        self.doneTasksQuantity = fileCacheManager.toDoItemsArray.filter { $0.status == .completed }.count
     }
     
     required init?(coder: NSCoder) {
@@ -83,115 +64,51 @@ class MainViewController: UIViewController {
         setUpTableView()
         setUpAddButton()
     }
-    
-    
-    // MARK: Private methods
-    
-    private func setUpTableView() {
-        tableView.separatorInset = UIEdgeInsets(top: 0, left: 54, bottom: 0, right: 0)
-        
-        tableView.translatesAutoresizingMaskIntoConstraints = false
-        
-        NSLayoutConstraint.activate([
-            tableView.topAnchor.constraint(equalTo: doneTasksLabel.bottomAnchor),
-            tableView.leftAnchor.constraint(equalTo: view.leftAnchor),
-            tableView.rightAnchor.constraint(equalTo: view.rightAnchor),
-            tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
-        ])
+
+    // MARK: Methods
+
+    private func updateToDoItemsArray() {
+        self.toDoItemsArray = fileCacheManager.toDoItems.map { $0.value }.sorted { $0.text < $1.text }
     }
-    
-    private func setUpViewTitle() {
-        viewTitle.translatesAutoresizingMaskIntoConstraints = false
-        viewTitle.text = NSLocalizedString("mainTitle", comment: "")
-        viewTitle.font = .boldSystemFont(ofSize: FontSizes.title)
-        
-        NSLayoutConstraint.activate([
-            viewTitle.topAnchor.constraint(equalTo: view.layoutMarginsGuide.topAnchor, constant: DesignConstants.titleTopConstraint),
-            viewTitle.leftAnchor.constraint(equalTo: view.leftAnchor, constant: DesignConstants.titleLeftConstraint)
-        ])
+
+    func updateDoneTasksLabel() {
+        doneTasksLabel.text = "\(NSLocalizedString("doneTasks", comment: "")) \(self.toDoItemsArray.filter { $0.status == .completed }.count)"
     }
-    
-    private func setUpDoneTasksLabel() {
-        doneTasksLabel.translatesAutoresizingMaskIntoConstraints = false
-        doneTasksLabel.text = "\(NSLocalizedString("doneTasks", comment: "")) \(doneTasksQuantity)"
-        doneTasksLabel.font = .systemFont(ofSize: FontSizes.underTitleLabels)
-        doneTasksLabel.textColor = .lightGray
-        
-        NSLayoutConstraint.activate([
-            doneTasksLabel.topAnchor.constraint(equalTo: viewTitle.bottomAnchor, constant: DesignConstants.doneTasksToTitleConstraint),
-            doneTasksLabel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: DesignConstants.titleLeftConstraint)
-        ])
-    }
-    
-    private func updateDoneTasksLabel() {
-        self.doneTasksLabel.text = "\(NSLocalizedString("doneTasks", comment: "")) \(fileCacheManager.toDoItemsArray.filter { $0.status == .completed }.count)"
-    }
-    
-    private func setUpShowHideButton() {
-        showHideTasksButton.translatesAutoresizingMaskIntoConstraints = false
-        showHideTasksButton.setTitle(NSLocalizedString("hide", comment: ""), for: .normal)
-        showHideTasksButton.setTitleColor(.systemBlue, for: .normal)
-        showHideTasksButton.titleLabel?.font = .boldSystemFont(ofSize: FontSizes.underTitleLabels)
-        showHideTasksButton.addTarget(self, action: #selector(showHideTasksButtonTapped), for: .touchUpInside)
-        
-        NSLayoutConstraint.activate([
-            showHideTasksButton.centerYAnchor.constraint(equalTo: doneTasksLabel.centerYAnchor),
-            showHideTasksButton.rightAnchor.constraint(equalTo: self.view.rightAnchor, constant: DesignConstants.showHideButtonRightConstraing)
-        ])
-    }
-    
-    private func setUpAddButton() {
-        addItemButton.translatesAutoresizingMaskIntoConstraints = false
-        addItemButton.backgroundColor = UIColor(named: "AddButtonColor")
-        addItemButton.layer.cornerRadius = DesignConstants.addItemButtonFrames / 2
-        
-        addItemButton.setImage(UIImage(systemName: "plus"), for: .normal)
-        addItemButton.imageView?.tintColor = UIColor.white
-        addItemButton.imageView?.contentMode = .scaleToFill
-        
-        addItemButton.addTarget(self, action: #selector(addItemButtonTapped), for: .touchUpInside)
-        
-        NSLayoutConstraint.activate([
-            addItemButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: DesignConstants.addItemButtonBottomConstraint),
-            addItemButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            addItemButton.widthAnchor.constraint(equalToConstant: DesignConstants.addItemButtonFrames),
-            addItemButton.heightAnchor.constraint(equalToConstant: DesignConstants.addItemButtonFrames)
-        ])
-    }
-    
     
     // MARK: Objc methods
     
-    @objc private func addItemButtonTapped() {
-        let vc = ToDoViewController(fileCacheManager: self.fileCacheManager)
+    @objc func addItemButtonTapped() {
+        let vc = ToDoViewController(fileCacheManager: self.fileCacheManager, currentToDoItem: nil)
         self.present(vc, animated: true, completion: nil)
     }
     
-    @objc private func showHideTasksButtonTapped() {
+    @objc func showHideTasksButtonTapped() {
         if showHideTasksButton.titleLabel?.text == NSLocalizedString("hide", comment: "") {
             showHideTasksButton.setTitle(NSLocalizedString("show", comment: ""), for: .normal)
-            
-            // TODO
-            
+            toDoItemsArray = toDoItemsArray.filter { $0.status != .completed }
+            updateDoneTasksLabel()
+            tableView.reloadData()
         } else {
             showHideTasksButton.setTitle(NSLocalizedString("hide", comment: ""), for: .normal)
-            
-            // TODO
-            
+            updateToDoItemsArray()
+            updateDoneTasksLabel()
+            tableView.reloadData()
         }
     }
     
     @objc private func onToDoVCDismissed() {
-        print(fileCacheManager.toDoItems.count)
+        updateToDoItemsArray()
         self.tableView.reloadData()
     }
     
 }
 
+// MARK: FileCacheDelegate
+
 extension MainViewController: FileCacheDelegate {
     
     func arrayDidChange(_ sender: FileCacheImplementation) {
-        self.updateDoneTasksLabel()
+        updateDoneTasksLabel()
         tableView.reloadData()
     }
     
