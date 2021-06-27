@@ -11,8 +11,10 @@ class ToDoViewController: UIViewController, UITextViewDelegate {
     
     // MARK: Properties
     
+    let fileCacheManager: FileCacheImplementation = FileCacheImplementation()
+    let cacheFileName: String = "tasks"
+    
     var dateOfTask: UILabel = UILabel()
-    var leftSideStack: UIStackView = UIStackView()
     var calendarSwitch: UISwitch = UISwitch()
     var taskPrioritySementedControl: UISegmentedControl = UISegmentedControl(items: [" ↘️ "," ➡️ "," ↗️ "])
     var taskTextView: UITextView = UITextView()
@@ -21,6 +23,16 @@ class ToDoViewController: UIViewController, UITextViewDelegate {
     let taskOptionsView: UIStackView = UIStackView()
     let taskDescriptionView: UIView = UIView()
     let deleteButtonView: UIButton = UIButton()
+    var navigationBar: UINavigationBar = UINavigationBar()
+    
+    lazy var scrollView : UIScrollView = {
+        let view = UIScrollView()
+        view.insetsLayoutMarginsFromSafeArea = true
+        view.contentInsetAdjustmentBehavior = .always
+        view.contentSize = CGSize(width: self.view.frame.width, height: self.view.frame.height + 115)
+        view.backgroundColor = .clear
+        return view
+    }()
     
     // MARK: Enums
     
@@ -34,6 +46,7 @@ class ToDoViewController: UIViewController, UITextViewDelegate {
         static var taskTextViewLeftRightTopConstraints: CGFloat { return 8 }
         static var deleteButtonHeight: CGFloat { return 56 }
         static var defaultCornRadius: CGFloat { return 16 }
+        static var defaultNavBarHeight: CGFloat { return 44 }
     }
     
     enum FontSizes {
@@ -46,46 +59,53 @@ class ToDoViewController: UIViewController, UITextViewDelegate {
     }
     
     // MARK: System methods
-
+    
+    override func viewDidLayoutSubviews() {
+        scrollView.frame = CGRect(x: 0, y: 60, width: self.view.frame.width, height: self.view.safeAreaLayoutGuide.layoutFrame.size.height)
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         self.view.backgroundColor = UIColor(named: "BackgroundColor")
-        view.addSubview(taskDescriptionView)
-        view.addSubview(taskOptionsView)
-        view.addSubview(deleteButtonView)
+        
+        setUpNavigationBar()
+        
+        view.addSubview(navigationBar)
+        view.addSubview(scrollView)
+        
+        scrollView.addSubview(taskDescriptionView)
+        scrollView.addSubview(taskOptionsView)
+        scrollView.addSubview(deleteButtonView)
         setUpTaskDescriptionView()
         setUpTaskOptionsView()
         setUpDeleteButtonView()
         
-        setUpNavigationBar()
-        
         datePickerView.addTarget(self, action: #selector(handlingDateChanges), for: .valueChanged)
-    }
-    
-    func textViewDidBeginEditing(_ textView: UITextView) {
-        if textView.textColor == UIColor.lightGray {
-            textView.text = nil
-            textView.textColor = UIColor.black
-        }
     }
     
     // MARK: Setup & configuration methods
     
+    /// NavigationBar
+    
     private func setUpNavigationBar() {
-        self.navigationItem.title = NSLocalizedString("task", comment: "")
-        self.navigationItem.setRightBarButton(UIBarButtonItem(title: NSLocalizedString("saveButton", comment: ""), style: .done, target: nil, action: nil), animated: false)
+        navigationBar = UINavigationBar(frame: CGRect(x: 0, y: self.view.safeAreaInsets.top, width: self.view.frame.width, height: DesignConstants.defaultNavBarHeight))
+        let navigationItem = UINavigationItem(title: NSLocalizedString("task", comment: ""))
+        let doneBtn = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.done, target: nil, action: #selector(dismissVC))
+        navigationItem.rightBarButtonItem = doneBtn
+        navigationBar.setItems([navigationItem], animated: false)
     }
+    
+    /// Description
     
     private func setUpTaskDescriptionView() {
         taskDescriptionView.backgroundColor = UIColor(named: "CardsBackground")
-        
         taskDescriptionView.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate( [
-            taskDescriptionView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: DesignConstants.defaultPadding),
-            taskDescriptionView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -DesignConstants.defaultPadding),
-            taskDescriptionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: DesignConstants.defaultPadding),
+            taskDescriptionView.widthAnchor.constraint(equalToConstant: self.view.frame.width - 2 * DesignConstants.defaultPadding),
+            taskDescriptionView.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor),
+            taskDescriptionView.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: DesignConstants.defaultPadding),
             taskDescriptionView.heightAnchor.constraint(equalToConstant: DesignConstants.taskDescriptionViewHeight)
         ])
         
@@ -100,14 +120,15 @@ class ToDoViewController: UIViewController, UITextViewDelegate {
         
         taskDescriptionView.addSubview(taskTextView)
         
-        NSLayoutConstraint.activate( [
+        NSLayoutConstraint.activate([
             taskTextView.leftAnchor.constraint(equalTo: taskDescriptionView.leftAnchor, constant: DesignConstants.taskTextViewLeftRightTopConstraints),
             taskTextView.rightAnchor.constraint(equalTo: taskDescriptionView.rightAnchor, constant: -DesignConstants.taskTextViewLeftRightTopConstraints),
-            taskTextView.widthAnchor.constraint(equalToConstant: taskDescriptionView.frame.width - 2 * DesignConstants.taskTextViewLeftRightTopConstraints),
             taskTextView.topAnchor.constraint(equalTo: taskDescriptionView.topAnchor, constant: DesignConstants.taskTextViewLeftRightTopConstraints),
-            taskTextView.heightAnchor.constraint(equalToConstant: DesignConstants.taskTextViewHeight)
+            taskTextView.bottomAnchor.constraint(equalTo: taskDescriptionView.bottomAnchor, constant: -DesignConstants.taskTextViewLeftRightTopConstraints)
         ])
     }
+    
+    /// Task options
     
     private func setUpTaskOptionsView() {
         taskOptionsView.backgroundColor = UIColor(named: "CardsBackground")
@@ -115,8 +136,8 @@ class ToDoViewController: UIViewController, UITextViewDelegate {
         taskOptionsView.axis = .vertical
         
         NSLayoutConstraint.activate( [
-            taskOptionsView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: DesignConstants.defaultPadding),
-            taskOptionsView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -DesignConstants.defaultPadding),
+            taskOptionsView.widthAnchor.constraint(equalToConstant: self.view.frame.width - 2 * DesignConstants.defaultPadding),
+            taskOptionsView.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor),
             taskOptionsView.topAnchor.constraint(equalTo: taskDescriptionView.bottomAnchor, constant: DesignConstants.defaultPadding)
         ])
         
@@ -132,7 +153,6 @@ class ToDoViewController: UIViewController, UITextViewDelegate {
         configureCell(leftText: NSLocalizedString("priority", comment: ""), rightView: taskPrioritySementedControl, cellType: .importance)
         
         configureCell(leftText: NSLocalizedString("doUntil", comment: ""), rightView: calendarSwitch, separatorNeeded: true, downText: "", cellType: .calendar)
-//        configureCell(leftText: NSLocalizedString("doUntil", comment: ""), rightView: calendarSwitch, separatorNeeded: false)
         
         if calendarSwitch.isOn {
             configureCalendar()
@@ -141,41 +161,17 @@ class ToDoViewController: UIViewController, UITextViewDelegate {
         deleteButtonView.layoutIfNeeded()
     }
     
-    private func setUpDeleteButtonView() {
-        deleteButtonView.setTitle(NSLocalizedString("delete", comment: ""), for: .normal)
-        deleteButtonView.setTitleColor(.red, for: .normal)
-        deleteButtonView.backgroundColor = UIColor(named: "CardsBackground")
-        
-        deleteButtonView.addTarget(self, action: #selector(buttonTapped), for: .touchUpInside)
-        
-        deleteButtonView.translatesAutoresizingMaskIntoConstraints = false
-        deleteButtonView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: DesignConstants.defaultPadding).isActive = true
-        deleteButtonView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -DesignConstants.defaultPadding).isActive = true
-        deleteButtonView.topAnchor.constraint(equalTo: taskOptionsView.bottomAnchor, constant: DesignConstants.defaultPadding).isActive = true
-        deleteButtonView.heightAnchor.constraint(equalToConstant: DesignConstants.deleteButtonHeight).isActive = true
-        
-        deleteButtonView.layer.cornerRadius = DesignConstants.defaultCornRadius
-    }
-    
-    
-    @objc private func handlingDateChanges(sender: UIDatePicker) {
-        let df = DateFormatter()
-        df.dateFormat = "d MMM yyyy"
-        let date = df.string(from: sender.date)
-        dateOfTask.textColor = .systemBlue
-        dateOfTask.font = .boldSystemFont(ofSize: 13)
-        dateOfTask.text = date
-    }
-    
     private func configureCell(leftText: String, rightView: UIView, separatorNeeded: Bool = true, downText: String = "", cellType: CellType) {
         
         switch cellType {
         case .calendar:
-            let hstackView = UIStackView()
-            hstackView.alignment = .center
-            hstackView.axis = .horizontal
-            leftSideStack.axis = .vertical
-            leftSideStack.alignment = .center
+            let generalHStack = UIStackView()
+            let leftSideVStack = UIStackView()
+            
+            generalHStack.alignment = .center
+            generalHStack.axis = .horizontal
+            leftSideVStack.axis = .vertical
+            leftSideVStack.alignment = .center
             
             let leftLabel = UILabel()
             leftLabel.text = leftText
@@ -185,27 +181,28 @@ class ToDoViewController: UIViewController, UITextViewDelegate {
             leftLabel.translatesAutoresizingMaskIntoConstraints = false
             dateOfTask.translatesAutoresizingMaskIntoConstraints = false
             
-            leftSideStack.addArrangedSubview(leftLabel)
-            leftSideStack.addArrangedSubview(dateOfTask)
+            leftSideVStack.addArrangedSubview(leftLabel)
+            leftSideVStack.addArrangedSubview(dateOfTask)
             
-            hstackView.addArrangedSubview(leftSideStack)
-            hstackView.addArrangedSubview(rightView)
+            generalHStack.addArrangedSubview(leftSideVStack)
+            generalHStack.addArrangedSubview(rightView)
             
-            taskOptionsView.addArrangedSubview(hstackView)
+            taskOptionsView.addArrangedSubview(generalHStack)
             
             NSLayoutConstraint.activate([
-                hstackView.heightAnchor.constraint(equalToConstant: DesignConstants.taskOptionsCellHeight),
-                hstackView.rightAnchor.constraint(equalTo: taskOptionsView.rightAnchor, constant: -DesignConstants.defaultPadding),
+                generalHStack.heightAnchor.constraint(equalToConstant: DesignConstants.taskOptionsCellHeight),
+                generalHStack.rightAnchor.constraint(equalTo: taskOptionsView.rightAnchor, constant: -DesignConstants.defaultPadding),
+                generalHStack.leftAnchor.constraint(equalTo: taskOptionsView.leftAnchor, constant: DesignConstants.defaultPadding),
                 
-                rightView.rightAnchor.constraint(equalTo: hstackView.rightAnchor, constant: -8),
-                rightView.centerYAnchor.constraint(equalTo: hstackView.centerYAnchor),
+                rightView.rightAnchor.constraint(equalTo: generalHStack.rightAnchor, constant: -8),
+                rightView.centerYAnchor.constraint(equalTo: generalHStack.centerYAnchor),
                 
-                leftSideStack.heightAnchor.constraint(equalToConstant: DesignConstants.taskOptionsCellHeight),
+                leftSideVStack.heightAnchor.constraint(equalToConstant: DesignConstants.taskOptionsCellHeight),
                 
-                leftLabel.leftAnchor.constraint(equalTo: leftSideStack.leftAnchor),
+                leftLabel.leftAnchor.constraint(equalTo: leftSideVStack.leftAnchor),
                 
-                dateOfTask.leftAnchor.constraint(equalTo: leftSideStack.leftAnchor),
-                dateOfTask.bottomAnchor.constraint(equalTo: hstackView.bottomAnchor, constant: -8)
+                dateOfTask.leftAnchor.constraint(equalTo: leftSideVStack.leftAnchor),
+                dateOfTask.bottomAnchor.constraint(equalTo: generalHStack.bottomAnchor, constant: -8)
             ])
             
         case .importance:
@@ -248,6 +245,7 @@ class ToDoViewController: UIViewController, UITextViewDelegate {
         
         datePickerView.datePickerMode = UIDatePicker.Mode.date
         datePickerView.preferredDatePickerStyle = .inline
+        datePickerView.minimumDate = Date()
         datePickerView.translatesAutoresizingMaskIntoConstraints = false
         
         taskOptionsView.addArrangedSubview(datePickerView)
@@ -272,12 +270,52 @@ class ToDoViewController: UIViewController, UITextViewDelegate {
         return divider
     }
     
+    /// Delete button
+    
+    private func setUpDeleteButtonView() {
+        deleteButtonView.setTitle(NSLocalizedString("delete", comment: ""), for: .normal)
+        deleteButtonView.setTitleColor(.red, for: .normal)
+        deleteButtonView.backgroundColor = UIColor(named: "CardsBackground")
+        
+        deleteButtonView.addTarget(self, action: #selector(buttonTapped), for: .touchUpInside)
+        
+        deleteButtonView.translatesAutoresizingMaskIntoConstraints = false
+        
+        NSLayoutConstraint.activate( [
+            deleteButtonView.widthAnchor.constraint(equalToConstant: self.view.frame.width - 2 * DesignConstants.defaultPadding),
+            deleteButtonView.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor),
+            deleteButtonView.topAnchor.constraint(equalTo: taskOptionsView.bottomAnchor, constant: DesignConstants.defaultPadding),
+            deleteButtonView.heightAnchor.constraint(equalToConstant: DesignConstants.deleteButtonHeight)
+        ])
+        
+        deleteButtonView.layer.cornerRadius = DesignConstants.defaultCornRadius
+    }
+    
+    // MARK: Private methods
+    
+    private func getStringFromDate() -> String {
+        let df = DateFormatter()
+        df.dateFormat = "d MMM yyyy"
+        return df.string(from: datePickerView.date)
+    }
+    
+    
+    internal func textViewDidBeginEditing(_ textView: UITextView) {
+        if textView.textColor == UIColor.lightGray {
+            textView.text = nil
+            textView.textColor = UIColor.black
+        }
+    }
+    
     // MARK: Objc methods
     
     @objc private func switchChanged(sender: UISwitch)
     {
         if (sender.isOn) {
             configureCalendar()
+            dateOfTask.textColor = .systemBlue
+            dateOfTask.font = .boldSystemFont(ofSize: 13)
+            dateOfTask.text = getStringFromDate()
         } else {
             dateOfTask.text = ""
             datePickerView.removeFromSuperview()
@@ -289,6 +327,16 @@ class ToDoViewController: UIViewController, UITextViewDelegate {
     @objc private func buttonTapped(sender: UIButton)
     {
         print("button tapped")
+    }
+    
+    @objc private func handlingDateChanges(sender: UIDatePicker) {
+        dateOfTask.textColor = .systemBlue
+        dateOfTask.font = .boldSystemFont(ofSize: 13)
+        dateOfTask.text = getStringFromDate()
+    }
+    
+    @objc private func dismissVC() {
+        self.dismiss(animated: true, completion: nil)
     }
     
 }

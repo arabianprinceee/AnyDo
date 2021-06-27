@@ -11,18 +11,20 @@ final class FileCacheImplementation: FileCache {
     
     // MARK: Properties
     
-    var toDoItems: [String: ToDoItemImplementation] = [:]
+    private(set) var toDoItems: [String: ToDoItem] = [:]
     let fileManager = FileManager()
     let tempDir = NSTemporaryDirectory()
     
     // MARK: Methods
     
-    func addTask(toDoItem: ToDoItemImplementation) {
+    func addToDoItem(toDoItem: ToDoItem, fileName: String) {
         self.toDoItems[toDoItem.id] = toDoItem
+        saveAllTasks(fileName: fileName)
     }
     
-    func deleteTask(with id: String) {
+    func deleteTask(with id: String, fileName: String) {
         self.toDoItems[id] = nil
+        saveAllTasks(fileName: fileName)
     }
     
     func saveAllTasks(fileName: String) {
@@ -33,8 +35,8 @@ final class FileCacheImplementation: FileCache {
         do {
             let jsonData = try? JSONSerialization.data(withJSONObject: jsonArray)
             try jsonData?.write(to: fileURL)
-        } catch let error as NSError {
-            print(error.localizedDescription)
+        } catch _ as NSError {
+            assertionFailure("Error during saving all tasks to json")
         }
     }
     
@@ -46,16 +48,13 @@ final class FileCacheImplementation: FileCache {
         do {
             let data = try Data(contentsOf: fileURL)
             if let json = try JSONSerialization.jsonObject(with: data) as? [[String: Any]] {
-                for subjson in json {
-                    if let id = subjson["id"] as? String {
-                        toDoItems[id] = ToDoItemImplementation.parse(json: subjson)
-                    } else {
-                        return
-                    }
+                let items = json.compactMap { ToDoItem.parse(json: $0) }
+                for item in items {
+                    toDoItems[item.id] = item
                 }
             }
-        } catch let error as NSError {
-            print(error.localizedDescription)
+        } catch _ as NSError {
+            assertionFailure("Error during loading all tasks from json")
         }
     }
     

@@ -12,3 +12,8 @@
 "priority" = "Priority";
 "doUntil" = "Do until";
 "delete" = "Delete";
+"dismiss" = "Cancel";
+"mainTitle" = "My tasks";
+"doneTasks" = "Tasks completed —";
+"show" = "Show";
+"hide" = "Hide";
