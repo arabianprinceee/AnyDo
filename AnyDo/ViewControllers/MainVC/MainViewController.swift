@@ -11,13 +11,14 @@ class MainViewController: UIViewController {
     
     // MARK: Properties
     
-    let fileCacheManager: FileCacheImplementation = FileCacheImplementation()
-    let cacheFileName: String = "tasks"
+    let fileCacheManager: FileCacheImplementation
     
     let addItemButton = UIButton()
     let viewTitle = UILabel()
     let doneTasksLabel = UILabel()
     let showHideTasksButton = UIButton()
+    
+    var doneTasksQuantity: Int
     
     let cellIdentifier = String(describing: TableViewCell.self)
     lazy var tableView: UITableView = {
@@ -46,13 +47,27 @@ class MainViewController: UIViewController {
         static var underTitleLabels: CGFloat { return 15 }
     }
     
+    // MARK: Initialization
+    
+    init(fileCacheManager: FileCacheImplementation) {
+        self.fileCacheManager = fileCacheManager
+        super.init(nibName: nil, bundle: nil)
+        self.fileCacheManager.delegate = self
+        self.fileCacheManager.loadAllTasks(fileName: fileCacheManager.cacheFileName)
+        
+        self.doneTasksQuantity = fileCacheManager.toDoItemsArray.filter { $0.status == .completed }.count
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     // MARK: System methods
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        fileCacheManager.loadAllTasks(fileName: cacheFileName)
+        NotificationCenter.default.addObserver(self, selector: #selector(onToDoVCDismissed), name: .toDoListChanged, object: nil)
         
         view.backgroundColor = UIColor(named: "BackgroundColor")
         
@@ -73,6 +88,8 @@ class MainViewController: UIViewController {
     // MARK: Private methods
     
     private func setUpTableView() {
+        tableView.separatorInset = UIEdgeInsets(top: 0, left: 54, bottom: 0, right: 0)
+        
         tableView.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
@@ -96,7 +113,7 @@ class MainViewController: UIViewController {
     
     private func setUpDoneTasksLabel() {
         doneTasksLabel.translatesAutoresizingMaskIntoConstraints = false
-        doneTasksLabel.text = "\(NSLocalizedString("doneTasks", comment: "")) \(fileCacheManager.toDoItems.map { $0.value }.filter { $0.status == .completed }.count)"
+        doneTasksLabel.text = "\(NSLocalizedString("doneTasks", comment: "")) \(doneTasksQuantity)"
         doneTasksLabel.font = .systemFont(ofSize: FontSizes.underTitleLabels)
         doneTasksLabel.textColor = .lightGray
         
@@ -106,8 +123,8 @@ class MainViewController: UIViewController {
         ])
     }
     
-    func updateDoneTasksLabel() {
-        self.doneTasksLabel.text = "\(NSLocalizedString("doneTasks", comment: "")) \(fileCacheManager.toDoItems.map { $0.value }.filter { $0.status == .completed }.count)"
+    private func updateDoneTasksLabel() {
+        self.doneTasksLabel.text = "\(NSLocalizedString("doneTasks", comment: "")) \(fileCacheManager.toDoItemsArray.filter { $0.status == .completed }.count)"
     }
     
     private func setUpShowHideButton() {
@@ -146,7 +163,7 @@ class MainViewController: UIViewController {
     // MARK: Objc methods
     
     @objc private func addItemButtonTapped() {
-        let vc = ToDoViewController()
+        let vc = ToDoViewController(fileCacheManager: self.fileCacheManager)
         self.present(vc, animated: true, completion: nil)
     }
     
@@ -162,6 +179,20 @@ class MainViewController: UIViewController {
             // TODO
             
         }
+    }
+    
+    @objc private func onToDoVCDismissed() {
+        print(fileCacheManager.toDoItems.count)
+        self.tableView.reloadData()
+    }
+    
+}
+
+extension MainViewController: FileCacheDelegate {
+    
+    func arrayDidChange(_ sender: FileCacheImplementation) {
+        self.updateDoneTasksLabel()
+        tableView.reloadData()
     }
     
 }

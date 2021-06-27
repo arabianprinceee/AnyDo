@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct ToDoItem {
+class ToDoItem {
     
     // MARK: Properties
     

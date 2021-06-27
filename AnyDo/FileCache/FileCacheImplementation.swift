@@ -11,25 +11,38 @@ final class FileCacheImplementation: FileCache {
     
     // MARK: Properties
     
+    weak var delegate: FileCacheDelegate?
     private(set) var toDoItems: [String: ToDoItem] = [:]
-    let fileManager = FileManager()
-    let tempDir = NSTemporaryDirectory()
+    private(set) var toDoItemsArray: [ToDoItem] = []
+    private let fileManager = FileManager()
+    private let tempDir = NSTemporaryDirectory()
+    var cacheFileName: String
+    
+    // MARK: Initialization
+    
+    init(cacheFileName: String) {
+        self.cacheFileName = cacheFileName
+    }
     
     // MARK: Methods
     
-    func addToDoItem(toDoItem: ToDoItem, fileName: String) {
+    func addToDoItem(toDoItem: ToDoItem) {
         self.toDoItems[toDoItem.id] = toDoItem
-        saveAllTasks(fileName: fileName)
+        self.toDoItemsArray.append(toDoItem)
+        saveAllTasks()
+        delegate?.arrayDidChange(self)
     }
     
-    func deleteTask(with id: String, fileName: String) {
+    func deleteTask(with id: String) {
         self.toDoItems[id] = nil
-        saveAllTasks(fileName: fileName)
+        self.toDoItemsArray = toDoItemsArray.filter { $0.id != id }
+        saveAllTasks()
+        delegate?.arrayDidChange(self)
     }
     
-    func saveAllTasks(fileName: String) {
+    func saveAllTasks() {
         let directoryURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-        let fileURL = URL(fileURLWithPath: fileName, relativeTo: directoryURL).appendingPathExtension("txt")
+        let fileURL = URL(fileURLWithPath: cacheFileName, relativeTo: directoryURL).appendingPathExtension("txt")
         let jsonArray = toDoItems.values.map { $0.json }
         
         do {
@@ -43,19 +56,28 @@ final class FileCacheImplementation: FileCache {
     func loadAllTasks(fileName: String) {
         let directoryURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
         let fileURL = URL(fileURLWithPath: fileName, relativeTo: directoryURL).appendingPathExtension("txt")
-        toDoItems.removeAll()
         
-        do {
-            let data = try Data(contentsOf: fileURL)
-            if let json = try JSONSerialization.jsonObject(with: data) as? [[String: Any]] {
-                let items = json.compactMap { ToDoItem.parse(json: $0) }
-                for item in items {
-                    toDoItems[item.id] = item
+        if fileManager.fileExists(atPath: fileURL.path) {
+            toDoItems.removeAll()
+            do {
+                let data = try Data(contentsOf: fileURL)
+                if let json = try JSONSerialization.jsonObject(with: data) as? [[String: Any]] {
+                    let items = json.compactMap { ToDoItem.parse(json: $0) }
+                    for item in items {
+                        toDoItems[item.id] = item
+                        toDoItemsArray.append(item)
+                    }
                 }
+            } catch _ as NSError {
+                assertionFailure("Error during loading all tasks from json")
             }
-        } catch _ as NSError {
-            assertionFailure("Error during loading all tasks from json")
         }
+    }
+    
+    func makeTaskCompleted(with id: String) {
+        self.toDoItems[id]?.status = .completed
+        saveAllTasks()
+        delegate?.arrayDidChange(self)
     }
     
 }
