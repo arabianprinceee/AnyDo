@@ -78,22 +78,27 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: cellIdentifier, for: indexPath) as? TableViewCell
-        else { return UITableViewCell() }
-        
-        let dateFormatterPrint = DateFormatter()
-        dateFormatterPrint.dateFormat = "dd MMM"
-        
-        if let deadline = self.toDoItemsArray[indexPath.row].deadline {
+
+        if indexPath.row == tableView.numberOfRows(inSection: 0) - 1 {
+            let cell = tableView.dequeueReusableCell(withIdentifier: AddItemCell.identifier, for: indexPath) as! AddItemCell
+            return cell
+        } else {
+            let cell = tableView.dequeueReusableCell(withIdentifier: cellIdentifier, for: indexPath) as! TableViewCell
+            
+            let dateFormatterPrint = DateFormatter()
+            dateFormatterPrint.dateFormat = "dd MMM"
+
+            if let deadline = self.toDoItemsArray[indexPath.row].deadline {
+                cell.configure(status: self.toDoItemsArray[indexPath.row].status,
+                               taskName: self.toDoItemsArray[indexPath.row].text,
+                               deadline: dateFormatterPrint.string(from: deadline))
+                return cell
+            }
+
             cell.configure(status: self.toDoItemsArray[indexPath.row].status,
-                           taskName: self.toDoItemsArray[indexPath.row].text,
-                           deadline: dateFormatterPrint.string(from: deadline))
+                           taskName: self.toDoItemsArray[indexPath.row].text)
             return cell
         }
-        
-        cell.configure(status: self.toDoItemsArray[indexPath.row].status,
-                       taskName: self.toDoItemsArray[indexPath.row].text)
-        return cell
     }
     
 }
@@ -102,4 +107,5 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
 
 extension Notification.Name {
     static let toDoListChanged = Notification.Name("ToDoListChanged")
+    static let addedToDoFromAddItemCell = Notification.Name("addedToDoFromAddItemCell")
 }

@@ -26,6 +26,7 @@ extension ToDoViewController {
     func setUpTaskDescriptionView() {
         taskDescriptionView.backgroundColor = UIColor(named: "CardsBackground")
         taskDescriptionView.translatesAutoresizingMaskIntoConstraints = false
+        taskDescriptionView.layer.cornerRadius = DesignConstants.defaultCornRadius
 
         NSLayoutConstraint.activate( [
             taskDescriptionView.widthAnchor.constraint(equalToConstant: self.view.frame.width - 2 * DesignConstants.defaultPadding),
@@ -33,8 +34,6 @@ extension ToDoViewController {
             taskDescriptionView.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: DesignConstants.defaultPadding),
             taskDescriptionView.heightAnchor.constraint(equalToConstant: DesignConstants.taskDescriptionViewHeight)
         ])
-
-        taskDescriptionView.layer.cornerRadius = DesignConstants.defaultCornRadius
 
         taskTextView.backgroundColor = UIColor(named: "CardsBackground")
         taskTextView.translatesAutoresizingMaskIntoConstraints = false

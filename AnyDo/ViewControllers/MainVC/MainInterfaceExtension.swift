@@ -17,7 +17,7 @@ extension MainViewController {
         tableView.translatesAutoresizingMaskIntoConstraints = false
 
         NSLayoutConstraint.activate([
-            tableView.topAnchor.constraint(equalTo: doneTasksLabel.bottomAnchor),
+            tableView.topAnchor.constraint(equalTo: doneTasksLabel.bottomAnchor, constant: 8),
             tableView.leftAnchor.constraint(equalTo: view.leftAnchor),
             tableView.rightAnchor.constraint(equalTo: view.rightAnchor),
             tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor)

@@ -158,13 +158,21 @@ class ToDoViewController: UIViewController, UITextViewDelegate {
     }
 
     private func getNewToDoItem() -> ToDoItem {
+        if let currentItem = currentToDoItem {
+            let td = ToDoItem(text: taskTextView.text,
+                              importance: getPriorityOfToDo(),
+                              deadLine: self.calendarSwitch.isOn ? self.datePickerView.date : nil,
+                              status: isEditingItem ? currentItem.status : getPriorityOfToDo() == .important ? .uncompletedImportant : .uncompleted)
+            return td
+        }
+
         return ToDoItem(text: taskTextView.text,
                         importance: getPriorityOfToDo(),
                         deadLine: self.calendarSwitch.isOn ? self.datePickerView.date : nil,
-                        status: getPriorityOfToDo() == .important ? .uncompletedImportant : .uncompleted)
+                        status:  getPriorityOfToDo() == .important ? .uncompletedImportant : .uncompleted)
     }
 
-    private func getPriorityOfToDo() -> Importance{
+    private func getPriorityOfToDo() -> Importance {
         return self.taskPrioritySementedControl.selectedSegmentIndex == 1 ? .standart : self.taskPrioritySementedControl.selectedSegmentIndex == 0 ? .unimportant : .important
     }
 

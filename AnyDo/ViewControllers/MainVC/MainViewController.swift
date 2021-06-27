@@ -24,6 +24,7 @@ class MainViewController: UIViewController {
     lazy var tableView: UITableView = {
         let tableView = UITableView(frame: .zero, style: .insetGrouped)
         tableView.register(UINib(nibName: String(describing: TableViewCell.self), bundle: nil), forCellReuseIdentifier: cellIdentifier)
+        tableView.register(AddItemCell.self, forCellReuseIdentifier: AddItemCell.identifier)
         tableView.delegate = self
         tableView.dataSource = self
         tableView.backgroundColor = UIColor(named: "BackgroundColor")
@@ -49,6 +50,7 @@ class MainViewController: UIViewController {
         super.viewDidLoad()
         
         NotificationCenter.default.addObserver(self, selector: #selector(onToDoVCDismissed), name: .toDoListChanged, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(addedToDoFromAddItemCell(_:)), name: .addedToDoFromAddItemCell, object: nil)
         
         view.backgroundColor = UIColor(named: "BackgroundColor")
         
@@ -100,6 +102,12 @@ class MainViewController: UIViewController {
         updateToDoItemsArray()
         self.tableView.reloadData()
     }
+
+    @objc private func addedToDoFromAddItemCell(_ notification: Notification) {
+        if let text = notification.userInfo?["title"] {
+            fileCacheManager.addToDoItem(toDoItem: ToDoItem(text: text as! String, importance: .standart, deadLine: nil, status: .uncompleted))
+        }
+    }
     
 }
 
@@ -109,6 +117,7 @@ extension MainViewController: FileCacheDelegate {
     
     func arrayDidChange(_ sender: FileCacheImplementation) {
         updateDoneTasksLabel()
+        updateToDoItemsArray()
         tableView.reloadData()
     }
     

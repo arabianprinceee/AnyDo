@@ -18,6 +18,7 @@ extension MainViewController {
         static var addItemButtonFrames: CGFloat { return 44 }
         static var addItemButtonBottomConstraint: CGFloat { return -54 }
         static var showHideButtonRightConstraing: CGFloat { return -32 }
+        static var defaultCornerRadius: CGFloat { return 16 }
     }
 
     enum FontSizes {

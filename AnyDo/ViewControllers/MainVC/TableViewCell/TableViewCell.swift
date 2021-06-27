@@ -22,12 +22,12 @@ class TableViewCell: UITableViewCell {
     }
     
     func configure(status: TaskStatus, taskName: String, deadline: String? = nil) {
-        
-        self.taskNameLabel?.text = taskName
+
         self.taskDeadlineLabel?.text = deadline
         
         switch status {
         case .uncompleted:
+            self.taskNameLabel?.text = taskName
             self.taskDoneImageView?.image = UIImage(systemName: "circle")
             taskDoneImageView?.tintColor = .lightGray
             
@@ -40,8 +40,9 @@ class TableViewCell: UITableViewCell {
             taskDoneImageView?.tintColor = .systemGreen
             
         case .uncompletedImportant:
+            self.taskNameLabel?.text = taskName
             self.taskDoneImageView?.image = UIImage(systemName: "circle")
-            taskDoneImageView?.tintColor = .systemRed
+            self.taskDoneImageView?.tintColor = .systemRed
         }
     }
     
