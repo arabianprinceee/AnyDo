@@ -26,22 +26,30 @@ final class FileCacheImplementation: FileCache {
     // MARK: Methods
     
     func addToDoItem(toDoItem: ToDoItem) {
-        self.toDoItems[toDoItem.id] = toDoItem
-        saveAllTasks()
-        delegate?.arrayDidChange(self)
+        DispatchQueue.global(qos: .userInteractive).async {
+            self.toDoItems[toDoItem.id] = toDoItem
+            self.saveAllTasks()
+            DispatchQueue.main.async {
+                self.delegate?.arrayDidChange(self)
+            }
+        }
     }
     
     func deleteTask(with id: String) {
-        self.toDoItems[id] = nil
-        saveAllTasks()
-        delegate?.arrayDidChange(self)
+        DispatchQueue.global(qos: .userInteractive).async {
+            self.toDoItems[id] = nil
+            self.saveAllTasks()
+            DispatchQueue.main.async {
+                self.delegate?.arrayDidChange(self)
+            }
+        }
     }
     
     func saveAllTasks() {
         let directoryURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-        let fileURL = URL(fileURLWithPath: cacheFileName, relativeTo: directoryURL).appendingPathExtension("txt")
-        let jsonArray = toDoItems.values.map { $0.json }
-        
+        let fileURL = URL(fileURLWithPath: self.cacheFileName, relativeTo: directoryURL).appendingPathExtension("txt")
+        let jsonArray = self.toDoItems.values.map { $0.json }
+
         do {
             let jsonData = try? JSONSerialization.data(withJSONObject: jsonArray)
             try jsonData?.write(to: fileURL)
@@ -51,22 +59,24 @@ final class FileCacheImplementation: FileCache {
     }
     
     func loadAllTasks(fileName: String) {
-        let directoryURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-        let fileURL = URL(fileURLWithPath: fileName, relativeTo: directoryURL).appendingPathExtension("txt")
-        
-        if fileManager.fileExists(atPath: fileURL.path) {
-            toDoItems.removeAll()
-            do {
-                let data = try Data(contentsOf: fileURL)
-                if let json = try JSONSerialization.jsonObject(with: data) as? [[String: Any]] {
-                    let items = json.compactMap { ToDoItem.parse(json: $0) }
-                    for item in items {
-                        toDoItems[item.id] = item
+        DispatchQueue.global(qos: .userInteractive).sync {
+            let directoryURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+            let fileURL = URL(fileURLWithPath: fileName, relativeTo: directoryURL).appendingPathExtension("txt")
+
+            if fileManager.fileExists(atPath: fileURL.path) {
+                toDoItems.removeAll()
+                do {
+                    let data = try Data(contentsOf: fileURL)
+                    if let json = try JSONSerialization.jsonObject(with: data) as? [[String: Any]] {
+                        let items = json.compactMap { ToDoItem.parse(json: $0) }
+                        for item in items {
+                            toDoItems[item.id] = item
+                        }
                     }
+                } catch let error as NSError {
+                    print(error.localizedDescription)
+                    assertionFailure("Error during loading all tasks from json")
                 }
-            } catch let error as NSError {
-                print(error.localizedDescription)
-                assertionFailure("Error during loading all tasks from json")
             }
         }
     }
