@@ -30,7 +30,7 @@
 		D9FF1588267BA380007A581D /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9FF1587267BA380007A581D /* MainViewController.swift */; };
 		D9FF1591267E088F007A581D /* TableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9FF158F267E088F007A581D /* TableViewCell.swift */; };
 		D9FF1592267E088F007A581D /* TableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = D9FF1590267E088F007A581D /* TableViewCell.xib */; };
-		D9FF1594267E3E15007A581D /* TableViewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9FF1593267E3E15007A581D /* TableViewExtension.swift */; };
+		D9FF1594267E3E15007A581D /* MainTableViewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9FF1593267E3E15007A581D /* MainTableViewExtension.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -86,7 +86,7 @@
 		D9FF1587267BA380007A581D /* MainViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
 		D9FF158F267E088F007A581D /* TableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableViewCell.swift; sourceTree = "<group>"; };
 		D9FF1590267E088F007A581D /* TableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = TableViewCell.xib; sourceTree = "<group>"; };
-		D9FF1593267E3E15007A581D /* TableViewExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableViewExtension.swift; sourceTree = "<group>"; };
+		D9FF1593267E3E15007A581D /* MainTableViewExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTableViewExtension.swift; sourceTree = "<group>"; };
 		F7C2FE564B324182CC34F698 /* Pods-AnyDoTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AnyDoTests.release.xcconfig"; path = "Target Support Files/Pods-AnyDoTests/Pods-AnyDoTests.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -223,9 +223,9 @@
 				D929A884267223E900F575F6 /* TodoItem */,
 				D929A8892672555700F575F6 /* FileCache */,
 				D9188CD82674BADB00B78A42 /* ViewControllers */,
-				D9441A58266CED590019902F /* Assets.xcassets */,
 				D9188CDC2674C98300B78A42 /* Storyboards */,
 				D9441A5D266CED590019902F /* Info.plist */,
+				D9441A58266CED590019902F /* Assets.xcassets */,
 				D9F276E7266E0F3100058CC8 /* Localizable.strings */,
 			);
 			path = AnyDo;
@@ -264,7 +264,7 @@
 				D9FF1587267BA380007A581D /* MainViewController.swift */,
 				D96DBC6626886F2D00A0E018 /* MainInterfaceExtension.swift */,
 				D96DBC6826886F5A00A0E018 /* MainEnums.swift */,
-				D9FF1593267E3E15007A581D /* TableViewExtension.swift */,
+				D9FF1593267E3E15007A581D /* MainTableViewExtension.swift */,
 				D9FF1596267E3E27007A581D /* TableViewCell */,
 				D93436C22688B540002FD8D5 /* AddItemCell */,
 			);
@@ -491,7 +491,7 @@
 				D96DBC6926886F5A00A0E018 /* MainEnums.swift in Sources */,
 				D9441A50266CED590019902F /* AppDelegate.swift in Sources */,
 				D93436C12688B53C002FD8D5 /* AddItemCell.swift in Sources */,
-				D9FF1594267E3E15007A581D /* TableViewExtension.swift in Sources */,
+				D9FF1594267E3E15007A581D /* MainTableViewExtension.swift in Sources */,
 				D9FF1588267BA380007A581D /* MainViewController.swift in Sources */,
 				D9188CD726749EF700B78A42 /* ToDoViewController.swift in Sources */,
 				D9FF1591267E088F007A581D /* TableViewCell.swift in Sources */,

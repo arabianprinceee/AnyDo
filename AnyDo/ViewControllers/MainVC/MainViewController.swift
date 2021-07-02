@@ -11,8 +11,9 @@ class MainViewController: UIViewController {
     
     // MARK: Properties
     
-    let fileCacheManager: FileCacheImplementation
+    var fileCacheManager: FileCache
     let cellIdentifier = String(describing: TableViewCell.self)
+    let completedTasksCondition: CompletedTasksCondition = .showCompleted
 
     var toDoItemsArray: [ToDoItem] // Массив туду айтемов для внутреннего пользования вьюконтроллеров
     
@@ -31,9 +32,9 @@ class MainViewController: UIViewController {
         return tableView
     }()
     
-    // MARK: Initialization
+    // MARK: Initialization && Deinitialization
     
-    init(fileCacheManager: FileCacheImplementation) {
+    init(fileCacheManager: FileCache) {
         self.fileCacheManager = fileCacheManager
         self.toDoItemsArray = fileCacheManager.toDoItems.map { $0.value }.sorted { $0.text < $1.text }
         super.init(nibName: nil, bundle: nil)
@@ -43,6 +44,10 @@ class MainViewController: UIViewController {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
     
     // MARK: System methods
     
@@ -50,7 +55,6 @@ class MainViewController: UIViewController {
         super.viewDidLoad()
         
         NotificationCenter.default.addObserver(self, selector: #selector(onToDoVCDismissed), name: .toDoListChanged, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(addedToDoFromAddItemCell(_:)), name: .addedToDoFromAddItemCell, object: nil)
         
         view.backgroundColor = UIColor(named: "BackgroundColor")
         
@@ -79,34 +83,27 @@ class MainViewController: UIViewController {
     
     // MARK: Objc methods
     
-    @objc func addItemButtonTapped() {
+    @objc func onAddItemButtonTapped() {
         let vc = ToDoViewController(fileCacheManager: self.fileCacheManager, currentToDoItem: nil)
         self.present(vc, animated: true, completion: nil)
     }
     
-    @objc func showHideTasksButtonTapped() {
-        if showHideTasksButton.titleLabel?.text == NSLocalizedString("hide", comment: "") {
+    @objc func onShowHideTasksButtonTapped() {
+        switch completedTasksCondition {
+        case .hideCompleted:
             showHideTasksButton.setTitle(NSLocalizedString("show", comment: ""), for: .normal)
             toDoItemsArray = toDoItemsArray.filter { $0.status != .completed }
-            updateDoneTasksLabel()
-            tableView.reloadData()
-        } else {
+        case .showCompleted:
             showHideTasksButton.setTitle(NSLocalizedString("hide", comment: ""), for: .normal)
             updateToDoItemsArray()
-            updateDoneTasksLabel()
-            tableView.reloadData()
         }
+        updateDoneTasksLabel()
+        tableView.reloadData()
     }
     
     @objc private func onToDoVCDismissed() {
         updateToDoItemsArray()
         self.tableView.reloadData()
-    }
-
-    @objc private func addedToDoFromAddItemCell(_ notification: Notification) {
-        if let text = notification.userInfo?["title"] {
-            fileCacheManager.addToDoItem(toDoItem: ToDoItem(text: text as! String, importance: .standart, deadLine: nil, status: .uncompleted))
-        }
     }
     
 }

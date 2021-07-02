@@ -16,7 +16,7 @@ extension ToDoViewController {
     func setUpNavigationBar() {
         navigationBar = UINavigationBar(frame: CGRect(x: 0, y: self.view.safeAreaInsets.top, width: self.view.frame.width, height: DesignConstants.defaultNavBarHeight))
         let navigationItem = UINavigationItem(title: NSLocalizedString("task", comment: ""))
-        let doneBtn = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.done, target: nil, action: #selector(dismissVC))
+        let doneBtn = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.done, target: nil, action: #selector(onDismissVC))
         navigationItem.rightBarButtonItem = doneBtn
         navigationBar.setItems([navigationItem], animated: false)
     }
@@ -28,7 +28,7 @@ extension ToDoViewController {
         taskDescriptionView.translatesAutoresizingMaskIntoConstraints = false
         taskDescriptionView.layer.cornerRadius = DesignConstants.defaultCornRadius
 
-        NSLayoutConstraint.activate( [
+        NSLayoutConstraint.activate([
             taskDescriptionView.widthAnchor.constraint(equalToConstant: self.view.frame.width - 2 * DesignConstants.defaultPadding),
             taskDescriptionView.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor),
             taskDescriptionView.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: DesignConstants.defaultPadding),
@@ -79,7 +79,7 @@ extension ToDoViewController {
         leftLabel.text = leftText
 
         if (isEditingItem) {
-            taskPrioritySementedControl.selectedSegmentIndex = currentToDoItem?.importance == .standart ? 1 : currentToDoItem?.importance == .important ? 2 : 0
+            taskPrioritySementedControl.selectedSegmentIndex = currentToDoItem?.importance.value ?? 1
         } else {
             taskPrioritySementedControl.selectedSegmentIndex = 1
         }

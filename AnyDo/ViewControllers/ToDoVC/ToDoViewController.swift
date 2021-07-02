@@ -11,7 +11,7 @@ class ToDoViewController: UIViewController, UITextViewDelegate {
     
     // MARK: Properties
 
-    private let fileCacheManager: FileCacheImplementation
+    private let fileCacheManager: FileCache
     var currentToDoItem: ToDoItem?
     var isEditingItem: Bool = false
     
@@ -30,14 +30,14 @@ class ToDoViewController: UIViewController, UITextViewDelegate {
         let view = UIScrollView()
         view.insetsLayoutMarginsFromSafeArea = true
         view.contentInsetAdjustmentBehavior = .always
-        view.contentSize = CGSize(width: self.view.frame.width, height: self.view.frame.height + 450)
+        view.contentSize = CGSize(width: self.view.frame.width, height: self.view.frame.height)
         view.backgroundColor = .clear
         return view
     }()
     
     // MARK: Initialization
     
-    init(fileCacheManager: FileCacheImplementation, currentToDoItem: ToDoItem?) {
+    init(fileCacheManager: FileCache, currentToDoItem: ToDoItem?) {
         self.fileCacheManager = fileCacheManager
         self.currentToDoItem = currentToDoItem
         super.init(nibName: nil, bundle: nil)
@@ -70,11 +70,16 @@ class ToDoViewController: UIViewController, UITextViewDelegate {
         setUpTaskOptionsView()
         setUpDeleteButtonView()
 
-        deleteButtonView.addTarget(self, action: #selector(deleteButtonTapped), for: .touchUpInside)
-        calendarSwitch.addTarget(self, action: #selector(switchChanged), for: .valueChanged)
-        datePickerView.addTarget(self, action: #selector(handlingDateChanges), for: .valueChanged)
+        deleteButtonView.addTarget(self, action: #selector(onDeleteButtonTapped), for: .touchUpInside)
+        calendarSwitch.addTarget(self, action: #selector(onSwitchChanged), for: .valueChanged)
+        datePickerView.addTarget(self, action: #selector(onHandleDateChanges), for: .valueChanged)
 
         setupEditScreen()
+
+        // Чтобы прятать клавиатуру
+        let tap = UITapGestureRecognizer(target: self, action: #selector(UIInputViewController.dismissKeyboard))
+        tap.cancelsTouchesInView = false
+        view.addGestureRecognizer(tap)
     }
     
     // MARK: Methods
@@ -119,7 +124,7 @@ class ToDoViewController: UIViewController, UITextViewDelegate {
     
     // MARK: Objc methods
     
-    @objc func switchChanged(sender: UISwitch) {
+    @objc func onSwitchChanged(sender: UISwitch) {
         if (sender.isOn) {
             configureCalendar(for: Date())
             dateOfTask.textColor = .systemBlue
@@ -133,7 +138,7 @@ class ToDoViewController: UIViewController, UITextViewDelegate {
         }
     }
     
-    @objc func deleteButtonTapped(sender: UIButton) {
+    @objc func onDeleteButtonTapped(sender: UIButton) {
         if (isEditingItem) {
             self.fileCacheManager.deleteTask(with: currentToDoItem!.id) // Вообще, форс - плохо, но в данной ситуации мы проверяли, что currentToDoItem не nil
             NotificationCenter.default.post(name: .toDoListChanged, object: nil)
@@ -147,24 +152,36 @@ class ToDoViewController: UIViewController, UITextViewDelegate {
         }
     }
     
-    @objc func handlingDateChanges(sender: UIDatePicker) {
+    @objc func onHandleDateChanges(sender: UIDatePicker) {
         dateOfTask.textColor = .systemBlue
         dateOfTask.font = .boldSystemFont(ofSize: 13)
         dateOfTask.text = getStringFromDate()
     }
     
-    @objc func dismissVC() {
+    @objc func onDismissVC() {
+        // Проверяем, что название задачи не пустое и что это не изначальная строка в текстфилде
+        if let text = taskTextView.text, text != "", text != NSLocalizedString("enterTaskName", comment: "") {
+            if isEditingItem {
+                self.fileCacheManager.deleteTask(with: currentToDoItem!.id) // Вообще, форс - плохо, но в данной ситуации мы проверяли, что currentToDoItem не nil
+                self.fileCacheManager.addToDoItem(toDoItem: getNewToDoItem())
+            } else {
+                self.fileCacheManager.addToDoItem(toDoItem: getNewToDoItem())
+            }
 
-        if (isEditingItem) {
-            self.fileCacheManager.deleteTask(with: currentToDoItem!.id) // Вообще, форс - плохо, но в данной ситуации мы проверяли, что currentToDoItem не nil
-            self.fileCacheManager.addToDoItem(toDoItem: getNewToDoItem())
-        } else {
-            self.fileCacheManager.addToDoItem(toDoItem: getNewToDoItem())
+            NotificationCenter.default.post(name: .toDoListChanged, object: nil)
         }
-
-        NotificationCenter.default.post(name: .toDoListChanged, object: nil)
         self.dismiss(animated: true, completion: nil)
     }
+
+    @objc func dismissKeyboard() {
+        view.endEditing(true)
+        if taskTextView.text == "" {
+            taskTextView.text = NSLocalizedString("enterTaskName", comment: "")
+            taskTextView.textColor = UIColor.lightGray
+        }
+    }
+
+    // MARK: Methods
 
     private func getNewToDoItem() -> ToDoItem {
         return ToDoItem(text: taskTextView.text,
@@ -174,7 +191,14 @@ class ToDoViewController: UIViewController, UITextViewDelegate {
     }
 
     private func getPriorityOfToDo() -> Importance {
-        return self.taskPrioritySementedControl.selectedSegmentIndex == 1 ? .standart : self.taskPrioritySementedControl.selectedSegmentIndex == 0 ? .unimportant : .important
+        switch self.taskPrioritySementedControl.selectedSegmentIndex {
+        case 0: return .unimportant
+        case 1: return .standart
+        case 2: return .important
+        default:
+            assert(false)
+            return .standart
+        }
     }
 
 }

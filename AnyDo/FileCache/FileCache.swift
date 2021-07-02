@@ -8,11 +8,14 @@
 import Foundation
 
 protocol FileCacheDelegate: AnyObject {
+
     func arrayDidChange(_ sender: FileCacheImplementation)
+
 }
 
 protocol FileCache {
-    
+
+    var delegate: FileCacheDelegate? { get set }
     var toDoItems: [String: ToDoItem] { get }
     
     func addToDoItem(toDoItem: ToDoItem)

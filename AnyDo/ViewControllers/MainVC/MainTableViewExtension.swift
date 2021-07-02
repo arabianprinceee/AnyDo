@@ -18,27 +18,18 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
-        if indexPath.row != self.tableView.numberOfRows(inSection: 0) - 1 {
+        if indexPath.row != self.tableView.numberOfRows(inSection: 0) - 1 && self.toDoItemsArray[indexPath.row].status != .completed {
             let completeTask = UIContextualAction(style: .normal, title: nil) { (action, sourceView, _) in
-                if self.toDoItemsArray[indexPath.row].status != .completed {
-                    let task = ToDoItem(id: self.toDoItemsArray[indexPath.row].id,
-                                        text: self.toDoItemsArray[indexPath.row].text,
-                                        importance: self.toDoItemsArray[indexPath.row].importance,
-                                        deadLine: self.toDoItemsArray[indexPath.row].deadline,
-                                        status: .completed)
+                let task = ToDoItem(id: self.toDoItemsArray[indexPath.row].id,
+                                    text: self.toDoItemsArray[indexPath.row].text,
+                                    importance: self.toDoItemsArray[indexPath.row].importance,
+                                    deadLine: self.toDoItemsArray[indexPath.row].deadline,
+                                    status: .completed)
 
-                    self.toDoItemsArray.insert(task, at: indexPath.row + 1)
-                    self.toDoItemsArray.remove(at: indexPath.row)
-                    self.fileCacheManager.deleteTask(with: task.id)
-                    self.fileCacheManager.addToDoItem(toDoItem: task)
-                }
-                else {
-                    let alert = UIAlertController(title: NSLocalizedString("already done", comment: ""),
-                                                  message: NSLocalizedString("task is done", comment: ""),
-                                                  preferredStyle: UIAlertController.Style.alert)
-                    alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: ""), style: UIAlertAction.Style.default, handler: nil))
-                    self.present(alert, animated: true, completion: nil)
-                }
+                self.toDoItemsArray.insert(task, at: indexPath.row + 1)
+                self.toDoItemsArray.remove(at: indexPath.row)
+                self.fileCacheManager.deleteTask(with: task.id)
+                self.fileCacheManager.addToDoItem(toDoItem: task)
             }
 
             completeTask.backgroundColor = .systemGreen
@@ -83,32 +74,40 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
         if indexPath.row != self.tableView.numberOfRows(inSection: 0) - 1 {
             present(ToDoViewController(fileCacheManager: fileCacheManager, currentToDoItem: toDoItemsArray[indexPath.row]), animated: true, completion: nil)
         }
+        tableView.deselectRow(at: indexPath, animated: true)
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 
         if indexPath.row == tableView.numberOfRows(inSection: 0) - 1 {
             let cell = tableView.dequeueReusableCell(withIdentifier: AddItemCell.identifier, for: indexPath) as! AddItemCell
+            cell.onTextDidChange = { text in
+                self.fileCacheManager.addToDoItem(toDoItem: ToDoItem(text: text, importance: .standart, deadLine: nil, status: .uncompleted))
+            }
             return cell
         } else {
-            let cell = tableView.dequeueReusableCell(withIdentifier: cellIdentifier, for: indexPath) as! TableViewCell
-            
-            let dateFormatterPrint = DateFormatter()
-            dateFormatterPrint.dateFormat = "dd MMM"
-
-            if let deadline = self.toDoItemsArray[indexPath.row].deadline {
-                cell.configure(status: self.toDoItemsArray[indexPath.row].status,
-                               taskName: self.toDoItemsArray[indexPath.row].text,
-                               deadline: dateFormatterPrint.string(from: deadline))
-                return cell
-            }
-
-            cell.configure(status: self.toDoItemsArray[indexPath.row].status,
-                           taskName: self.toDoItemsArray[indexPath.row].text)
-            return cell
+            return configureToDoItemCell(at: indexPath, cell: tableView.dequeueReusableCell(withIdentifier: cellIdentifier, for: indexPath) as! TableViewCell)
         }
     }
-    
+
+    // MARK: Cell configuration
+
+    private func configureToDoItemCell(at indexPath: IndexPath, cell: TableViewCell) -> TableViewCell {
+        let dateFormatterPrint = DateFormatter()
+        dateFormatterPrint.dateFormat = "dd MMM"
+
+        if let deadline = self.toDoItemsArray[indexPath.row].deadline {
+            cell.configure(status: self.toDoItemsArray[indexPath.row].status,
+                           taskName: self.toDoItemsArray[indexPath.row].text,
+                           deadline: dateFormatterPrint.string(from: deadline))
+            return cell
+        }
+
+        cell.configure(status: self.toDoItemsArray[indexPath.row].status,
+                       taskName: self.toDoItemsArray[indexPath.row].text)
+        return cell
+    }
+
 }
 
 // MARK: Notification center

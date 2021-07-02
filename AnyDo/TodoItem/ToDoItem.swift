@@ -45,6 +45,19 @@ enum Importance: String {
     
 }
 
+extension Importance {
+    var value: Int {
+        switch self {
+        case .unimportant:
+            return 0
+        case .standart:
+            return 1
+        case .important:
+            return 2
+        }
+    }
+}
+
 enum TaskStatus: String {
     
     case uncompletedImportant

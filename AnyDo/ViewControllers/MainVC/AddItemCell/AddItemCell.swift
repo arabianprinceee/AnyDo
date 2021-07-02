@@ -9,6 +9,7 @@ import UIKit
 
 class AddItemCell: UITableViewCell, UITextFieldDelegate {
 
+    var onTextDidChange: ((String) -> Void)?
     static let identifier: String = "AddItemCell"
 
     private var textField: UITextField = {
@@ -43,9 +44,14 @@ class AddItemCell: UITableViewCell, UITextFieldDelegate {
     }
 
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        NotificationCenter.default.post(name: .addedToDoFromAddItemCell, object: nil, userInfo: ["title": "\(self.textField.text ?? "Задача")"])
+        if let text = textField.text, text != "" {
+            onTextDidChange?(text)
+            self.textField.endEditing(true)
+            self.textField.text = nil
+            return true
+        }
         self.textField.endEditing(true)
         self.textField.text = nil
-        return true
+        return false
     }
 }
