@@ -26,4 +26,9 @@ extension MainViewController {
         static var underTitleLabels: CGFloat { return 15 }
     }
 
+    enum CompletedTasksCondition {
+        case hideCompleted
+        case showCompleted
+    }
+
 }

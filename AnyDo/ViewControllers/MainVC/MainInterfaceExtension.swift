@@ -52,7 +52,7 @@ extension MainViewController {
         showHideTasksButton.setTitle(NSLocalizedString("hide", comment: ""), for: .normal)
         showHideTasksButton.setTitleColor(.systemBlue, for: .normal)
         showHideTasksButton.titleLabel?.font = .boldSystemFont(ofSize: FontSizes.underTitleLabels)
-        showHideTasksButton.addTarget(self, action: #selector(showHideTasksButtonTapped), for: .touchUpInside)
+        showHideTasksButton.addTarget(self, action: #selector(onShowHideTasksButtonTapped), for: .touchUpInside)
 
         NSLayoutConstraint.activate([
             showHideTasksButton.centerYAnchor.constraint(equalTo: doneTasksLabel.centerYAnchor),
@@ -69,7 +69,7 @@ extension MainViewController {
         addItemButton.imageView?.tintColor = UIColor.white
         addItemButton.imageView?.contentMode = .scaleToFill
 
-        addItemButton.addTarget(self, action: #selector(addItemButtonTapped), for: .touchUpInside)
+        addItemButton.addTarget(self, action: #selector(onAddItemButtonTapped), for: .touchUpInside)
 
         NSLayoutConstraint.activate([
             addItemButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: DesignConstants.addItemButtonBottomConstraint),

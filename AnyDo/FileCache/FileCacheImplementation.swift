@@ -14,7 +14,6 @@ final class FileCacheImplementation: FileCache {
     weak var delegate: FileCacheDelegate?
     private(set) var toDoItems: [String: ToDoItem] = [:]
     private let fileManager = FileManager()
-    private let tempDir = NSTemporaryDirectory()
     var cacheFileName: String
     
     // MARK: Initialization
