@@ -14,7 +14,7 @@ class FileCacheTests: XCTestCase {
     
     override func setUp() {
         super.setUp()
-        fc = FileCacheImplementation()
+        fc = FileCacheImplementation(cacheFileName: "test0")
     }
     
     override func tearDown() {
@@ -24,8 +24,9 @@ class FileCacheTests: XCTestCase {
     
     func testAddTask() {
         XCTAssertTrue(fc.toDoItems.count == 0)
-        fc.addToDoItem(toDoItem: ToDoItem(id: "", text: "", importance: .standart, deadLine: nil, status: .completed))
-        XCTAssertTrue(fc.toDoItems.count == 1)
+        fc.addToDoItem(toDoItem: ToDoItem(text: "1", importance: .standart, deadLine: nil, status: .completed))
+        fc.addToDoItem(toDoItem: ToDoItem(text: "2", importance: .standart, deadLine: nil, status: .completed))
+        XCTAssertTrue(fc.toDoItems.count == 2)
     }
     
     func testDeleteTask() {
@@ -36,13 +37,16 @@ class FileCacheTests: XCTestCase {
     }
     
     func testSaveLoadAllTasks() {
-        fc.addToDoItem(toDoItem: ToDoItem(id: "test_id0", text: "", importance: .standart, deadLine: nil, status: .completed))
-        fc.addToDoItem(toDoItem: ToDoItem(id: "test_id1", text: "text1", importance: .important, deadLine: Date(), status: .uncompleted))
-        fc.saveAllTasks(fileName: "test_file")
+        fc.addToDoItem(toDoItem: ToDoItem(id: "test_id0", text: "task1", importance: .standart, deadLine: nil, status: .completed))
+        fc.addToDoItem(toDoItem: ToDoItem(id: "test_id1", text: "task2", importance: .important, deadLine: Date(), status: .uncompleted))
         
-        let fc1: FileCacheImplementation = FileCacheImplementation()
-        fc1.loadAllTasks(fileName: "test_file")
+        let fc1: FileCacheImplementation = FileCacheImplementation(cacheFileName: "")
+        fc1.loadAllTasks(fileName: "test3")
         XCTAssertEqual(fc1.toDoItems.count, 2)
+        
+        for elem in fc1.toDoItems {
+            print(elem.value.text)
+        }
     }
     
 }

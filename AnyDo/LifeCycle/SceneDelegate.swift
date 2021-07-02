@@ -16,11 +16,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         if let windowScene = scene as? UIWindowScene {
             
             let window = UIWindow(windowScene: windowScene)
-            let navController = UINavigationController()
-            let viewController = ToDoViewController()
-            navController.viewControllers = [viewController]
+
+            let cacheFileName = "tasksCache"
+            let fileCacheManager: FileCacheImplementation = FileCacheImplementation(cacheFileName: cacheFileName)
+            fileCacheManager.loadAllTasks(fileName: cacheFileName)
             
-            window.rootViewController = MainViewController()
+            window.rootViewController = MainViewController(fileCacheManager: fileCacheManager)
             self.window = window
             window.makeKeyAndVisible()
         }

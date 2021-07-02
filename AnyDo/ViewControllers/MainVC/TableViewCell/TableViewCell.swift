@@ -13,21 +13,24 @@ class TableViewCell: UITableViewCell {
     @IBOutlet weak var taskNameLabel: UILabel?
     @IBOutlet weak var taskDeadlineLabel: UILabel?
     
-    override func awakeFromNib() {
-        super.awakeFromNib()
-    }
-    
     override func prepareForReuse() {
         super.prepareForReuse()
+        taskDoneImageView?.image = nil
+        taskNameLabel?.textColor = .black
+        taskNameLabel?.attributedText = nil
+        taskDeadlineLabel?.attributedText = nil
     }
     
     func configure(status: TaskStatus, taskName: String, deadline: String? = nil) {
-        self.taskNameLabel?.text = taskName
+
         self.taskDeadlineLabel?.text = deadline
+        
         switch status {
         case .uncompleted:
+            self.taskNameLabel?.text = taskName
             self.taskDoneImageView?.image = UIImage(systemName: "circle")
             taskDoneImageView?.tintColor = .lightGray
+            
         case .completed:
             let attributeString = NSMutableAttributedString(string: taskName)
             attributeString.addAttribute(NSAttributedString.Key.strikethroughStyle, value: 1, range: NSMakeRange(0, attributeString.length))
@@ -35,9 +38,11 @@ class TableViewCell: UITableViewCell {
             self.taskNameLabel?.textColor = .lightGray
             self.taskDoneImageView?.image = UIImage(systemName: "checkmark.circle.fill")
             taskDoneImageView?.tintColor = .systemGreen
+            
         case .uncompletedImportant:
+            self.taskNameLabel?.text = taskName
             self.taskDoneImageView?.image = UIImage(systemName: "circle")
-            taskDoneImageView?.tintColor = .systemRed
+            self.taskDoneImageView?.tintColor = .systemRed
         }
     }
     
