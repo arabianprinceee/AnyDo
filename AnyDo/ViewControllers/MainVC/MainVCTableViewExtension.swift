@@ -24,7 +24,8 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
                                     text: self.toDoItemsArray[indexPath.row].text,
                                     importance: self.toDoItemsArray[indexPath.row].importance,
                                     deadLine: self.toDoItemsArray[indexPath.row].deadline,
-                                    status: .completed)
+                                    status: .completed,
+                                    updatedAt: Int(Date().timeIntervalSince1970))
 
                 self.toDoItemsArray.insert(task, at: indexPath.row + 1)
                 self.toDoItemsArray.remove(at: indexPath.row)
@@ -82,7 +83,11 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
         if indexPath.row == tableView.numberOfRows(inSection: 0) - 1 {
             let cell = tableView.dequeueReusableCell(withIdentifier: AddItemCell.identifier, for: indexPath) as! AddItemCell
             cell.onTextDidChange = { text in
-                self.fileCacheManager.addToDoItem(toDoItem: ToDoItem(text: text, importance: .standart, deadLine: nil, status: .uncompleted))
+                self.fileCacheManager.addToDoItem(toDoItem: ToDoItem(text: text,
+                                                                     importance: .standart,
+                                                                     deadLine: nil,
+                                                                     status: .uncompleted,
+                                                                     updatedAt: Int(Date().timeIntervalSince1970)))
             }
             return cell
         } else {

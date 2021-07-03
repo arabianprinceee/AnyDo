@@ -81,7 +81,7 @@ extension ToDoItem {
         }
         
         let deadline = (dict[DictKeys.kDeadline] as? Double).map { Date(timeIntervalSince1970: $0) }
-        return ToDoItem(id: id, text: text, importance: importance, deadLine: deadline, status: status)
+        return ToDoItem(id: id, text: text, importance: importance, deadLine: deadline, status: status, updatedAt: Int(Date().timeIntervalSince1970))
     }
     
 }

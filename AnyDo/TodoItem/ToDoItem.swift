@@ -16,15 +16,28 @@ struct ToDoItem {
     let importance: Importance
     let deadline: Date?
     let status: TaskStatus
+    let createdAt: Int
+    let updatedAt: Int
+    let isDirty: Bool
     
     // MARK: Initialization
     
-    init(id: String = UUID().uuidString, text: String, importance: Importance, deadLine: Date?, status: TaskStatus) {
+    init(id: String = UUID().uuidString,
+         text: String,
+         importance: Importance,
+         deadLine: Date?,
+         status: TaskStatus,
+         createdAt: Int = Int(Date().timeIntervalSince1970),
+         updatedAt: Int,
+         isDirty: Bool = false) {
         self.id = id
         self.text = text
         self.importance = importance
         self.deadline = deadLine
         self.status = status
+        self.createdAt = createdAt
+        self.updatedAt = updatedAt
+        self.isDirty = isDirty
     }
     
 }

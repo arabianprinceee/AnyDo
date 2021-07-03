@@ -187,7 +187,8 @@ class ToDoViewController: UIViewController, UITextViewDelegate {
         return ToDoItem(text: taskTextView.text,
                         importance: getPriorityOfToDo(),
                         deadLine: self.calendarSwitch.isOn ? self.datePickerView.date : nil,
-                        status:  getPriorityOfToDo() == .important ? .uncompletedImportant : .uncompleted)
+                        status:  getPriorityOfToDo() == .important ? .uncompletedImportant : .uncompleted,
+                        updatedAt: Int(Date().timeIntervalSince1970))
     }
 
     private func getPriorityOfToDo() -> Importance {

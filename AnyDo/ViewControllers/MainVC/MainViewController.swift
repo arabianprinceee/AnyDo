@@ -14,14 +14,12 @@ class MainViewController: UIViewController {
     var fileCacheManager: FileCache
     let cellIdentifier = String(describing: TableViewCell.self)
     let completedTasksCondition: CompletedTasksCondition = .showCompleted
-
-    var toDoItemsArray: [ToDoItem] // Массив туду айтемов для внутреннего пользования вьюконтроллеров
+    var toDoItemsArray: [ToDoItem]
     
     let addItemButton = UIButton()
     let viewTitle = UILabel()
     let doneTasksLabel = UILabel()
     let showHideTasksButton = UIButton()
-
     lazy var tableView: UITableView = {
         let tableView = UITableView(frame: .zero, style: .insetGrouped)
         tableView.register(UINib(nibName: String(describing: TableViewCell.self), bundle: nil), forCellReuseIdentifier: cellIdentifier)
