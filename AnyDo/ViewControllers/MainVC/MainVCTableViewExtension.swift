@@ -31,6 +31,7 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
                 self.toDoItemsArray.remove(at: indexPath.row)
                 self.fileCacheManager.deleteTask(with: task.id)
                 self.fileCacheManager.addToDoItem(toDoItem: task)
+                self.updateDoneTasksLabel()
             }
 
             completeTask.backgroundColor = .systemGreen

@@ -14,14 +14,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         if let windowScene = scene as? UIWindowScene {
-            
             let window = UIWindow(windowScene: windowScene)
-
-            let cacheFileName = "tasksCache"
-            let fileCacheManager: FileCacheImplementation = FileCacheImplementation(cacheFileName: cacheFileName)
-            fileCacheManager.loadAllTasks(fileName: cacheFileName)
-            
-            window.rootViewController = MainViewController(fileCacheManager: fileCacheManager)
+            window.rootViewController = MainViewController()
             self.window = window
             window.makeKeyAndVisible()
         }

@@ -10,11 +10,12 @@ import UIKit
 class MainViewController: UIViewController {
     
     // MARK: Properties
-    
+
+    private let cacheFileName = "tasksCache"
     var fileCacheManager: FileCache
     let cellIdentifier = String(describing: TableViewCell.self)
-    let completedTasksCondition: CompletedTasksCondition = .showCompleted
-    var toDoItemsArray: [ToDoItem]
+    var completedTasksCondition: CompletedTasksCondition = .showCompleted
+    var toDoItemsArray: [ToDoItem] = []
     
     let addItemButton = UIButton()
     let viewTitle = UILabel()
@@ -32,9 +33,8 @@ class MainViewController: UIViewController {
     
     // MARK: Initialization && Deinitialization
     
-    init(fileCacheManager: FileCache) {
-        self.fileCacheManager = fileCacheManager
-        self.toDoItemsArray = fileCacheManager.toDoItems.map { $0.value }.sorted { $0.text < $1.text }
+    init() {
+        self.fileCacheManager = FileCacheImplementation(cacheFileName: cacheFileName)
         super.init(nibName: nil, bundle: nil)
         self.fileCacheManager.delegate = self
     }
@@ -69,6 +69,17 @@ class MainViewController: UIViewController {
         setUpAddButton()
     }
 
+    override func viewWillAppear(_ animated: Bool) {
+        fileCacheManager.loadAllTasks(fileName: cacheFileName) { [weak self] in
+            self?.toDoItemsArray = self?.fileCacheManager.toDoItems.map { $0.value }.sorted { $0.text < $1.text } ?? []
+
+            DispatchQueue.main.async {
+                self?.tableView.reloadData()
+                self?.updateDoneTasksLabel()
+            }
+        }
+    }
+
     // MARK: Methods
 
     private func updateToDoItemsArray() {
@@ -88,13 +99,14 @@ class MainViewController: UIViewController {
     
     @objc func onShowHideTasksButtonTapped() {
         switch completedTasksCondition {
-        case .hideCompleted:
+        case .showCompleted:
             showHideTasksButton.setTitle(NSLocalizedString("show", comment: ""), for: .normal)
             toDoItemsArray = toDoItemsArray.filter { $0.status != .completed }
-        case .showCompleted:
+        case .hideCompleted:
             showHideTasksButton.setTitle(NSLocalizedString("hide", comment: ""), for: .normal)
             updateToDoItemsArray()
         }
+        completedTasksCondition = completedTasksCondition == .hideCompleted ? .showCompleted : .hideCompleted
         updateDoneTasksLabel()
         tableView.reloadData()
     }

@@ -21,6 +21,6 @@ protocol FileCache {
     func addToDoItem(toDoItem: ToDoItem)
     func deleteTask(with id: String)
     func saveAllTasks()
-    func loadAllTasks(fileName: String)
+    func loadAllTasks(fileName: String, completion: @escaping () -> Void)
     
 }
