@@ -74,7 +74,7 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if indexPath.row != self.tableView.numberOfRows(inSection: 0) - 1 {
-            present(ToDoViewController(fileCacheManager: fileCacheManager, currentToDoItem: toDoItemsArray[indexPath.row]), animated: true, completion: nil)
+            present(ToDoViewController(fileCacheManager: fileCacheManager, networkManager: self.networkManager, currentToDoItem: toDoItemsArray[indexPath.row]), animated: true, completion: nil)
         }
         tableView.deselectRow(at: indexPath, animated: true)
     }

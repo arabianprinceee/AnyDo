@@ -13,6 +13,7 @@ class MainViewController: UIViewController {
 
     private let cacheFileName = "tasksCache"
     var fileCacheManager: FileCache
+    var networkManager: NetworkService
     let cellIdentifier = String(describing: TableViewCell.self)
     var completedTasksCondition: CompletedTasksCondition = .showCompleted
     var toDoItemsArray: [ToDoItem] = []
@@ -35,6 +36,7 @@ class MainViewController: UIViewController {
     
     init() {
         self.fileCacheManager = FileCacheImplementation(cacheFileName: cacheFileName)
+        self.networkManager = NetworkServiceImplementation()
         super.init(nibName: nil, bundle: nil)
         self.fileCacheManager.delegate = self
     }
@@ -93,7 +95,7 @@ class MainViewController: UIViewController {
     // MARK: Objc methods
     
     @objc func onAddItemButtonTapped() {
-        let vc = ToDoViewController(fileCacheManager: self.fileCacheManager, currentToDoItem: nil)
+        let vc = ToDoViewController(fileCacheManager: self.fileCacheManager, networkManager: self.networkManager, currentToDoItem: nil)
         self.present(vc, animated: true, completion: nil)
     }
     
@@ -122,7 +124,7 @@ class MainViewController: UIViewController {
 
 extension MainViewController: FileCacheDelegate {
     
-    func arrayDidChange(_ sender: FileCacheImplementation) {
+    func onArrayDidChanged(_ sender: FileCacheImplementation) {
         updateDoneTasksLabel()
         updateToDoItemsArray()
         tableView.reloadData()

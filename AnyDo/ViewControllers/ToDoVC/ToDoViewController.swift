@@ -12,6 +12,7 @@ class ToDoViewController: UIViewController, UITextViewDelegate {
     // MARK: Properties
 
     private let fileCacheManager: FileCache
+    private let networkManager: NetworkService
     var currentToDoItem: ToDoItem?
     var isEditingItem: Bool = false
     
@@ -37,8 +38,9 @@ class ToDoViewController: UIViewController, UITextViewDelegate {
     
     // MARK: Initialization
     
-    init(fileCacheManager: FileCache, currentToDoItem: ToDoItem?) {
+    init(fileCacheManager: FileCache, networkManager: NetworkService, currentToDoItem: ToDoItem?) {
         self.fileCacheManager = fileCacheManager
+        self.networkManager = networkManager
         self.currentToDoItem = currentToDoItem
         super.init(nibName: nil, bundle: nil)
     }

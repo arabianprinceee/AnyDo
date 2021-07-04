@@ -9,7 +9,6 @@ import Foundation
 
 typealias EmptyResult = Result<Void, Error>
 typealias EmptyCompletion = (_ result: EmptyResult) -> Void
-
 typealias ToDoItemsResult = Result<[ToDoItem], Error>
 typealias ToDoItemsCompletion = (_ result: ToDoItemsResult) -> Void
 
@@ -22,10 +21,12 @@ protocol NetworkService {
 
 }
 
-enum NetworkServiceErrors: Int, Error {
+enum NetworkServiceErrors: Error {
 
-    case invalidToken = 403
-    case incorrectUrlOrToDoItem = 404
-    case serverError = 500
+    case invalidToken
+    case incorrectUrlOrToDoItem
+    case wrongContentType
+    case serverError
+    case undefinedError
 
 }

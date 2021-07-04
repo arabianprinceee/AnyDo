@@ -27,13 +27,13 @@ final class FileCacheImplementation: FileCache {
     func addToDoItem(toDoItem: ToDoItem) {
         self.toDoItems[toDoItem.id] = toDoItem
         saveAllTasks()
-        delegate?.arrayDidChange(self)
+        delegate?.onArrayDidChanged(self)
     }
     
     func deleteTask(with id: String) {
         self.toDoItems[id] = nil
         saveAllTasks()
-        delegate?.arrayDidChange(self)
+        delegate?.onArrayDidChanged(self)
     }
     
     func saveAllTasks() {

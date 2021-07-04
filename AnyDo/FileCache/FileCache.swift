@@ -9,7 +9,7 @@ import Foundation
 
 protocol FileCacheDelegate: AnyObject {
 
-    func arrayDidChange(_ sender: FileCacheImplementation)
+    func onArrayDidChanged(_ sender: FileCacheImplementation)
 
 }
 
