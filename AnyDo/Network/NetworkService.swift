@@ -8,18 +8,24 @@
 import Foundation
 
 typealias EmptyResult = Result<Void, Error>
-typealias ToDoItemResult = Result<ToDoItem, Error>
-typealias ToDoItemsResult = Result<[ToDoItem], Error>
 typealias EmptyCompletion = (_ result: EmptyResult) -> Void
-typealias ToDoItemCompletion = (_ result: ToDoItemResult) -> Void
+
+typealias ToDoItemsResult = Result<[ToDoItem], Error>
 typealias ToDoItemsCompletion = (_ result: ToDoItemsResult) -> Void
 
 protocol NetworkService {
 
     func getToDoItems(completion: @escaping ToDoItemsCompletion)
-    func saveToDoItem(completion: @escaping EmptyCompletion)
-    func updateToDoItem(completion: @escaping EmptyCompletion)
-    func deleteToDoItem(completion: @escaping EmptyCompletion)
-//    func synchronizeToDoItems()
+    func saveToDoItem(item: ToDoItem, completion: @escaping EmptyCompletion)
+    func updateToDoItem(item: ToDoItem, completion: @escaping EmptyCompletion)
+    func deleteToDoItem(with id: String, completion: @escaping EmptyCompletion)
+
+}
+
+enum NetworkServiceErrors: Int, Error {
+
+    case invalidToken = 403
+    case incorrectUrlOrToDoItem = 404
+    case serverError = 500
 
 }

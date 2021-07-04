@@ -52,8 +52,8 @@ struct ToDoItem: Codable {
         id = try values.decode(String.self, forKey: .id)
         text = try values.decode(String.self, forKey: .text)
 
-        let strImportance = try values.decode(String.self, forKey: .importance)
-        switch strImportance {
+        let importanceString = try values.decode(String.self, forKey: .importance)
+        switch importanceString {
         case "important":
             importance = .important
         case "basic":
@@ -64,14 +64,23 @@ struct ToDoItem: Codable {
             importance = .standart
         }
 
-        status = try values.decode(TaskStatus.self, forKey: .status)
+        let statusBoolean: Bool = try values.decode(Bool.self, forKey: .status)
+        switch statusBoolean {
+        case true:
+            status = .completed
+        case false:
+            status = importance == .important ? .uncompletedImportant : .uncompleted
+        }
+
         if let unixDeadline = try values.decode(Int?.self, forKey: .deadline) {
             deadline = Date(timeIntervalSince1970: TimeInterval(unixDeadline))
         } else {
             deadline = nil
         }
+
         createdAt = try values.decode(Int.self, forKey: .createdAt)
         updatedAt = try values.decode(Int?.self, forKey: .updatedAt)
+
         isDirty = false
     }
 
@@ -89,7 +98,13 @@ struct ToDoItem: Codable {
             try container.encode("low", forKey: .importance)
         }
 
-        try container.encode(status, forKey: .status)
+        switch status {
+        case .uncompletedImportant, .uncompleted:
+            try container.encode(false, forKey: .status)
+        case .completed:
+            try container.encode(true, forKey: .status)
+        }
+
         try container.encode(deadline, forKey: .deadline)
         try container.encode(createdAt, forKey: .createdAt)
         try container.encode(updatedAt, forKey: .updatedAt)

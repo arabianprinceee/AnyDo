@@ -61,8 +61,8 @@ final class FileCacheImplementation: FileCache {
             if self.fileManager.fileExists(atPath: fileURL.path) {
                 self.toDoItems.removeAll()
                 do {
-
                     let data = try Data(contentsOf: fileURL)
+
                     if let json = try JSONSerialization.jsonObject(with: data) as? [[String: Any]] {
                         let items = json.compactMap { ToDoItem.parse(json: $0) }
                         for item in items {
@@ -71,7 +71,6 @@ final class FileCacheImplementation: FileCache {
                     }
 
                     completion()
-
                 } catch let error as NSError {
                     print(error.localizedDescription)
                     assertionFailure("Error during loading all tasks from json")
