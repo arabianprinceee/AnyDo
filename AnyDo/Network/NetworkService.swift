@@ -20,6 +20,6 @@ protocol NetworkService {
     func saveToDoItem(completion: @escaping EmptyCompletion)
     func updateToDoItem(completion: @escaping EmptyCompletion)
     func deleteToDoItem(completion: @escaping EmptyCompletion)
-    func synchronizeToDoItems() // какой-то параметр
+//    func synchronizeToDoItems()
 
 }

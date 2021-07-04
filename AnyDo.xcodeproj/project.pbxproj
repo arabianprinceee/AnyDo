@@ -28,6 +28,7 @@
 		D96DBC6926886F5A00A0E018 /* MainVCEnums.swift in Sources */ = {isa = PBXBuildFile; fileRef = D96DBC6826886F5A00A0E018 /* MainVCEnums.swift */; };
 		D9A74A9A26903E8C004C6D97 /* NetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9A74A9926903E8C004C6D97 /* NetworkService.swift */; };
 		D9A74A9E26904765004C6D97 /* Tombstone.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9A74A9D26904765004C6D97 /* Tombstone.swift */; };
+		D9A74AA42691CEDD004C6D97 /* NetworkServiceImplementation.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9A74AA32691CEDC004C6D97 /* NetworkServiceImplementation.swift */; };
 		D9F276E5266E0F3100058CC8 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = D9F276E7266E0F3100058CC8 /* Localizable.strings */; };
 		D9FF1588267BA380007A581D /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9FF1587267BA380007A581D /* MainViewController.swift */; };
 		D9FF1591267E088F007A581D /* TableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9FF158F267E088F007A581D /* TableViewCell.swift */; };
@@ -85,6 +86,7 @@
 		D96DBC6826886F5A00A0E018 /* MainVCEnums.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainVCEnums.swift; sourceTree = "<group>"; };
 		D9A74A9926903E8C004C6D97 /* NetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkService.swift; sourceTree = "<group>"; };
 		D9A74A9D26904765004C6D97 /* Tombstone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tombstone.swift; sourceTree = "<group>"; };
+		D9A74AA32691CEDC004C6D97 /* NetworkServiceImplementation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkServiceImplementation.swift; sourceTree = "<group>"; };
 		D9F276E6266E0F3100058CC8 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		D9F276E8266E0F3500058CC8 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/Localizable.strings; sourceTree = "<group>"; };
 		D9FF1587267BA380007A581D /* MainViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
@@ -268,6 +270,7 @@
 			isa = PBXGroup;
 			children = (
 				D9A74A9926903E8C004C6D97 /* NetworkService.swift */,
+				D9A74AA32691CEDC004C6D97 /* NetworkServiceImplementation.swift */,
 			);
 			path = Network;
 			sourceTree = "<group>";
@@ -512,6 +515,7 @@
 				D957C9CE2673D73E002BF395 /* FileCacheImplementation.swift in Sources */,
 				D96DBC6926886F5A00A0E018 /* MainVCEnums.swift in Sources */,
 				D9441A50266CED590019902F /* AppDelegate.swift in Sources */,
+				D9A74AA42691CEDD004C6D97 /* NetworkServiceImplementation.swift in Sources */,
 				D93436C12688B53C002FD8D5 /* AddItemCell.swift in Sources */,
 				D9FF1594267E3E15007A581D /* MainVCTableViewExtension.swift in Sources */,
 				D9FF1588267BA380007A581D /* MainViewController.swift in Sources */,
