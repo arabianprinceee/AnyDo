@@ -31,6 +31,9 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
                     switch result {
                     case .success():
                         print("Successfully updated task")
+
+                        // TODO: Вопрос, конечно, нафига я логику обновления массива закидываю в комплишн - исправить это нужно везде
+
                         self?.toDoItemsArray.insert(task, at: indexPath.row + 1)
                         self?.toDoItemsArray.remove(at: indexPath.row)
                         self?.fileCacheManager.deleteTask(with: task.id)
