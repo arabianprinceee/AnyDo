@@ -16,11 +16,14 @@ protocol FileCacheDelegate: AnyObject {
 protocol FileCache {
 
     var delegate: FileCacheDelegate? { get set }
-    var toDoItems: [String: ToDoItem] { get }
+    var toDoItemsData: [String: ToDoItem] { get }
+    var tombstonesData: [Tombstone] { get }
     
     func addToDoItem(toDoItem: ToDoItem)
     func deleteTask(with id: String)
     func saveAllTasks()
     func loadAllTasks(fileName: String, completion: @escaping () -> Void)
-    
+    func saveTombstone(tombstone: Tombstone)
+    func deleteTombstone(with id: String)
+
 }

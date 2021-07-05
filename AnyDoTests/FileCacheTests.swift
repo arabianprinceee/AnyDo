@@ -23,17 +23,17 @@ class FileCacheTests: XCTestCase {
     }
     
     func testAddTask() {
-        XCTAssertTrue(fc.toDoItems.count == 0)
+        XCTAssertTrue(fc.toDoItemsData.count == 0)
         fc.addToDoItem(toDoItem: ToDoItem(text: "1", importance: .standart, deadLine: nil, status: .completed))
         fc.addToDoItem(toDoItem: ToDoItem(text: "2", importance: .standart, deadLine: nil, status: .completed))
-        XCTAssertTrue(fc.toDoItems.count == 2)
+        XCTAssertTrue(fc.toDoItemsData.count == 2)
     }
     
     func testDeleteTask() {
         fc.addToDoItem(toDoItem: ToDoItem(id: "test_id", text: "", importance: .standart, deadLine: nil, status: .uncompletedImportant))
-        XCTAssertTrue(fc.toDoItems.count == 1)
+        XCTAssertTrue(fc.toDoItemsData.count == 1)
         fc.deleteTask(with: "test_id")
-        XCTAssertTrue(fc.toDoItems.count == 0)
+        XCTAssertTrue(fc.toDoItemsData.count == 0)
     }
     
     func testSaveLoadAllTasks() {
@@ -42,9 +42,9 @@ class FileCacheTests: XCTestCase {
         
         let fc1: FileCacheImplementation = FileCacheImplementation(cacheFileName: "")
         fc1.loadAllTasks(fileName: "test3")
-        XCTAssertEqual(fc1.toDoItems.count, 2)
+        XCTAssertEqual(fc1.toDoItemsData.count, 2)
         
-        for elem in fc1.toDoItems {
+        for elem in fc1.toDoItemsData {
             print(elem.value.text)
         }
     }

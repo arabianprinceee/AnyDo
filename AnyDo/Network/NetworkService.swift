@@ -30,3 +30,17 @@ enum NetworkServiceErrors: Error {
     case undefinedError
 
 }
+
+enum ParsingErrors: Error {
+
+    case encodingError
+    case decodingError
+
+}
+
+enum FileWorkErrors: Error {
+
+    case readFileError
+    case writeToFileError
+
+}

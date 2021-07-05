@@ -12,6 +12,7 @@ class MainViewController: UIViewController {
     // MARK: Properties
 
     private let cacheFileName = "tasksCache"
+    private let tombstonesFileName = "tombstonesCache"
     var fileCacheManager: FileCache
     var networkManager: NetworkService
     let cellIdentifier = String(describing: TableViewCell.self)
@@ -35,7 +36,7 @@ class MainViewController: UIViewController {
     // MARK: Initialization && Deinitialization
     
     init() {
-        self.fileCacheManager = FileCacheImplementation(cacheFileName: cacheFileName)
+        self.fileCacheManager = FileCacheImplementation(cacheFileName: cacheFileName, tombstonesFileName: tombstonesFileName)
         self.networkManager = NetworkServiceImplementation()
         super.init(nibName: nil, bundle: nil)
         self.fileCacheManager.delegate = self
@@ -73,7 +74,7 @@ class MainViewController: UIViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         fileCacheManager.loadAllTasks(fileName: cacheFileName) { [weak self] in
-            self?.toDoItemsArray = self?.fileCacheManager.toDoItems.map { $0.value }.sorted { $0.text < $1.text } ?? []
+            self?.toDoItemsArray = self?.fileCacheManager.toDoItemsData.map { $0.value }.sorted { $0.text < $1.text } ?? []
 
             DispatchQueue.main.async {
                 self?.tableView.reloadData()
@@ -85,7 +86,7 @@ class MainViewController: UIViewController {
     // MARK: Methods
 
     private func updateToDoItemsArray() {
-        self.toDoItemsArray = fileCacheManager.toDoItems.map { $0.value }.sorted { $0.text < $1.text }
+        self.toDoItemsArray = fileCacheManager.toDoItemsData.map { $0.value }.sorted { $0.text < $1.text }
     }
 
     func updateDoneTasksLabel() {

@@ -38,8 +38,8 @@ final class NetworkServiceImplementation: NetworkService {
                     completion(.success(toDoItems))
                     return
                 } catch {
-                    print(error.localizedDescription)
-
+                    completion(.failure(ParsingErrors.decodingError))
+                    return
                 }
             }.resume()
         }
@@ -54,7 +54,10 @@ final class NetworkServiceImplementation: NetworkService {
         request.setValue("Application/json", forHTTPHeaderField: "Content-Type")
         request.addValue("Bearer \(apiToken)", forHTTPHeaderField: "Authorization")
 
-        guard let httpBody = try? JSONEncoder().encode(item) else { print("error during encoding"); return }
+        guard let httpBody = try? JSONEncoder().encode(item) else {
+            completion(.failure(ParsingErrors.encodingError))
+            return
+        }
         request.httpBody = httpBody
 
         let session = URLSession.shared
@@ -83,7 +86,11 @@ final class NetworkServiceImplementation: NetworkService {
         request.setValue("Application/json", forHTTPHeaderField: "Content-Type")
         request.addValue("Bearer \(apiToken)", forHTTPHeaderField: "Authorization")
 
-        guard let httpBody = try? JSONEncoder().encode(item) else { print("error during encoding"); return }
+        guard let httpBody = try? JSONEncoder().encode(item) else {
+            completion(.failure(ParsingErrors.encodingError))
+            return
+        }
+        
         request.httpBody = httpBody
 
         let session = URLSession.shared

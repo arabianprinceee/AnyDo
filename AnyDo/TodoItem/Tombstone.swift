@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Tombstone {
+struct Tombstone: Codable {
 
     let id: String
     let deletedAt: Date
