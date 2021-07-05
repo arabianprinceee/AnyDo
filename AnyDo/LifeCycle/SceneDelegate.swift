@@ -11,11 +11,15 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
     var window: UIWindow?
     
-    
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         if let windowScene = scene as? UIWindowScene {
+
+            let cacheFileName = "tasksCache", tombstonesFileName = "tombstonesCache"
+            let fileCacheManager = FileCacheServiceImplementation(cacheFileName: cacheFileName, tombstonesFileName: tombstonesFileName)
+            let networkManager = NetworkServiceImplementation()
+
             let window = UIWindow(windowScene: windowScene)
-            window.rootViewController = MainViewController()
+            window.rootViewController = MainViewController(fileCacheManager: fileCacheManager, networkManager: networkManager)
             self.window = window
             window.makeKeyAndVisible()
         }

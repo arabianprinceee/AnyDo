@@ -7,11 +7,11 @@
 
 import Foundation
 
-final class FileCacheImplementation: FileCache {
+final class FileCacheServiceImplementation: FileCacheService {
     
     // MARK: Properties
     
-    weak var delegate: FileCacheDelegate?
+    weak var delegate: FileCacheServiceDelegate?
     private(set) var toDoItemsData: [String: ToDoItem] = [:]
     private(set) var tombstonesData: [Tombstone] = []
     private let fileManager = FileManager()
@@ -30,13 +30,13 @@ final class FileCacheImplementation: FileCache {
     func addToDoItem(toDoItem: ToDoItem) {
         self.toDoItemsData[toDoItem.id] = toDoItem
         saveAllTasks()
-        delegate?.onArrayDidChanged(self)
+        delegate?.onArrayDidChange(self)
     }
     
     func deleteTask(with id: String) {
         self.toDoItemsData[id] = nil
         saveAllTasks()
-        delegate?.onArrayDidChanged(self)
+        delegate?.onArrayDidChange(self)
     }
     
     func saveAllTasks() {
@@ -48,6 +48,21 @@ final class FileCacheImplementation: FileCache {
         saveQueue.async {
             do {
                 let jsonData = try? JSONSerialization.data(withJSONObject: jsonArray)
+                try jsonData?.write(to: fileURL)
+            } catch _ as NSError {
+                assertionFailure("Error during saving all tasks to json")
+            }
+        }
+    }
+
+    func saveItemsFromServer(items: [ToDoItem]) {
+        let saveQueue = DispatchQueue(label: "com.AnyDo.saveItemsQueue", qos: .background)
+        let directoryURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+        let fileURL = URL(fileURLWithPath: cacheFileName, relativeTo: directoryURL).appendingPathExtension("txt")
+
+        saveQueue.async {
+            do {
+                let jsonData = try? JSONEncoder().encode(items)
                 try jsonData?.write(to: fileURL)
             } catch _ as NSError {
                 assertionFailure("Error during saving all tasks to json")
@@ -84,7 +99,7 @@ final class FileCacheImplementation: FileCache {
 
     // MARK: Tombstone Methods
 
-    func saveTombstone(tombstone: Tombstone) {
+    func addTombstone(tombstone: Tombstone) {
         tombstonesData.append(tombstone)
         saveAllTombstones { result in
             switch result {

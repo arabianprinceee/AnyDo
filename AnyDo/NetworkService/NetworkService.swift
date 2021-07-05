@@ -23,24 +23,6 @@ protocol NetworkService {
 
 enum NetworkServiceErrors: Error {
 
-    case invalidToken
-    case incorrectUrlOrToDoItem
-    case wrongContentType
-    case serverError
-    case undefinedError
-
-}
-
-enum ParsingErrors: Error {
-
-    case encodingError
-    case decodingError
-
-}
-
-enum FileWorkErrors: Error {
-
-    case readFileError
-    case writeToFileError
+    case networkError
 
 }

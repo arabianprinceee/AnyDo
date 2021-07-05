@@ -9,9 +9,13 @@ import Foundation
 
 final class NetworkServiceImplementation: NetworkService {
 
+    // MARK: Properties
+
     private let networkQueue = DispatchQueue(label: "com.AnyDo.NetworkServiceQueue", attributes: [.concurrent])
     private var apiUrl = "https://d5dps3h13rv6902lp5c8.apigw.yandexcloud.net"
     private let apiToken = "LTQwNDc2NDgyNTA0MTEzNDYzNTY"
+
+    // MARK: Methods
 
     func getToDoItems(completion: @escaping ToDoItemsCompletion) {
         guard let url = URL(string: "\(apiUrl)/tasks") else { return }
@@ -24,15 +28,15 @@ final class NetworkServiceImplementation: NetworkService {
         let session = URLSession.shared
         networkQueue.async {
             session.dataTask(with: request) { data, response, error in
-                if let _ = error {
-                    if let response = response as? HTTPURLResponse {
-                        completion(.failure(self.detectErrorType(statusCode: response.statusCode)))
-                        return
-                    }
-                    completion(.failure(NetworkServiceErrors.undefinedError))
+                guard
+                    let data = data,
+                    let response = response as? HTTPURLResponse,
+                    response.statusCode == 200,
+                    error == nil
+                else {
+                    completion(.failure(NetworkServiceErrors.networkError))
                     return
                 }
-                guard let data = data else { return }
                 do {
                     let toDoItems = try JSONDecoder().decode([ToDoItem].self, from: data)
                     completion(.success(toDoItems))
@@ -63,16 +67,15 @@ final class NetworkServiceImplementation: NetworkService {
         let session = URLSession.shared
         networkQueue.async {
             session.dataTask(with: request) { data, response, error in
-                if let _ = error {
-                    if let response = response as? HTTPURLResponse {
-                        completion(.failure(self.detectErrorType(statusCode: response.statusCode)))
-                        return
-                    }
-                    completion(.failure(NetworkServiceErrors.undefinedError))
+                guard
+                    let response = response as? HTTPURLResponse,
+                    response.statusCode == 200,
+                    error == nil
+                else {
+                    completion(.failure(NetworkServiceErrors.networkError))
                     return
                 }
                 completion(.success(()))
-                return
             }.resume()
         }
     }
@@ -96,22 +99,24 @@ final class NetworkServiceImplementation: NetworkService {
         let session = URLSession.shared
         networkQueue.async {
             session.dataTask(with: request) { data, response, error in
-                if let _ = error {
-                    if let response = response as? HTTPURLResponse {
-                        completion(.failure(self.detectErrorType(statusCode: response.statusCode)))
-                        return
-                    }
-                    completion(.failure(NetworkServiceErrors.undefinedError))
+                guard
+                    let response = response as? HTTPURLResponse,
+                    response.statusCode == 200,
+                    error == nil
+                else {
+                    completion(.failure(NetworkServiceErrors.networkError))
                     return
                 }
                 completion(.success(()))
-                return
             }.resume()
         }
     }
 
     func deleteToDoItem(with id: String, completion: @escaping EmptyCompletion) {
         guard let url = URL(string: "\(apiUrl)/tasks/\(id)") else { return }
+        
+        print(id)
+        print(url.description)
 
         var request = URLRequest(url: url)
         request.timeoutInterval = 30
@@ -121,16 +126,15 @@ final class NetworkServiceImplementation: NetworkService {
         let session = URLSession.shared
         networkQueue.async {
             session.dataTask(with: request) { data, response, error in
-                if let _ = error {
-                    if let response = response as? HTTPURLResponse {
-                        completion(.failure(self.detectErrorType(statusCode: response.statusCode)))
-                        return
-                    }
-                    completion(.failure(NetworkServiceErrors.undefinedError))
+                guard
+                    let response = response as? HTTPURLResponse,
+                    response.statusCode == 200,
+                    error == nil
+                else {
+                    completion(.failure(NetworkServiceErrors.networkError))
                     return
                 }
                 completion(.success(()))
-                return
             }.resume()
         }
     }
@@ -138,21 +142,6 @@ final class NetworkServiceImplementation: NetworkService {
     // TODO: synchronize local items with server
     func synchronizeToDoItems() {
 
-    }
-
-    private func detectErrorType(statusCode: Int) -> NetworkServiceErrors {
-        switch statusCode {
-        case 403:
-            return .invalidToken
-        case 404:
-            return .incorrectUrlOrToDoItem
-        case 415:
-            return .wrongContentType
-        case 500:
-            return .serverError
-        default:
-            return .undefinedError
-        }
     }
 
 }

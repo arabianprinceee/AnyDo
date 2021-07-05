@@ -11,9 +11,7 @@ class MainViewController: UIViewController {
     
     // MARK: Properties
 
-    private let cacheFileName = "tasksCache"
-    private let tombstonesFileName = "tombstonesCache"
-    var fileCacheManager: FileCache
+    var fileCacheManager: FileCacheService
     var networkManager: NetworkService
     let cellIdentifier = String(describing: TableViewCell.self)
     var completedTasksCondition: CompletedTasksCondition = .showCompleted
@@ -35,9 +33,9 @@ class MainViewController: UIViewController {
     
     // MARK: Initialization && Deinitialization
     
-    init() {
-        self.fileCacheManager = FileCacheImplementation(cacheFileName: cacheFileName, tombstonesFileName: tombstonesFileName)
-        self.networkManager = NetworkServiceImplementation()
+    init(fileCacheManager: FileCacheService, networkManager: NetworkService) {
+        self.fileCacheManager = fileCacheManager
+        self.networkManager = networkManager
         super.init(nibName: nil, bundle: nil)
         self.fileCacheManager.delegate = self
     }
@@ -73,14 +71,7 @@ class MainViewController: UIViewController {
     }
 
     override func viewWillAppear(_ animated: Bool) {
-        fileCacheManager.loadAllTasks(fileName: cacheFileName) { [weak self] in
-            self?.toDoItemsArray = self?.fileCacheManager.toDoItemsData.map { $0.value }.sorted { $0.text < $1.text } ?? []
-
-            DispatchQueue.main.async {
-                self?.tableView.reloadData()
-                self?.updateDoneTasksLabel()
-            }
-        }
+        self.toDoItemsArray = fileCacheManager.toDoItemsData.map { $0.value }.sorted { $0.text < $1.text }
     }
 
     // MARK: Methods
@@ -123,12 +114,14 @@ class MainViewController: UIViewController {
 
 // MARK: FileCacheDelegate
 
-extension MainViewController: FileCacheDelegate {
-    
-    func onArrayDidChanged(_ sender: FileCacheImplementation) {
-        updateDoneTasksLabel()
-        updateToDoItemsArray()
-        tableView.reloadData()
+extension MainViewController: FileCacheServiceDelegate {
+
+    func onArrayDidChange(_ sender: FileCacheServiceImplementation) {
+        DispatchQueue.main.async {
+            self.updateDoneTasksLabel()
+            self.updateToDoItemsArray()
+            self.tableView.reloadData()
+        }
     }
     
 }
