@@ -18,7 +18,8 @@ protocol NetworkService {
     func saveToDoItem(item: ToDoItem, completion: @escaping EmptyCompletion)
     func updateToDoItem(item: ToDoItem, completion: @escaping EmptyCompletion)
     func deleteToDoItem(with id: String, completion: @escaping EmptyCompletion)
-
+    func synchronizeToDoItems(ids: [String], items: [ToDoItem], completion: @escaping ToDoItemsCompletion)
+    
 }
 
 enum NetworkServiceErrors: Error {

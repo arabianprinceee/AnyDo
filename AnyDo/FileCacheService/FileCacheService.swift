@@ -17,11 +17,12 @@ protocol FileCacheService {
     var delegate: FileCacheServiceDelegate? { get set }
     var toDoItemsData: [String: ToDoItem] { get }
     var tombstonesData: [Tombstone] { get }
-    
+    var cacheFileName: String { get }
+
     func addToDoItem(toDoItem: ToDoItem)
     func deleteTask(with id: String)
     func saveAllTasks()
-    func saveItemsFromServer(items: [ToDoItem])
+    func saveItemsFromServer(items: [ToDoItem], completion: @escaping () -> Void) 
     func loadAllTasks(fileName: String, completion: @escaping () -> Void)
     func addTombstone(tombstone: Tombstone)
     func deleteTombstone(with id: String)

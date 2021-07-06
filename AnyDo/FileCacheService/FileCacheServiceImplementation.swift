@@ -8,7 +8,7 @@
 import Foundation
 
 final class FileCacheServiceImplementation: FileCacheService {
-    
+
     // MARK: Properties
     
     weak var delegate: FileCacheServiceDelegate?
@@ -55,18 +55,14 @@ final class FileCacheServiceImplementation: FileCacheService {
         }
     }
 
-    func saveItemsFromServer(items: [ToDoItem]) {
-        let saveQueue = DispatchQueue(label: "com.AnyDo.saveItemsQueue", qos: .background)
-        let directoryURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-        let fileURL = URL(fileURLWithPath: cacheFileName, relativeTo: directoryURL).appendingPathExtension("txt")
+    func saveItemsFromServer(items: [ToDoItem], completion: @escaping () -> Void) {
+        let saveQueue = DispatchQueue(label: "com.AnyDo.saveItemsQueue", qos: .userInitiated)
 
         saveQueue.async {
-            do {
-                let jsonData = try? JSONEncoder().encode(items)
-                try jsonData?.write(to: fileURL)
-            } catch _ as NSError {
-                assertionFailure("Error during saving all tasks to json")
+            for item in items {
+                self.toDoItemsData[item.id] = item
             }
+            completion()
         }
     }
     
@@ -87,7 +83,6 @@ final class FileCacheServiceImplementation: FileCacheService {
                             self.toDoItemsData[item.id] = item
                         }
                     }
-
                     completion()
                 } catch let error as NSError {
                     print(error.localizedDescription)

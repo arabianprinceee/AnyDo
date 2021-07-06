@@ -114,9 +114,6 @@ final class NetworkServiceImplementation: NetworkService {
 
     func deleteToDoItem(with id: String, completion: @escaping EmptyCompletion) {
         guard let url = URL(string: "\(apiUrl)/tasks/\(id)") else { return }
-        
-        print(id)
-        print(url.description)
 
         var request = URLRequest(url: url)
         request.timeoutInterval = 30
@@ -139,9 +136,48 @@ final class NetworkServiceImplementation: NetworkService {
         }
     }
 
-    // TODO: synchronize local items with server
-    func synchronizeToDoItems() {
+    func synchronizeToDoItems(ids: [String], items: [ToDoItem], completion: @escaping ToDoItemsCompletion) {
+        guard let url = URL(string: "\(apiUrl)/tasks") else { return }
 
+        var request = URLRequest(url: url)
+        request.timeoutInterval = 30
+        request.httpMethod = "PUT"
+        request.setValue("Application/json", forHTTPHeaderField: "Content-Type")
+        request.addValue("Bearer \(apiToken)", forHTTPHeaderField: "Authorization")
+
+        var dict: [String: Any] = [:]
+        dict["deleted"] = ids
+        dict["other"] = items
+
+        guard let httpBody = try? JSONSerialization.data(withJSONObject: dict) else {
+            completion(.failure(ParsingErrors.encodingError))
+            return
+        }
+
+        request.httpBody = httpBody
+
+        let session = URLSession.shared
+        networkQueue.async {
+            session.dataTask(with: request) { data, response, error in
+                guard
+                    let data = data,
+                    let response = response as? HTTPURLResponse,
+                    response.statusCode == 200,
+                    error == nil
+                else {
+                    completion(.failure(NetworkServiceErrors.networkError))
+                    return
+                }
+                do {
+                    let toDoItems = try JSONDecoder().decode([ToDoItem].self, from: data)
+                    completion(.success(toDoItems))
+                    return
+                } catch {
+                    completion(.failure(ParsingErrors.decodingError))
+                    return
+                }
+            }.resume()
+        }
     }
 
 }

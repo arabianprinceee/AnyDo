@@ -30,10 +30,10 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
                                     createdAt: self.toDoItemsArray[indexPath.row].createdAt,
                                     updatedAt: Int(Date().timeIntervalSince1970))
 
-                self.fileCacheManager.deleteTask(with: id)
-                self.fileCacheManager.addToDoItem(toDoItem: task)
+                self.fileCacheService.deleteTask(with: id)
+                self.fileCacheService.addToDoItem(toDoItem: task)
 
-                self.networkManager.updateToDoItem(item: task) { result in
+                self.networkService.updateToDoItem(item: task) { result in
                     switch result {
                     case .success():
                         print("Successfully updated task")
@@ -47,8 +47,8 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
                                                 createdAt: task.createdAt,
                                                 updatedAt: task.updatedAt,
                                                 isDirty: true)
-                        self.fileCacheManager.deleteTask(with: id)
-                        self.fileCacheManager.addToDoItem(toDoItem: dirtyTask)
+                        self.fileCacheService.deleteTask(with: id)
+                        self.fileCacheService.addToDoItem(toDoItem: dirtyTask)
                     }
                 }
             }
@@ -68,14 +68,14 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
             let deleteTask = UIContextualAction(style: .destructive, title: nil) { (action, sourceView, _) in
 
                 let id = self.toDoItemsArray[indexPath.row].id
-                self.fileCacheManager.deleteTask(with: id)
+                self.fileCacheService.deleteTask(with: id)
 
-                self.networkManager.deleteToDoItem(with: id) { result in
+                self.networkService.deleteToDoItem(with: id) { result in
                     switch result {
                     case .success():
                         print("Item has been successfully deleted from server")
                     case .failure(_):
-                        self.fileCacheManager.addTombstone(tombstone: Tombstone(id: id, deletedAt: Date()))
+                        self.fileCacheService.addTombstone(tombstone: Tombstone(id: id, deletedAt: Date()))
                     }
                 }
             }
@@ -101,7 +101,7 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if indexPath.row != self.tableView.numberOfRows(inSection: 0) - 1 {
-            present(ToDoViewController(fileCacheManager: fileCacheManager, networkManager: self.networkManager, currentToDoItem: toDoItemsArray[indexPath.row]), animated: true, completion: nil)
+            present(ToDoViewController(fileCacheManager: fileCacheService, networkManager: self.networkService, currentToDoItem: toDoItemsArray[indexPath.row]), animated: true, completion: nil)
         }
         tableView.deselectRow(at: indexPath, animated: true)
     }
@@ -119,9 +119,9 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
                                     status: .uncompleted,
                                     createdAt: Int(Date().timeIntervalSince1970))
 
-                self.fileCacheManager.addToDoItem(toDoItem: task)
+                self.fileCacheService.addToDoItem(toDoItem: task)
 
-                self.networkManager.saveToDoItem(item: task) { result in
+                self.networkService.saveToDoItem(item: task) { result in
                     switch result {
                     case .success():
                         print("Successfully saved ToDoItem")
@@ -134,8 +134,8 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
                                                  status: task.status,
                                                  createdAt: task.createdAt,
                                                  isDirty: true)
-                        self.fileCacheManager.deleteTask(with: id)
-                        self.fileCacheManager.addToDoItem(toDoItem: dirtyTask)
+                        self.fileCacheService.deleteTask(with: id)
+                        self.fileCacheService.addToDoItem(toDoItem: dirtyTask)
                     }
                 }
             }

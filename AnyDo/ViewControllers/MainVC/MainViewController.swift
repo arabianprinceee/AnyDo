@@ -11,8 +11,8 @@ class MainViewController: UIViewController {
     
     // MARK: Properties
 
-    var fileCacheManager: FileCacheService
-    var networkManager: NetworkService
+    var fileCacheService: FileCacheService
+    var networkService: NetworkService
     let cellIdentifier = String(describing: TableViewCell.self)
     var completedTasksCondition: CompletedTasksCondition = .showCompleted
     var toDoItemsArray: [ToDoItem] = []
@@ -34,10 +34,10 @@ class MainViewController: UIViewController {
     // MARK: Initialization && Deinitialization
     
     init(fileCacheManager: FileCacheService, networkManager: NetworkService) {
-        self.fileCacheManager = fileCacheManager
-        self.networkManager = networkManager
+        self.fileCacheService = fileCacheManager
+        self.networkService = networkManager
         super.init(nibName: nil, bundle: nil)
-        self.fileCacheManager.delegate = self
+        self.fileCacheService.delegate = self
     }
     
     required init?(coder: NSCoder) {
@@ -71,13 +71,37 @@ class MainViewController: UIViewController {
     }
 
     override func viewWillAppear(_ animated: Bool) {
-        self.toDoItemsArray = fileCacheManager.toDoItemsData.map { $0.value }.sorted { $0.text < $1.text }
+        networkService.synchronizeToDoItems(ids: fileCacheService.tombstonesData.map({$0.id}), items: fileCacheService.toDoItemsData.values.filter({$0.isDirty == true})) { result in
+            switch result {
+            case .success(let toDoItems):
+                print("Succesfully synchronized data")
+                for item in toDoItems {
+                    print(item.text)
+                }
+                self.fileCacheService.saveItemsFromServer(items: toDoItems) {
+                    print("Successfully saved items from server to local data")
+                    self.updateToDoItemsArray()
+                    for item in self.toDoItemsArray {
+                        print(item.id)
+                    }
+                    DispatchQueue.main.async {
+                        self.updateDoneTasksLabel()
+                        self.tableView.reloadData()
+                    }
+                }
+            case .failure(let error):
+                print(error)
+                self.fileCacheService.loadAllTasks(fileName: self.fileCacheService.cacheFileName) {
+                    self.updateToDoItemsArray()
+                }
+            }
+        }
     }
 
     // MARK: Methods
 
     private func updateToDoItemsArray() {
-        self.toDoItemsArray = fileCacheManager.toDoItemsData.map { $0.value }.sorted { $0.text < $1.text }
+        self.toDoItemsArray = fileCacheService.toDoItemsData.map { $0.value }.sorted { $0.text < $1.text }
     }
 
     func updateDoneTasksLabel() {
@@ -87,7 +111,7 @@ class MainViewController: UIViewController {
     // MARK: Objc methods
     
     @objc func onAddItemButtonTapped() {
-        let vc = ToDoViewController(fileCacheManager: self.fileCacheManager, networkManager: self.networkManager, currentToDoItem: nil)
+        let vc = ToDoViewController(fileCacheManager: self.fileCacheService, networkManager: self.networkService, currentToDoItem: nil)
         self.present(vc, animated: true, completion: nil)
     }
     
@@ -117,7 +141,7 @@ class MainViewController: UIViewController {
 extension MainViewController: FileCacheServiceDelegate {
 
     func onArrayDidChange(_ sender: FileCacheServiceImplementation) {
-        toDoItemsArray = fileCacheManager.toDoItemsData.map { $0.value }.sorted { $0.text < $1.text }
+        toDoItemsArray = fileCacheService.toDoItemsData.map { $0.value }.sorted { $0.text < $1.text }
         DispatchQueue.main.async {
             self.updateDoneTasksLabel()
             self.updateToDoItemsArray()
