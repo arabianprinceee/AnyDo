@@ -117,6 +117,7 @@ class MainViewController: UIViewController {
 extension MainViewController: FileCacheServiceDelegate {
 
     func onArrayDidChange(_ sender: FileCacheServiceImplementation) {
+        toDoItemsArray = fileCacheManager.toDoItemsData.map { $0.value }.sorted { $0.text < $1.text }
         DispatchQueue.main.async {
             self.updateDoneTasksLabel()
             self.updateToDoItemsArray()

@@ -20,29 +20,35 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         if indexPath.row != self.tableView.numberOfRows(inSection: 0) - 1 && self.toDoItemsArray[indexPath.row].status != .completed {
             let completeTask = UIContextualAction(style: .normal, title: nil) { (action, sourceView, _) in
-                let task = ToDoItem(id: self.toDoItemsArray[indexPath.row].id,
+
+                let id = self.toDoItemsArray[indexPath.row].id
+                let task = ToDoItem(id: id,
                                     text: self.toDoItemsArray[indexPath.row].text,
                                     importance: self.toDoItemsArray[indexPath.row].importance,
                                     deadLine: self.toDoItemsArray[indexPath.row].deadline,
                                     status: .completed,
+                                    createdAt: self.toDoItemsArray[indexPath.row].createdAt,
                                     updatedAt: Int(Date().timeIntervalSince1970))
 
-                self.networkManager.updateToDoItem(item: task) { [weak self] result in
+                self.fileCacheManager.deleteTask(with: id)
+                self.fileCacheManager.addToDoItem(toDoItem: task)
+
+                self.networkManager.updateToDoItem(item: task) { result in
                     switch result {
                     case .success():
                         print("Successfully updated task")
-
-                        // TODO: Вопрос, конечно, нафига я логику обновления массива закидываю в комплишн - исправить это нужно везде
-
-                        self?.toDoItemsArray.insert(task, at: indexPath.row + 1)
-                        self?.toDoItemsArray.remove(at: indexPath.row)
-                        self?.fileCacheManager.deleteTask(with: task.id)
-                        self?.fileCacheManager.addToDoItem(toDoItem: task)
-                        DispatchQueue.main.async {
-                            self?.updateDoneTasksLabel()
-                        }
                     case .failure(let error):
                         print(error)
+                        let dirtyTask = ToDoItem(id: id,
+                                                text: task.text,
+                                                importance: task.importance,
+                                                deadLine: task.deadline,
+                                                status: .completed,
+                                                createdAt: task.createdAt,
+                                                updatedAt: task.updatedAt,
+                                                isDirty: true)
+                        self.fileCacheManager.deleteTask(with: id)
+                        self.fileCacheManager.addToDoItem(toDoItem: dirtyTask)
                     }
                 }
             }
@@ -60,9 +66,10 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         if indexPath.row != self.tableView.numberOfRows(inSection: 0) - 1 {
             let deleteTask = UIContextualAction(style: .destructive, title: nil) { (action, sourceView, _) in
+
                 let id = self.toDoItemsArray[indexPath.row].id
-                self.toDoItemsArray.remove(at: indexPath.row)
                 self.fileCacheManager.deleteTask(with: id)
+
                 self.networkManager.deleteToDoItem(with: id) { result in
                     switch result {
                     case .success():
@@ -105,30 +112,30 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
             let cell = tableView.dequeueReusableCell(withIdentifier: AddItemCell.identifier, for: indexPath) as! AddItemCell
             cell.onTaskAdded = { text in
                 let id = UUID().uuidString
-                self.networkManager.saveToDoItem(item: ToDoItem(id: id,
-                                                                text: text,
-                                                                importance: .standart,
-                                                                deadLine: nil,
-                                                                status: .uncompleted,
-                                                                createdAt: Int(Date().timeIntervalSince1970))) { result in
+                let task = ToDoItem(id: id,
+                                    text: text,
+                                    importance: .standart,
+                                    deadLine: nil,
+                                    status: .uncompleted,
+                                    createdAt: Int(Date().timeIntervalSince1970))
+
+                self.fileCacheManager.addToDoItem(toDoItem: task)
+
+                self.networkManager.saveToDoItem(item: task) { result in
                     switch result {
                     case .success():
                         print("Successfully saved ToDoItem")
-                        self.fileCacheManager.addToDoItem(toDoItem: ToDoItem(id: id,
-                                                                             text: text,
-                                                                             importance: .standart,
-                                                                             deadLine: nil,
-                                                                             status: .uncompleted,
-                                                                             createdAt: Int(Date().timeIntervalSince1970)))
                     case .failure(let error):
                         print(error)
-                        self.fileCacheManager.addToDoItem(toDoItem: ToDoItem(id: id,
-                                                                             text: text,
-                                                                             importance: .standart,
-                                                                             deadLine: nil,
-                                                                             status: .uncompleted,
-                                                                             createdAt: Int(Date().timeIntervalSince1970),
-                                                                             isDirty: true))
+                        let dirtyTask = ToDoItem(id: task.id,
+                                                 text: task.text,
+                                                 importance: task.importance,
+                                                 deadLine: task.deadline,
+                                                 status: task.status,
+                                                 createdAt: task.createdAt,
+                                                 isDirty: true)
+                        self.fileCacheManager.deleteTask(with: id)
+                        self.fileCacheManager.addToDoItem(toDoItem: dirtyTask)
                     }
                 }
             }

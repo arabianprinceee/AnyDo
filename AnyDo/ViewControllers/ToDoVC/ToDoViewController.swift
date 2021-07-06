@@ -165,44 +165,63 @@ class ToDoViewController: UIViewController, UITextViewDelegate {
             switch isEditingItem {
             case true:
                 guard let id = currentToDoItem?.id else { return }
-                self.getNewToDoItem(with: id) { [weak self] toDoItem in
-                    self?.networkManager.updateToDoItem(item: toDoItem) { result in
-                        switch result {
-                        case .success():
-                            print("Successfully updated ToDoItem")
-                            self?.fileCacheManager.deleteTask(with: id)
-                            self?.getNewToDoItem(with: id) { item in
-                                self?.fileCacheManager.addToDoItem(toDoItem: item)
-                            }
-                        case .failure(let error):
-                            print(error)
-                            self?.fileCacheManager.deleteTask(with: id)
-                            self?.getNewToDoItem(with: id, isDirty: true) { item in
-                                self?.fileCacheManager.addToDoItem(toDoItem: item)
-                            }
-                        }
+                let index = taskPrioritySementedControl.selectedSegmentIndex
+                let task = ToDoItem(id: id,
+                                    text: self.taskTextView.text,
+                                    importance: index == 0 ? .unimportant : index == 1 ? .standart : .important,
+                                    deadLine: calendarSwitch.isOn ? datePickerView.date : nil,
+                                    status: getStatusOfToDo(),
+                                    updatedAt: Int(Date().timeIntervalSince1970))
+
+                self.fileCacheManager.deleteTask(with: id)
+                self.fileCacheManager.addToDoItem(toDoItem: task)
+
+                self.networkManager.updateToDoItem(item: task) { result in
+                    switch result {
+                    case .success():
+                        print("Successfully updated task")
+                    case .failure(let error):
+                        print(error)
+                        let dirtyTask = ToDoItem(id: id,
+                                                text: task.text,
+                                                importance: task.importance,
+                                                deadLine: task.deadline,
+                                                status: .completed,
+                                                createdAt: task.createdAt,
+                                                updatedAt: task.updatedAt,
+                                                isDirty: true)
+                        self.fileCacheManager.deleteTask(with: id)
+                        self.fileCacheManager.addToDoItem(toDoItem: dirtyTask)
                     }
                 }
             case false:
                 let id = UUID().uuidString
-                self.getNewToDoItem(with: id) { [weak self] toDoItem in
-                    self?.networkManager.saveToDoItem(item: toDoItem) { result in
-                        switch result {
-                        case .success():
-                            print("Successfully saved ToDoItem")
-                            self?.getNewToDoItem(with: id) { item in
-                                self?.fileCacheManager.addToDoItem(toDoItem: item)
-                            }
-                        case .failure(let error):
-                            print(error)
-                            self?.getNewToDoItem(with: id, isDirty: true) { item in
-                                self?.fileCacheManager.addToDoItem(toDoItem: item)
-                            }
-                        }
+                let index = taskPrioritySementedControl.selectedSegmentIndex
+                let task = ToDoItem(id: id,
+                                    text: self.taskTextView.text,
+                                    importance: index == 0 ? .unimportant : index == 1 ? .standart : .important,
+                                    deadLine: calendarSwitch.isOn ? datePickerView.date : nil,
+                                    status: getStatusOfToDo(),
+                                    updatedAt: Int(Date().timeIntervalSince1970))
+
+                self.fileCacheManager.addToDoItem(toDoItem: task)
+
+                self.networkManager.saveToDoItem(item: task) { result in
+                    switch result {
+                    case .success():
+                        print("Successfully saved ToDoItem")
+                    case .failure(let error):
+                        print(error)
+                        let dirtyTask = ToDoItem(id: task.id,
+                                                 text: task.text,
+                                                 importance: task.importance,
+                                                 deadLine: task.deadline,
+                                                 status: task.status,
+                                                 createdAt: task.createdAt,
+                                                 isDirty: true)
+                        self.fileCacheManager.deleteTask(with: id)
+                        self.fileCacheManager.addToDoItem(toDoItem: dirtyTask)
                     }
-                }
-                getNewToDoItem(with: UUID().uuidString) { [weak self] toDoItem in
-                    self?.fileCacheManager.addToDoItem(toDoItem: toDoItem)
                 }
             }
 
@@ -221,26 +240,11 @@ class ToDoViewController: UIViewController, UITextViewDelegate {
 
     // MARK: Methods
 
-    private func getNewToDoItem(with id: String, isDirty: Bool = false, completion: @escaping ((ToDoItem) -> Void)) {
-        DispatchQueue.main.async {
-            let index = self.taskPrioritySementedControl.selectedSegmentIndex
-            completion(ToDoItem(id: id,
-                                text: self.taskTextView.text,
-                                importance: index == 0 ? .unimportant : index == 1 ? .standart : .important,
-                                deadLine: self.calendarSwitch.isOn ? self.datePickerView.date : nil,
-                                status: self.getStatusOfToDo(),
-                                updatedAt: Int(Date().timeIntervalSince1970),
-                                isDirty: isDirty))
-        }
-    }
-
     private func getStatusOfToDo() -> TaskStatus {
         if let currentToDoItem = currentToDoItem {
-            if currentToDoItem.status == .completed {
-                return .completed
-            }
+            return currentToDoItem.status
         }
-        return currentToDoItem?.importance == .important ? .uncompletedImportant : .uncompleted
+        return self.taskPrioritySementedControl.selectedSegmentIndex == 2 ? .uncompletedImportant : .uncompleted
     }
 
 }
