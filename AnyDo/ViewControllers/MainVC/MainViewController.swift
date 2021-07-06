@@ -71,28 +71,28 @@ class MainViewController: UIViewController {
     }
 
     override func viewWillAppear(_ animated: Bool) {
-        networkService.synchronizeToDoItems(ids: fileCacheService.tombstonesData.map({$0.id}), items: fileCacheService.toDoItemsData.values.filter({$0.isDirty == true})) { result in
-            switch result {
-            case .success(let toDoItems):
-                print("Succesfully synchronized data")
-                for item in toDoItems {
-                    print(item.text)
-                }
-                self.fileCacheService.saveItemsFromServer(items: toDoItems) {
-                    print("Successfully saved items from server to local data")
-                    self.updateToDoItemsArray()
-                    for item in self.toDoItemsArray {
-                        print(item.id)
+        fileCacheService.loadAllTasks(fileName: fileCacheService.cacheFileName) {
+            self.fileCacheService.loadAllTombstones {
+                self.networkService.synchronizeToDoItems(ids: self.fileCacheService.tombstonesData.map({$0.id}),
+                                                         items: self.fileCacheService.toDoItemsData.values.filter({$0.isDirty == true})) { result in
+                    switch result {
+                    case .success(let toDoItems):
+                        print("Succesfully synchronized data")
+                        self.fileCacheService.saveItemsFromServer(items: toDoItems) {
+                            print("Successfully saved items from server to local data")
+                            self.fileCacheService.deleteAllTombstones()
+                            self.fileCacheService.makeAllTasksNotDirty {
+                                self.updateToDoItemsArray()
+                                DispatchQueue.main.async {
+                                    self.updateDoneTasksLabel()
+                                    self.tableView.reloadData()
+                                }
+                            }
+                        }
+                    case .failure(let error):
+                        print(error)
+                        self.updateToDoItemsArray()
                     }
-                    DispatchQueue.main.async {
-                        self.updateDoneTasksLabel()
-                        self.tableView.reloadData()
-                    }
-                }
-            case .failure(let error):
-                print(error)
-                self.fileCacheService.loadAllTasks(fileName: self.fileCacheService.cacheFileName) {
-                    self.updateToDoItemsArray()
                 }
             }
         }
@@ -107,14 +107,14 @@ class MainViewController: UIViewController {
     func updateDoneTasksLabel() {
         doneTasksLabel.text = "\(NSLocalizedString("doneTasks", comment: "")) \(self.toDoItemsArray.filter { $0.status == .completed }.count)"
     }
-    
+
     // MARK: Objc methods
-    
+
     @objc func onAddItemButtonTapped() {
         let vc = ToDoViewController(fileCacheManager: self.fileCacheService, networkManager: self.networkService, currentToDoItem: nil)
         self.present(vc, animated: true, completion: nil)
     }
-    
+
     @objc func onShowHideTasksButtonTapped() {
         switch completedTasksCondition {
         case .showCompleted:
@@ -128,12 +128,14 @@ class MainViewController: UIViewController {
         updateDoneTasksLabel()
         tableView.reloadData()
     }
-    
+
     @objc private func onToDoVCDismissed() {
         updateToDoItemsArray()
-        self.tableView.reloadData()
+        DispatchQueue.main.async {
+            self.tableView.reloadData()
+        }
     }
-    
+
 }
 
 // MARK: FileCacheDelegate

@@ -22,10 +22,14 @@ protocol FileCacheService {
     func addToDoItem(toDoItem: ToDoItem)
     func deleteTask(with id: String)
     func saveAllTasks()
+    func deleteAllTombstones()
     func saveItemsFromServer(items: [ToDoItem], completion: @escaping () -> Void) 
     func loadAllTasks(fileName: String, completion: @escaping () -> Void)
     func addTombstone(tombstone: Tombstone)
     func deleteTombstone(with id: String)
+    func makeAllTasksNotDirty(completion: @escaping () -> Void)
+    func loadAllTombstones(completion: @escaping () -> Void)
+    
 }
 
 enum ParsingErrors: Error {

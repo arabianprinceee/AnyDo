@@ -174,12 +174,12 @@ class ToDoViewController: UIViewController, UITextViewDelegate {
                                     updatedAt: Int(Date().timeIntervalSince1970))
 
                 self.fileCacheManager.deleteTask(with: id)
-                self.fileCacheManager.addToDoItem(toDoItem: task)
 
                 self.networkManager.updateToDoItem(item: task) { result in
                     switch result {
                     case .success():
                         print("Successfully updated task")
+                        self.fileCacheManager.addToDoItem(toDoItem: task)
                     case .failure(let error):
                         print(error)
                         let dirtyTask = ToDoItem(id: id,
@@ -190,9 +190,9 @@ class ToDoViewController: UIViewController, UITextViewDelegate {
                                                 createdAt: task.createdAt,
                                                 updatedAt: task.updatedAt,
                                                 isDirty: true)
-                        self.fileCacheManager.deleteTask(with: id)
                         self.fileCacheManager.addToDoItem(toDoItem: dirtyTask)
                     }
+                    NotificationCenter.default.post(name: .toDoListChanged, object: nil)
                 }
             case false:
                 let id = UUID().uuidString
@@ -204,12 +204,11 @@ class ToDoViewController: UIViewController, UITextViewDelegate {
                                     status: getStatusOfToDo(),
                                     updatedAt: Int(Date().timeIntervalSince1970))
 
-                self.fileCacheManager.addToDoItem(toDoItem: task)
-
                 self.networkManager.saveToDoItem(item: task) { result in
                     switch result {
                     case .success():
                         print("Successfully saved ToDoItem")
+                        self.fileCacheManager.addToDoItem(toDoItem: task)
                     case .failure(let error):
                         print(error)
                         let dirtyTask = ToDoItem(id: task.id,
@@ -219,13 +218,11 @@ class ToDoViewController: UIViewController, UITextViewDelegate {
                                                  status: task.status,
                                                  createdAt: task.createdAt,
                                                  isDirty: true)
-                        self.fileCacheManager.deleteTask(with: id)
                         self.fileCacheManager.addToDoItem(toDoItem: dirtyTask)
                     }
+                    NotificationCenter.default.post(name: .toDoListChanged, object: nil)
                 }
             }
-
-            NotificationCenter.default.post(name: .toDoListChanged, object: nil)
         }
         self.dismiss(animated: true, completion: nil)
     }

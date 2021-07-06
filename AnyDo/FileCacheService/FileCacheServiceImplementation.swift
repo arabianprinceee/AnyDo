@@ -92,7 +92,31 @@ final class FileCacheServiceImplementation: FileCacheService {
         }
     }
 
+    func makeAllTasksNotDirty(completion: @escaping () -> Void) {
+        let toggleDirtyQueue = DispatchQueue(label: "com.AnyDo.toggleDirtyQueue", qos: .userInitiated)
+
+        toggleDirtyQueue.async {
+            for item in self.toDoItemsData.values {
+                if item.isDirty {
+                    self.toDoItemsData[item.id] = ToDoItem(id: item.id,
+                                                           text: item.text,
+                                                           importance: item.importance,
+                                                           deadLine: item.deadline,
+                                                           status: item.status,
+                                                           createdAt: item.createdAt,
+                                                           updatedAt: Int(Date().timeIntervalSince1970),
+                                                           isDirty: false)
+                }
+            }
+            completion()
+        }
+    }
+
     // MARK: Tombstone Methods
+
+    func deleteAllTombstones() {
+        tombstonesData = []
+    }
 
     func addTombstone(tombstone: Tombstone) {
         tombstonesData.append(tombstone)
@@ -130,6 +154,7 @@ final class FileCacheServiceImplementation: FileCacheService {
                     return
                 }
                 try json.write(to: fileURL)
+                completion(.success(()))
             } catch let error as NSError {
                 print(error.localizedDescription)
                 completion(.failure(FileWorkErrors.writeToFileError))
@@ -137,25 +162,23 @@ final class FileCacheServiceImplementation: FileCacheService {
         }
     }
 
-    func loadAllTombstones(completion: @escaping EmptyCompletion) {
+    func loadAllTombstones(completion: @escaping () -> Void) {
         let loadQueue = DispatchQueue(label: "com.AnyDo.loadTombstonesQueue", qos: .background)
         let directoryURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
         let fileURL = URL(fileURLWithPath: tombstonesFileName, relativeTo: directoryURL).appendingPathExtension("txt")
 
         loadQueue.async {
-            guard self.fileManager.fileExists(atPath: fileURL.path) else {
-                completion(.failure(FileWorkErrors.readFileError))
-                return
-            }
-            self.tombstonesData.removeAll()
-            do {
-                let data = try Data(contentsOf: fileURL)
-                let tombstones = try JSONDecoder().decode([Tombstone].self, from: data)
-                self.tombstonesData = tombstones
-                completion(.success(()))
-            } catch let error as NSError {
-                print(error.localizedDescription)
-                completion(.failure(ParsingErrors.decodingError))
+            if self.fileManager.fileExists(atPath: fileURL.path) {
+                self.tombstonesData.removeAll()
+                do {
+                    let data = try Data(contentsOf: fileURL)
+                    let tombstones = try JSONDecoder().decode([Tombstone].self, from: data)
+                    self.tombstonesData = tombstones
+                    completion()
+                } catch let error as NSError {
+                    print(error.localizedDescription)
+                    assertionFailure("Error during loading all tombstones from json")
+                }
             }
         }
     }
