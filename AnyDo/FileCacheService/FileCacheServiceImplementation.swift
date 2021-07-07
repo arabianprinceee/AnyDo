@@ -49,6 +49,7 @@ final class FileCacheServiceImplementation: FileCacheService {
             do {
                 let jsonData = try? JSONSerialization.data(withJSONObject: jsonArray)
                 try jsonData?.write(to: fileURL)
+                print("Successfully saved all tasks to file")
             } catch _ as NSError {
                 assertionFailure("Error during saving all tasks to json")
             }
@@ -56,6 +57,7 @@ final class FileCacheServiceImplementation: FileCacheService {
     }
 
     func saveItemsFromServer(items: [ToDoItem], completion: @escaping () -> Void) {
+        self.toDoItemsData = [:]
         let saveQueue = DispatchQueue(label: "com.AnyDo.saveItemsQueue", qos: .userInitiated)
 
         saveQueue.async {
@@ -79,13 +81,14 @@ final class FileCacheServiceImplementation: FileCacheService {
 
                     if let json = try JSONSerialization.jsonObject(with: data) as? [[String: Any]] {
                         let items = json.compactMap { ToDoItem.parse(json: $0) }
+                        print(items)
                         for item in items {
                             self.toDoItemsData[item.id] = item
                         }
                     }
+                    print("Successfully load all tasks from file")
                     completion()
-                } catch let error as NSError {
-                    print(error.localizedDescription)
+                } catch {
                     assertionFailure("Error during loading all tasks from json")
                 }
             }
@@ -177,8 +180,10 @@ final class FileCacheServiceImplementation: FileCacheService {
                     completion()
                 } catch let error as NSError {
                     print(error.localizedDescription)
-                    assertionFailure("Error during loading all tombstones from json")
                 }
+            } else {
+                print("File doesnt exists yet, tombstones are: []")
+                completion()
             }
         }
     }

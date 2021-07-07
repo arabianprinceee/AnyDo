@@ -164,33 +164,36 @@ class ToDoViewController: UIViewController, UITextViewDelegate {
         if let text = taskTextView.text, text != "", text != NSLocalizedString("enterTaskName", comment: "") {
             switch isEditingItem {
             case true:
-                guard let id = currentToDoItem?.id else { return }
+                guard let currentToDoItem = currentToDoItem else { return }
                 let index = taskPrioritySementedControl.selectedSegmentIndex
-                let task = ToDoItem(id: id,
+                let task = ToDoItem(id: currentToDoItem.id,
                                     text: self.taskTextView.text,
                                     importance: index == 0 ? .unimportant : index == 1 ? .standart : .important,
                                     deadLine: calendarSwitch.isOn ? datePickerView.date : nil,
-                                    status: getStatusOfToDo(),
-                                    updatedAt: Int(Date().timeIntervalSince1970))
+                                    status: currentToDoItem.status,
+                                    createdAt: currentToDoItem.createdAt,
+                                    updatedAt: Int(Date().timeIntervalSince1970),
+                                    isDirty: false)
 
-                self.fileCacheManager.deleteTask(with: id)
+                self.fileCacheManager.deleteTask(with: currentToDoItem.id)
 
                 self.networkManager.updateToDoItem(item: task) { result in
                     switch result {
                     case .success():
-                        print("Successfully updated task")
+                        print("Successfully updated toDoItem")
                         self.fileCacheManager.addToDoItem(toDoItem: task)
-                    case .failure(let error):
-                        print(error)
-                        let dirtyTask = ToDoItem(id: id,
-                                                text: task.text,
-                                                importance: task.importance,
-                                                deadLine: task.deadline,
-                                                status: .completed,
-                                                createdAt: task.createdAt,
-                                                updatedAt: task.updatedAt,
-                                                isDirty: true)
+                    case .failure(_):
+                        print("Error during updating toDoItem")
+                        let dirtyTask = ToDoItem(id: currentToDoItem.id,
+                                                 text: task.text,
+                                                 importance: task.importance,
+                                                 deadLine: task.deadline,
+                                                 status: task.status,
+                                                 createdAt: task.createdAt,
+                                                 updatedAt: task.updatedAt,
+                                                 isDirty: true)
                         self.fileCacheManager.addToDoItem(toDoItem: dirtyTask)
+                        print("Dirty task has been created")
                     }
                     NotificationCenter.default.post(name: .toDoListChanged, object: nil)
                 }
@@ -201,16 +204,18 @@ class ToDoViewController: UIViewController, UITextViewDelegate {
                                     text: self.taskTextView.text,
                                     importance: index == 0 ? .unimportant : index == 1 ? .standart : .important,
                                     deadLine: calendarSwitch.isOn ? datePickerView.date : nil,
-                                    status: getStatusOfToDo(),
-                                    updatedAt: Int(Date().timeIntervalSince1970))
+                                    status: index == 2 ? .uncompletedImportant : .uncompleted,
+                                    createdAt: Int(Date().timeIntervalSince1970),
+                                    updatedAt: nil,
+                                    isDirty: false)
 
                 self.networkManager.saveToDoItem(item: task) { result in
                     switch result {
                     case .success():
                         print("Successfully saved ToDoItem")
                         self.fileCacheManager.addToDoItem(toDoItem: task)
-                    case .failure(let error):
-                        print(error)
+                    case .failure(_):
+                        print("Error during saving new task")
                         let dirtyTask = ToDoItem(id: task.id,
                                                  text: task.text,
                                                  importance: task.importance,
@@ -219,6 +224,7 @@ class ToDoViewController: UIViewController, UITextViewDelegate {
                                                  createdAt: task.createdAt,
                                                  isDirty: true)
                         self.fileCacheManager.addToDoItem(toDoItem: dirtyTask)
+                        print("Dirty task has been saved")
                     }
                     NotificationCenter.default.post(name: .toDoListChanged, object: nil)
                 }
@@ -233,15 +239,6 @@ class ToDoViewController: UIViewController, UITextViewDelegate {
             taskTextView.text = NSLocalizedString("enterTaskName", comment: "")
             taskTextView.textColor = UIColor.lightGray
         }
-    }
-
-    // MARK: Methods
-
-    private func getStatusOfToDo() -> TaskStatus {
-        if let currentToDoItem = currentToDoItem {
-            return currentToDoItem.status
-        }
-        return self.taskPrioritySementedControl.selectedSegmentIndex == 2 ? .uncompletedImportant : .uncompleted
     }
 
 }

@@ -72,7 +72,10 @@ class MainViewController: UIViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         fileCacheService.loadAllTasks(fileName: fileCacheService.cacheFileName) {
+            print(self.fileCacheService.toDoItemsData.count)
+            print(self.fileCacheService.toDoItemsData.values.filter({$0.isDirty}).count)
             self.fileCacheService.loadAllTombstones {
+                print("loaded all tombstones")
                 self.networkService.synchronizeToDoItems(ids: self.fileCacheService.tombstonesData.map({$0.id}),
                                                          items: self.fileCacheService.toDoItemsData.values.filter({$0.isDirty == true})) { result in
                     switch result {
@@ -89,9 +92,13 @@ class MainViewController: UIViewController {
                                 }
                             }
                         }
-                    case .failure(let error):
-                        print(error)
+                    case .failure(_):
+                        print("Synchronize error happend")
                         self.updateToDoItemsArray()
+                        DispatchQueue.main.async {
+                            self.updateDoneTasksLabel()
+                            self.tableView.reloadData()
+                        }
                     }
                 }
             }

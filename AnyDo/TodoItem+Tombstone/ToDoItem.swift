@@ -80,7 +80,6 @@ struct ToDoItem: Codable {
 
         createdAt = try values.decode(Int.self, forKey: .createdAt)
         updatedAt = try values.decode(Int?.self, forKey: .updatedAt)
-
         isDirty = false
     }
 
@@ -118,6 +117,9 @@ enum DictKeys {
     static let kImportance: String = "importance"
     static let kDeadline: String = "deadline"
     static let kStatus: String = "status"
+    static let kCreatedAt: String = "createdAt"
+    static let kUpdatedAt: String = "updatedAt"
+    static let kIsDirty: String = "isDirty"
 }
 
 enum Importance: String, Codable {

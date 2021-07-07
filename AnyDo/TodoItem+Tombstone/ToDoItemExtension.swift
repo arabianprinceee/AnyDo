@@ -18,6 +18,9 @@ extension ToDoItem {
         dict[DictKeys.kId] = self.id
         dict[DictKeys.kText] = self.text
         dict[DictKeys.kStatus] = self.status.rawValue
+        dict[DictKeys.kCreatedAt] = self.createdAt
+        dict[DictKeys.kUpdatedAt] = self.updatedAt
+        dict[DictKeys.kIsDirty] = self.isDirty
         
         switch self.importance {
         case .important, .unimportant:
@@ -32,6 +35,28 @@ extension ToDoItem {
         
         return dict
     }
+
+    func syncronizationJson() -> Any {
+        var dict: [String: Any] = [:]
+
+        dict["id"] = id
+        dict["text"] = text
+        dict["created_at"] = createdAt
+        dict["updated_at"] = updatedAt
+        dict["deadline"] = deadline?.timeIntervalSince1970
+        dict["done"] = status == .completed ? true : false
+
+        switch importance {
+        case .important:
+            dict["priority"] = "important"
+        case .standart:
+            dict["priority"] = "basic"
+        case .unimportant:
+            dict["priority"] = "low"
+        }
+
+        return dict
+    }
     
     
     // MARK: Methods
@@ -42,29 +67,42 @@ extension ToDoItem {
         let text: String
         let status: TaskStatus
         let importance: Importance
+        let createdAt: Int
+        let updatedAt: Int?
+        let isDirty: Bool
         
         guard let dict = json as? [String : Any] else { return nil }
         
-        if let _id = dict[DictKeys.kId] as? String, let _text = dict[DictKeys.kText] as? String {
-            id = _id
-            text = _text
-        } else {
+        guard
+            let _id = dict[DictKeys.kId] as? String,
+            let _text = dict[DictKeys.kText] as? String,
+            let _status = dict[DictKeys.kStatus] as? String,
+            let _createdAt = dict[DictKeys.kCreatedAt] as? Int,
+            let _isDirty = dict[DictKeys.kIsDirty] as? Bool
+        else {
             return nil
         }
-        
-        if let _status = dict[DictKeys.kStatus] as? String {
-            switch _status {
-            case TaskStatus.completed.rawValue:
-                status = .completed
-            case TaskStatus.uncompleted.rawValue:
-                status = .uncompleted
-            case TaskStatus.uncompletedImportant.rawValue:
-                status = .uncompletedImportant
-            default:
-                return nil
-            }
-        } else {
+
+        id = _id
+        text = _text
+        createdAt = _createdAt
+        isDirty = _isDirty
+
+        switch _status {
+        case TaskStatus.completed.rawValue:
+            status = .completed
+        case TaskStatus.uncompleted.rawValue:
+            status = .uncompleted
+        case TaskStatus.uncompletedImportant.rawValue:
+            status = .uncompletedImportant
+        default:
             return nil
+        }
+
+        if let _updatedAt = dict[DictKeys.kUpdatedAt] as? Int {
+            updatedAt = _updatedAt
+        } else {
+            updatedAt = nil
         }
         
         if let _importance = dict[DictKeys.kImportance] as? String {
@@ -81,7 +119,14 @@ extension ToDoItem {
         }
         
         let deadline = (dict[DictKeys.kDeadline] as? Double).map { Date(timeIntervalSince1970: $0) }
-        return ToDoItem(id: id, text: text, importance: importance, deadLine: deadline, status: status, updatedAt: Int(Date().timeIntervalSince1970))
+        return ToDoItem(id: id,
+                        text: text,
+                        importance: importance,
+                        deadLine: deadline,
+                        status: status,
+                        createdAt: createdAt,
+                        updatedAt: updatedAt,
+                        isDirty: isDirty)
     }
     
 }

@@ -139,6 +139,8 @@ final class NetworkServiceImplementation: NetworkService {
     func synchronizeToDoItems(ids: [String], items: [ToDoItem], completion: @escaping ToDoItemsCompletion) {
         guard let url = URL(string: "\(apiUrl)/tasks") else { return }
 
+        print("Started synchronizing...")
+
         var request = URLRequest(url: url)
         request.timeoutInterval = 30
         request.httpMethod = "PUT"
@@ -147,9 +149,12 @@ final class NetworkServiceImplementation: NetworkService {
 
         var dict: [String: Any] = [:]
         dict["deleted"] = ids
-        dict["other"] = items
+        dict["other"] = items.map({$0.syncronizationJson()})
 
-        guard let httpBody = try? JSONSerialization.data(withJSONObject: dict) else {
+        guard
+            let httpBody = try? JSONSerialization.data(withJSONObject: dict, options: []),
+            JSONSerialization.isValidJSONObject(dict)
+        else {
             completion(.failure(ParsingErrors.encodingError))
             return
         }

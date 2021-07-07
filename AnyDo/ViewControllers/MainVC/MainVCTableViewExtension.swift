@@ -36,9 +36,9 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
                 self.networkService.updateToDoItem(item: task) { result in
                     switch result {
                     case .success():
-                        print("Successfully updated task")
-                    case .failure(let error):
-                        print(error)
+                        print("Successfully updated task on server")
+                    case .failure(_):
+                        print("Error during update task on server")
                         let dirtyTask = ToDoItem(id: id,
                                                 text: task.text,
                                                 importance: task.importance,
@@ -49,6 +49,7 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
                                                 isDirty: true)
                         self.fileCacheService.deleteTask(with: id)
                         self.fileCacheService.addToDoItem(toDoItem: dirtyTask)
+                        print("Dirty task has been added")
                     }
                 }
             }
@@ -76,6 +77,7 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
                         print("Item has been successfully deleted from server")
                     case .failure(_):
                         self.fileCacheService.addTombstone(tombstone: Tombstone(id: id, deletedAt: Date()))
+                        print("Tombstone has been created")
                     }
                 }
             }
@@ -125,8 +127,8 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
                     switch result {
                     case .success():
                         print("Successfully saved ToDoItem")
-                    case .failure(let error):
-                        print(error)
+                    case .failure(_):
+                        print("Error during saving ToDoItem")
                         let dirtyTask = ToDoItem(id: task.id,
                                                  text: task.text,
                                                  importance: task.importance,
@@ -136,6 +138,7 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
                                                  isDirty: true)
                         self.fileCacheService.deleteTask(with: id)
                         self.fileCacheService.addToDoItem(toDoItem: dirtyTask)
+                        print("Dirty task has been created")
                     }
                 }
             }
