@@ -120,6 +120,14 @@ final class FileCacheServiceImplementation: FileCacheService {
 
     func deleteAllTombstones() {
         tombstonesData = []
+        saveAllTombstones { result in
+            switch result {
+            case .success():
+                print("Successfully deleted all tombstones")
+            case .failure(_):
+                print("Erorr during deleting all tombstones")
+            }
+        }
     }
 
     func addTombstone(tombstone: Tombstone) {
@@ -129,19 +137,7 @@ final class FileCacheServiceImplementation: FileCacheService {
             case .success():
                 print("Successfully saved new tombstone")
             case .failure(_):
-                break
-            }
-        }
-    }
-
-    func deleteTombstone(with id: String) {
-        tombstonesData = tombstonesData.filter({ $0.id != id })
-        saveAllTombstones { result in
-            switch result {
-            case .success():
-                print("Successfully deleted tombstone")
-            case .failure(_):
-                break
+                print("Erorr during saving new tombstone")
             }
         }
     }
@@ -159,8 +155,7 @@ final class FileCacheServiceImplementation: FileCacheService {
                 }
                 try json.write(to: fileURL)
                 completion(.success(()))
-            } catch let error as NSError {
-                print(error.localizedDescription)
+            } catch {
                 completion(.failure(FileWorkErrors.writeToFileError))
             }
         }

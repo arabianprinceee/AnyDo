@@ -26,7 +26,6 @@ protocol FileCacheService {
     func saveItemsFromServer(items: [ToDoItem], completion: @escaping () -> Void) 
     func loadAllTasks(fileName: String, completion: @escaping () -> Void)
     func addTombstone(tombstone: Tombstone)
-    func deleteTombstone(with id: String)
     func makeAllTasksNotDirty(completion: @escaping () -> Void)
     func loadAllTombstones(completion: @escaping () -> Void)
     
