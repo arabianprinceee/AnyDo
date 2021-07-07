@@ -64,6 +64,7 @@ final class FileCacheServiceImplementation: FileCacheService {
             for item in items {
                 self.toDoItemsData[item.id] = item
             }
+            self.saveAllTasks()
             completion()
         }
     }

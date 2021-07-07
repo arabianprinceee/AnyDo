@@ -170,28 +170,29 @@ class ToDoViewController: UIViewController, UITextViewDelegate {
                                     text: self.taskTextView.text,
                                     importance: index == 0 ? .unimportant : index == 1 ? .standart : .important,
                                     deadLine: calendarSwitch.isOn ? datePickerView.date : nil,
-                                    status: currentToDoItem.status,
+                                    status: currentToDoItem.status == .completed ? .completed : index == 2 ? .uncompletedImportant : .uncompleted,
                                     createdAt: currentToDoItem.createdAt,
                                     updatedAt: Int(Date().timeIntervalSince1970),
                                     isDirty: false)
 
                 self.fileCacheManager.deleteTask(with: currentToDoItem.id)
+                self.fileCacheManager.addToDoItem(toDoItem: task)
 
                 self.networkManager.updateToDoItem(item: task) { result in
                     switch result {
                     case .success():
                         print("Successfully updated toDoItem")
-                        self.fileCacheManager.addToDoItem(toDoItem: task)
                     case .failure(_):
                         print("Error during updating toDoItem")
                         let dirtyTask = ToDoItem(id: currentToDoItem.id,
                                                  text: task.text,
                                                  importance: task.importance,
                                                  deadLine: task.deadline,
-                                                 status: task.status,
+                                                 status: task.status == .completed ? .completed : index == 2 ? .uncompletedImportant : .uncompleted,
                                                  createdAt: task.createdAt,
                                                  updatedAt: task.updatedAt,
                                                  isDirty: true)
+                        self.fileCacheManager.deleteTask(with: currentToDoItem.id)
                         self.fileCacheManager.addToDoItem(toDoItem: dirtyTask)
                         print("Dirty task has been created")
                     }
@@ -209,11 +210,12 @@ class ToDoViewController: UIViewController, UITextViewDelegate {
                                     updatedAt: nil,
                                     isDirty: false)
 
+                self.fileCacheManager.addToDoItem(toDoItem: task)
+
                 self.networkManager.saveToDoItem(item: task) { result in
                     switch result {
                     case .success():
                         print("Successfully saved ToDoItem")
-                        self.fileCacheManager.addToDoItem(toDoItem: task)
                     case .failure(_):
                         print("Error during saving new task")
                         let dirtyTask = ToDoItem(id: task.id,
@@ -223,6 +225,7 @@ class ToDoViewController: UIViewController, UITextViewDelegate {
                                                  status: task.status,
                                                  createdAt: task.createdAt,
                                                  isDirty: true)
+                        self.fileCacheManager.deleteTask(with: task.id)
                         self.fileCacheManager.addToDoItem(toDoItem: dirtyTask)
                         print("Dirty task has been saved")
                     }
