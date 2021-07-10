@@ -20,16 +20,38 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         if indexPath.row != self.tableView.numberOfRows(inSection: 0) - 1 && self.toDoItemsArray[indexPath.row].status != .completed {
             let completeTask = UIContextualAction(style: .normal, title: nil) { (action, sourceView, _) in
-                let task = ToDoItem(id: self.toDoItemsArray[indexPath.row].id,
+
+                let id = self.toDoItemsArray[indexPath.row].id
+                let task = ToDoItem(id: id,
                                     text: self.toDoItemsArray[indexPath.row].text,
                                     importance: self.toDoItemsArray[indexPath.row].importance,
                                     deadLine: self.toDoItemsArray[indexPath.row].deadline,
-                                    status: .completed)
+                                    status: .completed,
+                                    createdAt: self.toDoItemsArray[indexPath.row].createdAt,
+                                    updatedAt: Int(Date().timeIntervalSince1970))
 
-                self.toDoItemsArray.insert(task, at: indexPath.row + 1)
-                self.toDoItemsArray.remove(at: indexPath.row)
-                self.fileCacheManager.deleteTask(with: task.id)
-                self.fileCacheManager.addToDoItem(toDoItem: task)
+                self.fileCacheService.deleteTask(with: id)
+                self.fileCacheService.addToDoItem(toDoItem: task)
+
+                self.networkService.updateToDoItem(item: task) { result in
+                    switch result {
+                    case .success():
+                        print("Successfully updated task on server")
+                    case .failure(_):
+                        print("Error during update task on server")
+                        let dirtyTask = ToDoItem(id: id,
+                                                text: task.text,
+                                                importance: task.importance,
+                                                deadLine: task.deadline,
+                                                status: .completed,
+                                                createdAt: task.createdAt,
+                                                updatedAt: task.updatedAt,
+                                                isDirty: true)
+                        self.fileCacheService.deleteTask(with: id)
+                        self.fileCacheService.addToDoItem(toDoItem: dirtyTask)
+                        print("Dirty task has been added")
+                    }
+                }
             }
 
             completeTask.backgroundColor = .systemGreen
@@ -45,14 +67,23 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         if indexPath.row != self.tableView.numberOfRows(inSection: 0) - 1 {
             let deleteTask = UIContextualAction(style: .destructive, title: nil) { (action, sourceView, _) in
+
                 let id = self.toDoItemsArray[indexPath.row].id
-                self.toDoItemsArray.remove(at: indexPath.row)
-                self.fileCacheManager.deleteTask(with: id)
+                self.fileCacheService.deleteTask(with: id)
+
+                self.networkService.deleteToDoItem(with: id) { result in
+                    switch result {
+                    case .success():
+                        print("Item has been successfully deleted from server")
+                    case .failure(_):
+                        self.fileCacheService.addTombstone(tombstone: Tombstone(id: id, deletedAt: Date()))
+                        print("Tombstone has been created")
+                    }
+                }
             }
 
             deleteTask.backgroundColor = .systemRed
             deleteTask.image = UIImage(systemName: "trash")?.withTintColor(.white)
-
             let swipeActionConfig = UISwipeActionsConfiguration(actions: [deleteTask])
             swipeActionConfig.performsFirstActionWithFullSwipe = true
             return swipeActionConfig
@@ -67,12 +98,12 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        self.toDoItemsArray.count
+        self.toDoItemsArray.count + 1
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if indexPath.row != self.tableView.numberOfRows(inSection: 0) - 1 {
-            present(ToDoViewController(fileCacheManager: fileCacheManager, currentToDoItem: toDoItemsArray[indexPath.row]), animated: true, completion: nil)
+            present(ToDoViewController(fileCacheManager: fileCacheService, networkManager: self.networkService, currentToDoItem: toDoItemsArray[indexPath.row]), animated: true, completion: nil)
         }
         tableView.deselectRow(at: indexPath, animated: true)
     }
@@ -81,8 +112,35 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
 
         if indexPath.row == tableView.numberOfRows(inSection: 0) - 1 {
             let cell = tableView.dequeueReusableCell(withIdentifier: AddItemCell.identifier, for: indexPath) as! AddItemCell
-            cell.onTextDidChange = { text in
-                self.fileCacheManager.addToDoItem(toDoItem: ToDoItem(text: text, importance: .standart, deadLine: nil, status: .uncompleted))
+            cell.onTaskAdded = { text in
+                let id = UUID().uuidString
+                let task = ToDoItem(id: id,
+                                    text: text,
+                                    importance: .standart,
+                                    deadLine: nil,
+                                    status: .uncompleted,
+                                    createdAt: Int(Date().timeIntervalSince1970))
+
+                self.fileCacheService.addToDoItem(toDoItem: task)
+
+                self.networkService.saveToDoItem(item: task) { result in
+                    switch result {
+                    case .success():
+                        print("Successfully saved ToDoItem")
+                    case .failure(_):
+                        print("Error during saving ToDoItem")
+                        let dirtyTask = ToDoItem(id: task.id,
+                                                 text: task.text,
+                                                 importance: task.importance,
+                                                 deadLine: task.deadline,
+                                                 status: task.status,
+                                                 createdAt: task.createdAt,
+                                                 isDirty: true)
+                        self.fileCacheService.deleteTask(with: id)
+                        self.fileCacheService.addToDoItem(toDoItem: dirtyTask)
+                        print("Dirty task has been created")
+                    }
+                }
             }
             return cell
         } else {

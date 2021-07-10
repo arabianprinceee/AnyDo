@@ -12,7 +12,7 @@
 		AF0B5E8D2957BB2EA5D21317 /* Pods_AnyDoTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 142F8BBF9C272DE2B8CA5B30 /* Pods_AnyDoTests.framework */; };
 		D9188CD726749EF700B78A42 /* ToDoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9188CD626749EF700B78A42 /* ToDoViewController.swift */; };
 		D929A88826722AB600F575F6 /* ToDoItemExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = D929A88726722AB600F575F6 /* ToDoItemExtension.swift */; };
-		D929A88B2672557900F575F6 /* FileCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = D929A88A2672557900F575F6 /* FileCache.swift */; };
+		D929A88B2672557900F575F6 /* FileCacheService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D929A88A2672557900F575F6 /* FileCacheService.swift */; };
 		D93436C12688B53C002FD8D5 /* AddItemCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D93436C02688B53C002FD8D5 /* AddItemCell.swift */; };
 		D9441A50266CED590019902F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9441A4F266CED590019902F /* AppDelegate.swift */; };
 		D9441A52266CED590019902F /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9441A51266CED590019902F /* SceneDelegate.swift */; };
@@ -21,16 +21,19 @@
 		D9441A72266CED5A0019902F /* AnyDoUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9441A71266CED5A0019902F /* AnyDoUITests.swift */; };
 		D957C9CA2673925E002BF395 /* FileCacheTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D957C9C92673925E002BF395 /* FileCacheTests.swift */; };
 		D957C9CC2673D6F3002BF395 /* ToDoItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = D957C9CB2673D6F3002BF395 /* ToDoItem.swift */; };
-		D957C9CE2673D73E002BF395 /* FileCacheImplementation.swift in Sources */ = {isa = PBXBuildFile; fileRef = D957C9CD2673D73E002BF395 /* FileCacheImplementation.swift */; };
-		D96DBC6326886BF100A0E018 /* ToDoInterfaceExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = D96DBC6226886BF100A0E018 /* ToDoInterfaceExtension.swift */; };
-		D96DBC6526886C6700A0E018 /* ToDoEnums.swift in Sources */ = {isa = PBXBuildFile; fileRef = D96DBC6426886C6700A0E018 /* ToDoEnums.swift */; };
-		D96DBC6726886F2D00A0E018 /* MainInterfaceExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = D96DBC6626886F2D00A0E018 /* MainInterfaceExtension.swift */; };
-		D96DBC6926886F5A00A0E018 /* MainEnums.swift in Sources */ = {isa = PBXBuildFile; fileRef = D96DBC6826886F5A00A0E018 /* MainEnums.swift */; };
+		D957C9CE2673D73E002BF395 /* FileCacheServiceImplementation.swift in Sources */ = {isa = PBXBuildFile; fileRef = D957C9CD2673D73E002BF395 /* FileCacheServiceImplementation.swift */; };
+		D96DBC6326886BF100A0E018 /* ToDoVCInterfaceExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = D96DBC6226886BF100A0E018 /* ToDoVCInterfaceExtension.swift */; };
+		D96DBC6526886C6700A0E018 /* ToDoVCEnums.swift in Sources */ = {isa = PBXBuildFile; fileRef = D96DBC6426886C6700A0E018 /* ToDoVCEnums.swift */; };
+		D96DBC6726886F2D00A0E018 /* MainVCInterfaceExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = D96DBC6626886F2D00A0E018 /* MainVCInterfaceExtension.swift */; };
+		D96DBC6926886F5A00A0E018 /* MainVCEnums.swift in Sources */ = {isa = PBXBuildFile; fileRef = D96DBC6826886F5A00A0E018 /* MainVCEnums.swift */; };
+		D9A74A9A26903E8C004C6D97 /* NetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9A74A9926903E8C004C6D97 /* NetworkService.swift */; };
+		D9A74A9E26904765004C6D97 /* Tombstone.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9A74A9D26904765004C6D97 /* Tombstone.swift */; };
+		D9A74AA42691CEDD004C6D97 /* NetworkServiceImplementation.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9A74AA32691CEDC004C6D97 /* NetworkServiceImplementation.swift */; };
 		D9F276E5266E0F3100058CC8 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = D9F276E7266E0F3100058CC8 /* Localizable.strings */; };
 		D9FF1588267BA380007A581D /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9FF1587267BA380007A581D /* MainViewController.swift */; };
 		D9FF1591267E088F007A581D /* TableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9FF158F267E088F007A581D /* TableViewCell.swift */; };
 		D9FF1592267E088F007A581D /* TableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = D9FF1590267E088F007A581D /* TableViewCell.xib */; };
-		D9FF1594267E3E15007A581D /* MainTableViewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9FF1593267E3E15007A581D /* MainTableViewExtension.swift */; };
+		D9FF1594267E3E15007A581D /* MainVCTableViewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9FF1593267E3E15007A581D /* MainVCTableViewExtension.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -61,7 +64,7 @@
 		A2A574039655F9BCFC84179F /* Pods-AnyDo.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AnyDo.release.xcconfig"; path = "Target Support Files/Pods-AnyDo/Pods-AnyDo.release.xcconfig"; sourceTree = "<group>"; };
 		D9188CD626749EF700B78A42 /* ToDoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToDoViewController.swift; sourceTree = "<group>"; };
 		D929A88726722AB600F575F6 /* ToDoItemExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToDoItemExtension.swift; sourceTree = "<group>"; };
-		D929A88A2672557900F575F6 /* FileCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileCache.swift; sourceTree = "<group>"; };
+		D929A88A2672557900F575F6 /* FileCacheService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileCacheService.swift; sourceTree = "<group>"; };
 		D93436C02688B53C002FD8D5 /* AddItemCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddItemCell.swift; sourceTree = "<group>"; };
 		D9441A4C266CED590019902F /* AnyDo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AnyDo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D9441A4F266CED590019902F /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -76,17 +79,20 @@
 		D9441A73266CED5A0019902F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D957C9C92673925E002BF395 /* FileCacheTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileCacheTests.swift; sourceTree = "<group>"; };
 		D957C9CB2673D6F3002BF395 /* ToDoItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToDoItem.swift; sourceTree = "<group>"; };
-		D957C9CD2673D73E002BF395 /* FileCacheImplementation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileCacheImplementation.swift; sourceTree = "<group>"; };
-		D96DBC6226886BF100A0E018 /* ToDoInterfaceExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToDoInterfaceExtension.swift; sourceTree = "<group>"; };
-		D96DBC6426886C6700A0E018 /* ToDoEnums.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToDoEnums.swift; sourceTree = "<group>"; };
-		D96DBC6626886F2D00A0E018 /* MainInterfaceExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainInterfaceExtension.swift; sourceTree = "<group>"; };
-		D96DBC6826886F5A00A0E018 /* MainEnums.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainEnums.swift; sourceTree = "<group>"; };
+		D957C9CD2673D73E002BF395 /* FileCacheServiceImplementation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileCacheServiceImplementation.swift; sourceTree = "<group>"; };
+		D96DBC6226886BF100A0E018 /* ToDoVCInterfaceExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToDoVCInterfaceExtension.swift; sourceTree = "<group>"; };
+		D96DBC6426886C6700A0E018 /* ToDoVCEnums.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToDoVCEnums.swift; sourceTree = "<group>"; };
+		D96DBC6626886F2D00A0E018 /* MainVCInterfaceExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainVCInterfaceExtension.swift; sourceTree = "<group>"; };
+		D96DBC6826886F5A00A0E018 /* MainVCEnums.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainVCEnums.swift; sourceTree = "<group>"; };
+		D9A74A9926903E8C004C6D97 /* NetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkService.swift; sourceTree = "<group>"; };
+		D9A74A9D26904765004C6D97 /* Tombstone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tombstone.swift; sourceTree = "<group>"; };
+		D9A74AA32691CEDC004C6D97 /* NetworkServiceImplementation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkServiceImplementation.swift; sourceTree = "<group>"; };
 		D9F276E6266E0F3100058CC8 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		D9F276E8266E0F3500058CC8 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/Localizable.strings; sourceTree = "<group>"; };
 		D9FF1587267BA380007A581D /* MainViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
 		D9FF158F267E088F007A581D /* TableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableViewCell.swift; sourceTree = "<group>"; };
 		D9FF1590267E088F007A581D /* TableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = TableViewCell.xib; sourceTree = "<group>"; };
-		D9FF1593267E3E15007A581D /* MainTableViewExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTableViewExtension.swift; sourceTree = "<group>"; };
+		D9FF1593267E3E15007A581D /* MainVCTableViewExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainVCTableViewExtension.swift; sourceTree = "<group>"; };
 		F7C2FE564B324182CC34F698 /* Pods-AnyDoTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AnyDoTests.release.xcconfig"; path = "Target Support Files/Pods-AnyDoTests/Pods-AnyDoTests.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -162,28 +168,29 @@
 			isa = PBXGroup;
 			children = (
 				D9188CD626749EF700B78A42 /* ToDoViewController.swift */,
-				D96DBC6226886BF100A0E018 /* ToDoInterfaceExtension.swift */,
-				D96DBC6426886C6700A0E018 /* ToDoEnums.swift */,
+				D96DBC6226886BF100A0E018 /* ToDoVCInterfaceExtension.swift */,
+				D96DBC6426886C6700A0E018 /* ToDoVCEnums.swift */,
 			);
 			path = ToDoVC;
 			sourceTree = "<group>";
 		};
-		D929A884267223E900F575F6 /* TodoItem */ = {
+		D929A884267223E900F575F6 /* TodoItem+Tombstone */ = {
 			isa = PBXGroup;
 			children = (
 				D957C9CB2673D6F3002BF395 /* ToDoItem.swift */,
 				D929A88726722AB600F575F6 /* ToDoItemExtension.swift */,
+				D9A74A9D26904765004C6D97 /* Tombstone.swift */,
 			);
-			path = TodoItem;
+			path = "TodoItem+Tombstone";
 			sourceTree = "<group>";
 		};
-		D929A8892672555700F575F6 /* FileCache */ = {
+		D929A8892672555700F575F6 /* FileCacheService */ = {
 			isa = PBXGroup;
 			children = (
-				D929A88A2672557900F575F6 /* FileCache.swift */,
-				D957C9CD2673D73E002BF395 /* FileCacheImplementation.swift */,
+				D929A88A2672557900F575F6 /* FileCacheService.swift */,
+				D957C9CD2673D73E002BF395 /* FileCacheServiceImplementation.swift */,
 			);
-			path = FileCache;
+			path = FileCacheService;
 			sourceTree = "<group>";
 		};
 		D93436C22688B540002FD8D5 /* AddItemCell */ = {
@@ -220,8 +227,9 @@
 			isa = PBXGroup;
 			children = (
 				D957C9CF2673DFCD002BF395 /* LifeCycle */,
-				D929A884267223E900F575F6 /* TodoItem */,
-				D929A8892672555700F575F6 /* FileCache */,
+				D9A74A9B26903E9B004C6D97 /* NetworkService */,
+				D929A884267223E900F575F6 /* TodoItem+Tombstone */,
+				D929A8892672555700F575F6 /* FileCacheService */,
 				D9188CD82674BADB00B78A42 /* ViewControllers */,
 				D9188CDC2674C98300B78A42 /* Storyboards */,
 				D9441A5D266CED590019902F /* Info.plist */,
@@ -258,15 +266,32 @@
 			path = LifeCycle;
 			sourceTree = "<group>";
 		};
+		D9A74A9B26903E9B004C6D97 /* NetworkService */ = {
+			isa = PBXGroup;
+			children = (
+				D9A74A9926903E8C004C6D97 /* NetworkService.swift */,
+				D9A74AA32691CEDC004C6D97 /* NetworkServiceImplementation.swift */,
+			);
+			path = NetworkService;
+			sourceTree = "<group>";
+		};
+		D9A74A9C2690431A004C6D97 /* Cells */ = {
+			isa = PBXGroup;
+			children = (
+				D9FF1596267E3E27007A581D /* TableViewCell */,
+				D93436C22688B540002FD8D5 /* AddItemCell */,
+			);
+			path = Cells;
+			sourceTree = "<group>";
+		};
 		D9FF1595267E3E1D007A581D /* MainVC */ = {
 			isa = PBXGroup;
 			children = (
 				D9FF1587267BA380007A581D /* MainViewController.swift */,
-				D96DBC6626886F2D00A0E018 /* MainInterfaceExtension.swift */,
-				D96DBC6826886F5A00A0E018 /* MainEnums.swift */,
-				D9FF1593267E3E15007A581D /* MainTableViewExtension.swift */,
-				D9FF1596267E3E27007A581D /* TableViewCell */,
-				D93436C22688B540002FD8D5 /* AddItemCell */,
+				D96DBC6626886F2D00A0E018 /* MainVCInterfaceExtension.swift */,
+				D96DBC6826886F5A00A0E018 /* MainVCEnums.swift */,
+				D9FF1593267E3E15007A581D /* MainVCTableViewExtension.swift */,
+				D9A74A9C2690431A004C6D97 /* Cells */,
 			);
 			path = MainVC;
 			sourceTree = "<group>";
@@ -484,20 +509,23 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D96DBC6326886BF100A0E018 /* ToDoInterfaceExtension.swift in Sources */,
-				D96DBC6726886F2D00A0E018 /* MainInterfaceExtension.swift in Sources */,
+				D96DBC6326886BF100A0E018 /* ToDoVCInterfaceExtension.swift in Sources */,
+				D96DBC6726886F2D00A0E018 /* MainVCInterfaceExtension.swift in Sources */,
 				D957C9CC2673D6F3002BF395 /* ToDoItem.swift in Sources */,
-				D957C9CE2673D73E002BF395 /* FileCacheImplementation.swift in Sources */,
-				D96DBC6926886F5A00A0E018 /* MainEnums.swift in Sources */,
+				D957C9CE2673D73E002BF395 /* FileCacheServiceImplementation.swift in Sources */,
+				D96DBC6926886F5A00A0E018 /* MainVCEnums.swift in Sources */,
 				D9441A50266CED590019902F /* AppDelegate.swift in Sources */,
+				D9A74AA42691CEDD004C6D97 /* NetworkServiceImplementation.swift in Sources */,
 				D93436C12688B53C002FD8D5 /* AddItemCell.swift in Sources */,
-				D9FF1594267E3E15007A581D /* MainTableViewExtension.swift in Sources */,
+				D9FF1594267E3E15007A581D /* MainVCTableViewExtension.swift in Sources */,
 				D9FF1588267BA380007A581D /* MainViewController.swift in Sources */,
 				D9188CD726749EF700B78A42 /* ToDoViewController.swift in Sources */,
+				D9A74A9E26904765004C6D97 /* Tombstone.swift in Sources */,
+				D9A74A9A26903E8C004C6D97 /* NetworkService.swift in Sources */,
 				D9FF1591267E088F007A581D /* TableViewCell.swift in Sources */,
 				D929A88826722AB600F575F6 /* ToDoItemExtension.swift in Sources */,
-				D929A88B2672557900F575F6 /* FileCache.swift in Sources */,
-				D96DBC6526886C6700A0E018 /* ToDoEnums.swift in Sources */,
+				D929A88B2672557900F575F6 /* FileCacheService.swift in Sources */,
+				D96DBC6526886C6700A0E018 /* ToDoVCEnums.swift in Sources */,
 				D9441A52266CED590019902F /* SceneDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

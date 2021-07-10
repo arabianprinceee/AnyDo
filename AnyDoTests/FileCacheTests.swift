@@ -9,44 +9,40 @@ import XCTest
 @testable import AnyDo
 
 class FileCacheTests: XCTestCase {
-    
-    var fc: FileCacheImplementation!
-    
+
+    var fc: FileCacheServiceImplementation!
+
     override func setUp() {
         super.setUp()
-        fc = FileCacheImplementation(cacheFileName: "test0")
+        fc = FileCacheServiceImplementation(cacheFileName: "test0", tombstonesFileName: "tombstonesTest0")
     }
-    
+
     override func tearDown() {
         super.tearDown()
         fc = nil
     }
-    
+
     func testAddTask() {
-        XCTAssertTrue(fc.toDoItems.count == 0)
-        fc.addToDoItem(toDoItem: ToDoItem(text: "1", importance: .standart, deadLine: nil, status: .completed))
-        fc.addToDoItem(toDoItem: ToDoItem(text: "2", importance: .standart, deadLine: nil, status: .completed))
-        XCTAssertTrue(fc.toDoItems.count == 2)
+        XCTAssertTrue(fc.toDoItemsData.count == 0)
+        fc.addToDoItem(toDoItem: ToDoItem(id: "123", text: "", importance: .important, deadLine: nil, status: .uncompleted, createdAt: 0, updatedAt: nil, isDirty: true))
+        XCTAssertTrue(fc.toDoItemsData.count == 1)
     }
-    
+
     func testDeleteTask() {
-        fc.addToDoItem(toDoItem: ToDoItem(id: "test_id", text: "", importance: .standart, deadLine: nil, status: .uncompletedImportant))
-        XCTAssertTrue(fc.toDoItems.count == 1)
-        fc.deleteTask(with: "test_id")
-        XCTAssertTrue(fc.toDoItems.count == 0)
+        fc.addToDoItem(toDoItem: ToDoItem(id: "123", text: "", importance: .important, deadLine: nil, status: .uncompleted, createdAt: 0, updatedAt: nil, isDirty: true))
+        XCTAssertTrue(fc.toDoItemsData.count == 1)
+        fc.deleteTask(with: "123")
+        XCTAssertTrue(fc.toDoItemsData.count == 0)
     }
-    
+
     func testSaveLoadAllTasks() {
-        fc.addToDoItem(toDoItem: ToDoItem(id: "test_id0", text: "task1", importance: .standart, deadLine: nil, status: .completed))
-        fc.addToDoItem(toDoItem: ToDoItem(id: "test_id1", text: "task2", importance: .important, deadLine: Date(), status: .uncompleted))
-        
-        let fc1: FileCacheImplementation = FileCacheImplementation(cacheFileName: "")
-        fc1.loadAllTasks(fileName: "test3")
-        XCTAssertEqual(fc1.toDoItems.count, 2)
-        
-        for elem in fc1.toDoItems {
-            print(elem.value.text)
+        let fc1 = FileCacheServiceImplementation(cacheFileName: "test00", tombstonesFileName: "tombstonesTest00")
+
+        fc1.addToDoItem(toDoItem: ToDoItem(id: "123", text: "", importance: .important, deadLine: nil, status: .uncompleted, createdAt: 0, updatedAt: nil, isDirty: true))
+
+        fc1.loadAllTasks(fileName: fc1.cacheFileName) {
+            XCTAssertEqual(fc1.toDoItemsData.count, 1)
         }
     }
-    
+
 }
