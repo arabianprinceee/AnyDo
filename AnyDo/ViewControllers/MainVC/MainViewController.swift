@@ -72,8 +72,6 @@ class MainViewController: UIViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         fileCacheService.loadAllTasks(fileName: fileCacheService.cacheFileName) {
-            print(self.fileCacheService.toDoItemsData.count)
-            print(self.fileCacheService.toDoItemsData.values.filter({$0.isDirty}).count)
             self.fileCacheService.loadAllTombstones {
                 print("loaded all tombstones")
                 self.networkService.synchronizeToDoItems(ids: self.fileCacheService.tombstonesData.map({$0.id}),
@@ -149,7 +147,7 @@ class MainViewController: UIViewController {
 
 extension MainViewController: FileCacheServiceDelegate {
 
-    func onArrayDidChange(_ sender: FileCacheServiceImplementation) {
+    func fileCacheServiceOnArrayDidChange(_ sender: FileCacheServiceImplementation) {
         toDoItemsArray = fileCacheService.toDoItemsData.map { $0.value }.sorted { $0.text < $1.text }
         DispatchQueue.main.async {
             self.updateDoneTasksLabel()

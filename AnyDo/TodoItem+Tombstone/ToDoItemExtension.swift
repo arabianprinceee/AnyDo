@@ -12,7 +12,6 @@ extension ToDoItem {
     // MARK: Properties
     
     var json: Any {
-        
         var dict: [String: Any] = [:]
         
         dict[DictKeys.kId] = self.id
@@ -62,7 +61,6 @@ extension ToDoItem {
     // MARK: Methods
     
     static func parse(json: Any) -> ToDoItem? {
-        
         let id: String
         let text: String
         let status: TaskStatus

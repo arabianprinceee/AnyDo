@@ -17,7 +17,13 @@ final class FileCacheServiceImplementation: FileCacheService {
     private let fileManager = FileManager()
     var cacheFileName: String
     var tombstonesFileName: String
-    
+
+    let loadItemsQueue = DispatchQueue(label: "com.AnyDo.loadItemsQueue", qos: .userInitiated)
+    let saveItemsQueue = DispatchQueue(label: "com.AnyDo.saveItemsQueue", qos: .background)
+    let toggleDirtyQueue = DispatchQueue(label: "com.AnyDo.toggleDirtyQueue", qos: .userInitiated)
+    let saveTmbstnQueue = DispatchQueue(label: "com.AnyDo.saveTombstonesQueue", qos: .background)
+    let loadTmbstnsQueue = DispatchQueue(label: "com.AnyDo.loadTombstonesQueue", qos: .userInitiated)
+
     // MARK: Initialization
     
     init(cacheFileName: String, tombstonesFileName: String) {
@@ -30,22 +36,21 @@ final class FileCacheServiceImplementation: FileCacheService {
     func addToDoItem(toDoItem: ToDoItem) {
         self.toDoItemsData[toDoItem.id] = toDoItem
         saveAllTasks()
-        delegate?.onArrayDidChange(self)
+        delegate?.fileCacheServiceOnArrayDidChange(self)
     }
     
     func deleteTask(with id: String) {
         self.toDoItemsData[id] = nil
         saveAllTasks()
-        delegate?.onArrayDidChange(self)
+        delegate?.fileCacheServiceOnArrayDidChange(self)
     }
     
     func saveAllTasks() {
-        let saveQueue = DispatchQueue(label: "com.AnyDo.saveItemsQueue", qos: .background)
         let directoryURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
         let fileURL = URL(fileURLWithPath: cacheFileName, relativeTo: directoryURL).appendingPathExtension("txt")
         let jsonArray = toDoItemsData.values.map { $0.json }
 
-        saveQueue.async {
+        saveItemsQueue.async {
             do {
                 let jsonData = try? JSONSerialization.data(withJSONObject: jsonArray)
                 try jsonData?.write(to: fileURL)
@@ -58,9 +63,8 @@ final class FileCacheServiceImplementation: FileCacheService {
 
     func saveItemsFromServer(items: [ToDoItem], completion: @escaping () -> Void) {
         self.toDoItemsData = [:]
-        let saveQueue = DispatchQueue(label: "com.AnyDo.saveItemsQueue", qos: .userInitiated)
 
-        saveQueue.async {
+        saveItemsQueue.async {
             for item in items {
                 self.toDoItemsData[item.id] = item
             }
@@ -70,11 +74,12 @@ final class FileCacheServiceImplementation: FileCacheService {
     }
     
     func loadAllTasks(fileName: String, completion: @escaping () -> Void) {
-        let loadQueue = DispatchQueue(label: "com.AnyDo.loadItemsQueue", qos: .userInitiated)
         let directoryURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
         let fileURL = URL(fileURLWithPath: fileName, relativeTo: directoryURL).appendingPathExtension("txt")
 
-        loadQueue.async {
+        print("Started loading all tasks...")
+
+        loadItemsQueue.async {
             if self.fileManager.fileExists(atPath: fileURL.path) {
                 self.toDoItemsData.removeAll()
                 do {
@@ -82,7 +87,6 @@ final class FileCacheServiceImplementation: FileCacheService {
 
                     if let json = try JSONSerialization.jsonObject(with: data) as? [[String: Any]] {
                         let items = json.compactMap { ToDoItem.parse(json: $0) }
-                        print(items)
                         for item in items {
                             self.toDoItemsData[item.id] = item
                         }
@@ -92,13 +96,14 @@ final class FileCacheServiceImplementation: FileCacheService {
                 } catch {
                     assertionFailure("Error during loading all tasks from json")
                 }
+            } else {
+                print("File doesnt exists yet, tasks are: []")
+                completion()
             }
         }
     }
 
     func makeAllTasksNotDirty(completion: @escaping () -> Void) {
-        let toggleDirtyQueue = DispatchQueue(label: "com.AnyDo.toggleDirtyQueue", qos: .userInitiated)
-
         toggleDirtyQueue.async {
             for item in self.toDoItemsData.values {
                 if item.isDirty {
@@ -143,11 +148,10 @@ final class FileCacheServiceImplementation: FileCacheService {
     }
 
     func saveAllTombstones(completion: @escaping EmptyCompletion) {
-        let saveQueue = DispatchQueue(label: "com.AnyDo.saveTombstonesQueue", qos: .background)
         let directoryURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
         let fileURL = URL(fileURLWithPath: tombstonesFileName, relativeTo: directoryURL).appendingPathExtension("txt")
 
-        saveQueue.async {
+        saveTmbstnQueue.async {
             do {
                 guard let json = try? JSONEncoder().encode(self.tombstonesData) else {
                     completion(.failure(ParsingErrors.encodingError))
@@ -162,11 +166,10 @@ final class FileCacheServiceImplementation: FileCacheService {
     }
 
     func loadAllTombstones(completion: @escaping () -> Void) {
-        let loadQueue = DispatchQueue(label: "com.AnyDo.loadTombstonesQueue", qos: .background)
         let directoryURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
         let fileURL = URL(fileURLWithPath: tombstonesFileName, relativeTo: directoryURL).appendingPathExtension("txt")
 
-        loadQueue.async {
+        loadTmbstnsQueue.async {
             if self.fileManager.fileExists(atPath: fileURL.path) {
                 self.tombstonesData.removeAll()
                 do {

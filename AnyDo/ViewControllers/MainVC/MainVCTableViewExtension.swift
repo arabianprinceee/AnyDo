@@ -126,9 +126,9 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
                 self.networkService.saveToDoItem(item: task) { result in
                     switch result {
                     case .success():
-                        print("Successfully saved ToDoItem")
+                        print("Successfully saved ToDoItem on server")
                     case .failure(_):
-                        print("Error during saving ToDoItem")
+                        print("Error during saving ToDoItem on server")
                         let dirtyTask = ToDoItem(id: task.id,
                                                  text: task.text,
                                                  importance: task.importance,

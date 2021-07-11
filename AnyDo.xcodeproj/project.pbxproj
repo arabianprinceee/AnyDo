@@ -3,13 +3,14 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 51;
 	objects = {
 
 /* Begin PBXBuildFile section */
 		460121C10ADAA1454F8AE293 /* Pods_AnyDo_AnyDoUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 819D9DC28867B201DB29E2B8 /* Pods_AnyDo_AnyDoUITests.framework */; };
 		7D9BA8717550CAFF0A2E35B2 /* Pods_AnyDo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6FF3B72DE9720E0AFFCE5CE2 /* Pods_AnyDo.framework */; };
 		AF0B5E8D2957BB2EA5D21317 /* Pods_AnyDoTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 142F8BBF9C272DE2B8CA5B30 /* Pods_AnyDoTests.framework */; };
+		D9058AC6269A1352007CE210 /* StorageServiceImplementation.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9058AC5269A1352007CE210 /* StorageServiceImplementation.swift */; };
 		D9188CD726749EF700B78A42 /* ToDoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9188CD626749EF700B78A42 /* ToDoViewController.swift */; };
 		D929A88826722AB600F575F6 /* ToDoItemExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = D929A88726722AB600F575F6 /* ToDoItemExtension.swift */; };
 		D929A88B2672557900F575F6 /* FileCacheService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D929A88A2672557900F575F6 /* FileCacheService.swift */; };
@@ -62,6 +63,7 @@
 		819D9DC28867B201DB29E2B8 /* Pods_AnyDo_AnyDoUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_AnyDo_AnyDoUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		9D424FFE5D79186D91AF0D6C /* Pods-AnyDo-AnyDoUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AnyDo-AnyDoUITests.debug.xcconfig"; path = "Target Support Files/Pods-AnyDo-AnyDoUITests/Pods-AnyDo-AnyDoUITests.debug.xcconfig"; sourceTree = "<group>"; };
 		A2A574039655F9BCFC84179F /* Pods-AnyDo.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AnyDo.release.xcconfig"; path = "Target Support Files/Pods-AnyDo/Pods-AnyDo.release.xcconfig"; sourceTree = "<group>"; };
+		D9058AC5269A1352007CE210 /* StorageServiceImplementation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageServiceImplementation.swift; sourceTree = "<group>"; };
 		D9188CD626749EF700B78A42 /* ToDoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToDoViewController.swift; sourceTree = "<group>"; };
 		D929A88726722AB600F575F6 /* ToDoItemExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToDoItemExtension.swift; sourceTree = "<group>"; };
 		D929A88A2672557900F575F6 /* FileCacheService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileCacheService.swift; sourceTree = "<group>"; };
@@ -189,6 +191,7 @@
 			children = (
 				D929A88A2672557900F575F6 /* FileCacheService.swift */,
 				D957C9CD2673D73E002BF395 /* FileCacheServiceImplementation.swift */,
+				D9058AC5269A1352007CE210 /* StorageServiceImplementation.swift */,
 			);
 			path = FileCacheService;
 			sourceTree = "<group>";
@@ -316,6 +319,7 @@
 				D9441A48266CED590019902F /* Sources */,
 				D9441A49266CED590019902F /* Frameworks */,
 				D9441A4A266CED590019902F /* Resources */,
+				64AC29C46EE9DEC079238034 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -353,6 +357,7 @@
 				D9441A69266CED5A0019902F /* Sources */,
 				D9441A6A266CED5A0019902F /* Frameworks */,
 				D9441A6B266CED5A0019902F /* Resources */,
+				8670585DC7BEEC3BA13E40BF /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -458,6 +463,40 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
+		64AC29C46EE9DEC079238034 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-AnyDo/Pods-AnyDo-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-AnyDo/Pods-AnyDo-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-AnyDo/Pods-AnyDo-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		8670585DC7BEEC3BA13E40BF /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-AnyDo-AnyDoUITests/Pods-AnyDo-AnyDoUITests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-AnyDo-AnyDoUITests/Pods-AnyDo-AnyDoUITests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-AnyDo-AnyDoUITests/Pods-AnyDo-AnyDoUITests-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
 		AC679C6C15198AF3DB5BF55B /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -515,6 +554,7 @@
 				D957C9CE2673D73E002BF395 /* FileCacheServiceImplementation.swift in Sources */,
 				D96DBC6926886F5A00A0E018 /* MainVCEnums.swift in Sources */,
 				D9441A50266CED590019902F /* AppDelegate.swift in Sources */,
+				D9058AC6269A1352007CE210 /* StorageServiceImplementation.swift in Sources */,
 				D9A74AA42691CEDD004C6D97 /* NetworkServiceImplementation.swift in Sources */,
 				D93436C12688B53C002FD8D5 /* AddItemCell.swift in Sources */,
 				D9FF1594267E3E15007A581D /* MainVCTableViewExtension.swift in Sources */,
