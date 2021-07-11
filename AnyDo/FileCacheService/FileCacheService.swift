@@ -7,14 +7,9 @@
 
 import Foundation
 
-protocol FileCacheServiceDelegate: AnyObject {
-
-    func fileCacheServiceOnArrayDidChange(_ sender: FileCacheServiceImplementation)
-}
-
 protocol FileCacheService {
 
-    var delegate: FileCacheServiceDelegate? { get set }
+    var delegate: StorageServiceDelegate? { get set }
     var toDoItemsData: [String: ToDoItem] { get }
     var tombstonesData: [Tombstone] { get }
     var cacheFileName: String { get }

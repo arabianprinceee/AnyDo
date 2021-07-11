@@ -107,6 +107,11 @@ final class NetworkServiceImplementation: NetworkService {
                     response.statusCode < 300,
                     error == nil
                 else {
+                    print(response)
+                    print("")
+                    print(data)
+                    print("")
+                    print(error)
                     completion(.failure(NetworkServiceErrors.networkError))
                     return
                 }

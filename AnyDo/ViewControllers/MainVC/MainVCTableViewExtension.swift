@@ -22,33 +22,33 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
             let completeTask = UIContextualAction(style: .normal, title: nil) { (action, sourceView, _) in
 
                 let id = self.toDoItemsArray[indexPath.row].id
-                let task = ToDoItem(id: id,
-                                    text: self.toDoItemsArray[indexPath.row].text,
-                                    importance: self.toDoItemsArray[indexPath.row].importance,
-                                    deadLine: self.toDoItemsArray[indexPath.row].deadline,
-                                    status: .completed,
-                                    createdAt: self.toDoItemsArray[indexPath.row].createdAt,
-                                    updatedAt: Int(Date().timeIntervalSince1970))
+                let updItem = ToDoItem(id: id,
+                                       text: self.toDoItemsArray[indexPath.row].text,
+                                       importance: self.toDoItemsArray[indexPath.row].importance,
+                                       deadLine: self.toDoItemsArray[indexPath.row].deadline,
+                                       status: .completed,
+                                       createdAt: self.toDoItemsArray[indexPath.row].createdAt,
+                                       updatedAt: Int(Date().timeIntervalSince1970))
 
-                self.fileCacheService.deleteTask(with: id)
-                self.fileCacheService.addToDoItem(toDoItem: task)
+                self.storageService.updateToDoItem(todoItem: updItem)
 
-                self.networkService.updateToDoItem(item: task) { result in
+                self.networkService.updateToDoItem(item: updItem) { result in
                     switch result {
                     case .success():
                         print("Successfully updated task on server")
-                    case .failure(_):
+                    case .failure(let error):
+                        print(error)
                         print("Error during update task on server")
                         let dirtyTask = ToDoItem(id: id,
-                                                text: task.text,
-                                                importance: task.importance,
-                                                deadLine: task.deadline,
-                                                status: .completed,
-                                                createdAt: task.createdAt,
-                                                updatedAt: task.updatedAt,
-                                                isDirty: true)
-                        self.fileCacheService.deleteTask(with: id)
-                        self.fileCacheService.addToDoItem(toDoItem: dirtyTask)
+                                                 text: updItem.text,
+                                                 importance: updItem.importance,
+                                                 deadLine: updItem.deadline,
+                                                 status: .completed,
+                                                 createdAt: updItem.createdAt,
+                                                 updatedAt: updItem.updatedAt,
+                                                 isDirty: true)
+
+                        self.storageService.updateToDoItem(todoItem: dirtyTask)
                         print("Dirty task has been added")
                     }
                 }
@@ -69,14 +69,14 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
             let deleteTask = UIContextualAction(style: .destructive, title: nil) { (action, sourceView, _) in
 
                 let id = self.toDoItemsArray[indexPath.row].id
-                self.fileCacheService.deleteTask(with: id)
+                self.storageService.deleteToDoItem(with: id)
 
                 self.networkService.deleteToDoItem(with: id) { result in
                     switch result {
                     case .success():
                         print("Item has been successfully deleted from server")
                     case .failure(_):
-                        self.fileCacheService.addTombstone(tombstone: Tombstone(id: id, deletedAt: Date()))
+                        self.storageService.addTombstone(tombstone: Tombstone(id: id, deletedAt: Date()))
                         print("Tombstone has been created")
                     }
                 }
@@ -103,7 +103,7 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if indexPath.row != self.tableView.numberOfRows(inSection: 0) - 1 {
-            present(ToDoViewController(fileCacheManager: fileCacheService, networkManager: self.networkService, currentToDoItem: toDoItemsArray[indexPath.row]), animated: true, completion: nil)
+            present(ToDoViewController(storageService: self.storageService, networkService: self.networkService, currentToDoItem: toDoItemsArray[indexPath.row]), animated: true, completion: nil)
         }
         tableView.deselectRow(at: indexPath, animated: true)
     }
@@ -121,7 +121,7 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
                                     status: .uncompleted,
                                     createdAt: Int(Date().timeIntervalSince1970))
 
-                self.fileCacheService.addToDoItem(toDoItem: task)
+                self.storageService.addToDoItem(toDoItem: task)
 
                 self.networkService.saveToDoItem(item: task) { result in
                     switch result {
@@ -136,8 +136,8 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
                                                  status: task.status,
                                                  createdAt: task.createdAt,
                                                  isDirty: true)
-                        self.fileCacheService.deleteTask(with: id)
-                        self.fileCacheService.addToDoItem(toDoItem: dirtyTask)
+
+                        self.storageService.updateToDoItem(todoItem: dirtyTask)
                         print("Dirty task has been created")
                     }
                 }

@@ -8,22 +8,18 @@
 import Foundation
 import SQLite
 
-protocol StorageService {
-
-}
-
 public final class StorageServiceImplementation: StorageService {
 
-    var delegate: FileCacheServiceDelegate?
-    var toDoItemsData: [ToDoItem] = []
-    var tombstonesData: [Tombstone] = []
+    weak var delegate: StorageServiceDelegate?
+    private(set) var toDoItemsData: [ToDoItem] = []
+    private(set) var tombstonesData: [Tombstone] = []
 
-    private let directoryURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first
-//    private let fileManager: FileManager = FileManager()
     private var dataBase: Connection? = nil
-    private let dataBaseFileName: String = "AnyDoDataBase"
     private let toDoItemsTable = Table("ToDoItems")
     private let tombstonesTable = Table("Tombstones")
+    private let dataBaseFileName: String
+
+    private let directoryURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first
 
     /// ToDoItems table elements
     private let id = Expression<String>("id")
@@ -39,7 +35,8 @@ public final class StorageServiceImplementation: StorageService {
     private let tombstoneId = Expression<String>("id")
     private let deletedAt = Expression<Date>("deletedAt")
 
-    init() {
+    init(dataBaseFileName: String) {
+        self.dataBaseFileName = dataBaseFileName
         do {
             let dataBaseURL = URL(fileURLWithPath: dataBaseFileName, relativeTo: directoryURL).appendingPathExtension("txt")
             dataBase = try Connection(dataBaseURL.absoluteString)
@@ -69,27 +66,49 @@ public final class StorageServiceImplementation: StorageService {
 
     func addToDoItem(toDoItem: ToDoItem) {
         do {
+            toDoItemsData.append(toDoItem)
             try dataBase?.run(toDoItemsTable.insert(toDoItem))
+            delegate?.storageServiceOnArrayDidChange(self)
             print("succesfully saved item to database")
         } catch {
+            print(error)
             print("Error while saving DB")
         }
     }
 
-    func deleteTask(with id: String) {
+    func deleteToDoItem(with id: String) {
         do {
+            toDoItemsData.removeAll(where: { $0.id == id })
             let itemToDelete = toDoItemsTable.filter(self.id == id)
             try dataBase?.run(itemToDelete.delete())
+            delegate?.storageServiceOnArrayDidChange(self)
         } catch {
             print("Error while deleting from database")
         }
     }
 
-    func saveItemsFromServer(items: [ToDoItem], completion: @escaping EmptyCompletion) {
-        self.toDoItemsData = items
+    func updateToDoItem(todoItem: ToDoItem) {
+        do {
+            try dataBase?.run(toDoItemsTable.filter(id == todoItem.id).update(todoItem))
+            loadAllToDoItems { result in
+                switch result {
+                case .success():
+                    self.delegate?.storageServiceOnArrayDidChange(self)
+                case .failure(_):
+                    print("Error during update item")
+                }
+            }
+            delegate?.storageServiceOnArrayDidChange(self)
+        } catch {
+            print("Error while updating element")
+        }
+    }
+
+    func saveToDoItemsFromServer(items: [ToDoItem], completion: @escaping EmptyCompletion) {
+        self.toDoItemsData = []
         do {
             try dataBase?.run(toDoItemsTable.delete())
-            for item in toDoItemsData {
+            for item in items {
                 addToDoItem(toDoItem: item)
             }
             completion(.success(()))
@@ -99,7 +118,7 @@ public final class StorageServiceImplementation: StorageService {
         }
     }
 
-    func loadAllTasks(completion: @escaping EmptyCompletion) {
+    func loadAllToDoItems(completion: @escaping EmptyCompletion) {
         guard let dataBase = dataBase else {
             print("data base is nil")
             completion(.failure(DataBaseErrors.dataBaseNotExistsError))
@@ -115,7 +134,7 @@ public final class StorageServiceImplementation: StorageService {
         }
     }
 
-    func makeAllTasksNotDirty(completion: @escaping EmptyCompletion) {
+    func makeAllToDoItemsNotDirty(completion: @escaping EmptyCompletion) {
         do {
             try dataBase?.run(toDoItemsTable.update(isDirty <- false))
             completion(.success(()))
@@ -160,14 +179,5 @@ public final class StorageServiceImplementation: StorageService {
             completion(.failure(DataBaseErrors.loadItemsFromServerError))
         }
     }
-
-}
-
-enum DataBaseErrors: Error {
-
-    case saveItemsFromServerError
-    case loadItemsFromServerError
-    case updateTableError
-    case dataBaseNotExistsError
 
 }

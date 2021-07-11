@@ -11,7 +11,7 @@ final class FileCacheServiceImplementation: FileCacheService {
 
     // MARK: Properties
     
-    weak var delegate: FileCacheServiceDelegate?
+    weak var delegate: StorageServiceDelegate?
     private(set) var toDoItemsData: [String: ToDoItem] = [:]
     private(set) var tombstonesData: [Tombstone] = []
     private let fileManager = FileManager()
@@ -36,13 +36,13 @@ final class FileCacheServiceImplementation: FileCacheService {
     func addToDoItem(toDoItem: ToDoItem) {
         self.toDoItemsData[toDoItem.id] = toDoItem
         saveAllTasks()
-        delegate?.fileCacheServiceOnArrayDidChange(self)
+//        delegate?.storageServiceOnArrayDidChange(self)
     }
     
     func deleteTask(with id: String) {
         self.toDoItemsData[id] = nil
         saveAllTasks()
-        delegate?.fileCacheServiceOnArrayDidChange(self)
+//        delegate?.storageServiceOnArrayDidChange(self)
     }
     
     func saveAllTasks() {
