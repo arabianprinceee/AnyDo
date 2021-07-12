@@ -107,11 +107,6 @@ final class NetworkServiceImplementation: NetworkService {
                     response.statusCode < 300,
                     error == nil
                 else {
-                    print(response)
-                    print("")
-                    print(data)
-                    print("")
-                    print(error)
                     completion(.failure(NetworkServiceErrors.networkError))
                     return
                 }
@@ -148,7 +143,7 @@ final class NetworkServiceImplementation: NetworkService {
     func synchronizeToDoItems(ids: [String], items: [ToDoItem], completion: @escaping ToDoItemsCompletion) {
         guard let url = URL(string: "\(apiUrl)/tasks") else { return }
 
-        print("Started synchronizing...")
+        print("Started synchronizing...\n")
 
         var request = URLRequest(url: url)
         request.timeoutInterval = 30

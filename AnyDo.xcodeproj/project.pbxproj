@@ -184,13 +184,13 @@
 			path = "TodoItem+Tombstone";
 			sourceTree = "<group>";
 		};
-		D929A8892672555700F575F6 /* FileCacheService */ = {
+		D929A8892672555700F575F6 /* StorageService */ = {
 			isa = PBXGroup;
 			children = (
 				D9058AC7269B22BB007CE210 /* StorageService.swift */,
 				D9058AC5269A1352007CE210 /* StorageServiceImplementation.swift */,
 			);
-			path = FileCacheService;
+			path = StorageService;
 			sourceTree = "<group>";
 		};
 		D93436C22688B540002FD8D5 /* AddItemCell */ = {
@@ -229,7 +229,7 @@
 				D957C9CF2673DFCD002BF395 /* LifeCycle */,
 				D9A74A9B26903E9B004C6D97 /* NetworkService */,
 				D929A884267223E900F575F6 /* TodoItem+Tombstone */,
-				D929A8892672555700F575F6 /* FileCacheService */,
+				D929A8892672555700F575F6 /* StorageService */,
 				D9188CD82674BADB00B78A42 /* ViewControllers */,
 				D9188CDC2674C98300B78A42 /* Storyboards */,
 				D9441A5D266CED590019902F /* Info.plist */,

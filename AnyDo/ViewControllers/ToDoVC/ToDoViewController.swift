@@ -208,7 +208,7 @@ class ToDoViewController: UIViewController, UITextViewDelegate {
                                     updatedAt: nil,
                                     isDirty: false)
 
-                self.storageService.addToDoItem(toDoItem: task, reloadUI: true)
+                self.storageService.addToDoItem(toDoItem: task)
 
                 self.networkService.saveToDoItem(item: task) { result in
                     switch result {

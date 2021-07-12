@@ -19,16 +19,16 @@ protocol StorageService {
     var toDoItemsData: [ToDoItem] { get }
     var tombstonesData: [Tombstone] { get }
 
-    func addToDoItem(toDoItem: ToDoItem, reloadUI: Bool)
+    func addToDoItem(toDoItem: ToDoItem)
     func deleteToDoItem(with id: String)
     func updateToDoItem(todoItem: ToDoItem)
     func saveToDoItemsFromServer(items: [ToDoItem], completion: @escaping EmptyCompletion)
-    func loadAllToDoItems(completion: @escaping EmptyCompletion)
+    func loadAllToDoItems(completion: @escaping () -> Void)
     func makeAllToDoItemsNotDirty(completion: @escaping EmptyCompletion)
 
     func addTombstone(tombstone: Tombstone)
     func deleteAllTombstones()
-    func loadAllTombstones(completion: @escaping EmptyCompletion)
+    func loadAllTombstones(completion: @escaping () -> Void)
 
 }
 

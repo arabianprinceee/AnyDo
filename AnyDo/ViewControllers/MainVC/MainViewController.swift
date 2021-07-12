@@ -70,92 +70,58 @@ class MainViewController: UIViewController {
         setUpAddButton()
     }
 
-//    override func viewWillAppear(_ animated: Bool) {
-//        storageService.loadAllToDoItems { loadToDoItemsResult in
-//            switch loadToDoItemsResult {
-//            case .success():
-//                print("willapeear:\n")
-//                print(self.storageService.toDoItemsData)
-//                self.storageService.addToDoItem(toDoItem: ToDoItem(text: "1", importance: .important, deadLine: nil, status: .completed))
-//            case .failure(let error):
-//                print(error)
-//            }
-//        }
-//    }
+    override func viewWillAppear(_ animated: Bool) {
+        let group = DispatchGroup()
 
-        override func viewWillAppear(_ animated: Bool) {
-            storageService.loadAllToDoItems { loadToDoItemsResult in
-                switch loadToDoItemsResult {
-                case .success():
-                    print("\n\nElements:")
-                    for elem in self.storageService.toDoItemsData {
-                        print("\n\(elem)")
-                    }
-                    print("\n\n")
-                    self.storageService.loadAllTombstones { loadTombstonesResult in
-                        switch loadTombstonesResult {
+        group.enter()
+        self.storageService.loadAllToDoItems {
+            group.leave()
+        }
+
+        group.enter()
+        self.storageService.loadAllTombstones {
+            group.leave()
+        }
+
+        group.notify(queue: .global(qos: .userInitiated)) {
+            self.networkService.synchronizeToDoItems(ids: self.storageService.tombstonesData.map({$0.id}),
+                                                     items: self.storageService.toDoItemsData.filter({$0.isDirty == true})) { synchronizeResult in
+                switch synchronizeResult {
+                case .success(let toDoItems):
+                    print("Succesfully synchronized data")
+                    self.storageService.saveToDoItemsFromServer(items: toDoItems) { saveItemsResult in
+                        switch saveItemsResult {
                         case .success():
-                            print("loaded all tombstones")
-                            self.networkService.synchronizeToDoItems(ids: self.storageService.tombstonesData.map({$0.id}),
-                                                                     items: self.storageService.toDoItemsData.filter({$0.isDirty == true})) { synchronizeResult in
-                                switch synchronizeResult {
-                                case .success(let toDoItems):
-                                    print("Succesfully synchronized data")
-
-                                    print("\n\nElements from server:")
-                                    for elem in toDoItems {
-                                        print("\n\(elem)")
-                                    }
-                                    print("\n\n")
-                                    self.storageService.saveToDoItemsFromServer(items: toDoItems) { saveItemsResult in
-                                        switch saveItemsResult {
-                                        case .success():
-                                            print("Successfully saved items from server to local data")
-                                            print("\n\nElements after saving from server:")
-                                            for elem in self.storageService.toDoItemsData {
-                                                print("\n\(elem)")
-                                            }
-                                            print("\n\n")
-                                            self.storageService.deleteAllTombstones()
-                                            self.storageService.makeAllToDoItemsNotDirty { makeNotDirtyResult in
-                                                switch makeNotDirtyResult {
-                                                case .success():
-                                                    print("\n\nElements after making not dirty:")
-                                                    for elem in self.storageService.toDoItemsData {
-                                                        print("\n\(elem)")
-                                                    }
-                                                    print("\n\n")
-                                                    self.updateToDoItemsArray()
-                                                    DispatchQueue.main.async {
-                                                        self.updateDoneTasksLabel()
-                                                        self.tableView.reloadData()
-                                                    }
-                                                case .failure(let error):
-                                                    print(error)
-                                                }
-                                            }
-                                        case .failure(let error):
-                                            print(error)
-                                        }
-                                    }
-                                case .failure(_):
-                                    print("Synchronize error happend")
+                            print("Successfully saved items from server to local data")
+                            self.storageService.deleteAllTombstones()
+                            self.storageService.makeAllToDoItemsNotDirty { makeNotDirtyResult in
+                                switch makeNotDirtyResult {
+                                case .success():
                                     self.updateToDoItemsArray()
                                     DispatchQueue.main.async {
                                         self.updateDoneTasksLabel()
                                         self.tableView.reloadData()
                                     }
+                                case .failure(let error):
+                                    print(error)
                                 }
                             }
                         case .failure(let error):
                             print(error)
                         }
                     }
-                case .failure(let error):
-                    print(error)
+                case .failure(_):
+                    print("Synchronize error happend")
+                    self.updateToDoItemsArray()
+                    DispatchQueue.main.async {
+                        self.updateDoneTasksLabel()
+                        self.tableView.reloadData()
+                    }
                 }
             }
+
         }
+    }
 
     // MARK: Methods
 
