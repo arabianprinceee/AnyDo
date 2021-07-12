@@ -38,7 +38,7 @@ public final class StorageServiceImplementation: StorageService {
     init(dataBaseFileName: String) {
         self.dataBaseFileName = dataBaseFileName
         do {
-            let dataBaseURL = URL(fileURLWithPath: dataBaseFileName, relativeTo: directoryURL).appendingPathExtension("txt")
+            let dataBaseURL = URL(fileURLWithPath: dataBaseFileName, relativeTo: directoryURL)
             dataBase = try Connection(dataBaseURL.absoluteString)
             print("successfully connected to database")
             try dataBase?.run(toDoItemsTable.create(ifNotExists: true) { t in
@@ -64,11 +64,13 @@ public final class StorageServiceImplementation: StorageService {
 
     // MARK: ToDoItems
 
-    func addToDoItem(toDoItem: ToDoItem) {
+    func addToDoItem(toDoItem: ToDoItem, reloadUI: Bool) {
         do {
             toDoItemsData.append(toDoItem)
             try dataBase?.run(toDoItemsTable.insert(toDoItem))
-            delegate?.storageServiceOnArrayDidChange(self)
+            if reloadUI {
+                delegate?.storageServiceOnArrayDidChange(self)
+            }
             print("succesfully saved item to database")
         } catch {
             print(error)
@@ -98,7 +100,6 @@ public final class StorageServiceImplementation: StorageService {
                     print("Error during update item")
                 }
             }
-            delegate?.storageServiceOnArrayDidChange(self)
         } catch {
             print("Error while updating element")
         }
@@ -109,7 +110,7 @@ public final class StorageServiceImplementation: StorageService {
         do {
             try dataBase?.run(toDoItemsTable.delete())
             for item in items {
-                addToDoItem(toDoItem: item)
+                addToDoItem(toDoItem: item, reloadUI: false)
             }
             completion(.success(()))
         } catch {
@@ -125,10 +126,12 @@ public final class StorageServiceImplementation: StorageService {
             return
         }
         do {
-            let lodadedToDoItems: [ToDoItem] = try dataBase.prepare(toDoItemsTable).map({ try $0.decode() })
+            let lodadedToDoItems: [ToDoItem] = try dataBase.prepare(toDoItemsTable).map({ return try $0.decode() })
             self.toDoItemsData = lodadedToDoItems
             completion(.success(()))
         } catch {
+            print(error)
+            print(error.localizedDescription)
             print("Error while loading all tasks from data base")
             completion(.failure(DataBaseErrors.loadItemsFromServerError))
         }
@@ -156,7 +159,7 @@ public final class StorageServiceImplementation: StorageService {
 
     func deleteAllTombstones() {
         do {
-            try dataBase?.run(toDoItemsTable.delete())
+            try dataBase?.run(tombstonesTable.delete())
             print("successfully deleted all tombstones from data base")
         } catch {
             print("Error while deleting all tombstones data base")

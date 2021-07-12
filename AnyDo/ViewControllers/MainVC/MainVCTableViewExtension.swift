@@ -121,7 +121,7 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
                                     status: .uncompleted,
                                     createdAt: Int(Date().timeIntervalSince1970))
 
-                self.storageService.addToDoItem(toDoItem: task)
+                self.storageService.addToDoItem(toDoItem: task, reloadUI: true)
 
                 self.networkService.saveToDoItem(item: task) { result in
                     switch result {

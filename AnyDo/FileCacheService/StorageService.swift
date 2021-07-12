@@ -19,7 +19,7 @@ protocol StorageService {
     var toDoItemsData: [ToDoItem] { get }
     var tombstonesData: [Tombstone] { get }
 
-    func addToDoItem(toDoItem: ToDoItem)
+    func addToDoItem(toDoItem: ToDoItem, reloadUI: Bool)
     func deleteToDoItem(with id: String)
     func updateToDoItem(todoItem: ToDoItem)
     func saveToDoItemsFromServer(items: [ToDoItem], completion: @escaping EmptyCompletion)
@@ -38,5 +38,19 @@ enum DataBaseErrors: Error {
     case loadItemsFromServerError
     case updateTableError
     case dataBaseNotExistsError
+
+}
+
+enum ParsingErrors: Error {
+
+    case encodingError
+    case decodingError
+
+}
+
+enum FileWorkErrors: Error {
+
+    case readFileError
+    case writeToFileError
 
 }

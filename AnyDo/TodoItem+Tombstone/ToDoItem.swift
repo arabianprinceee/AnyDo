@@ -79,8 +79,12 @@ struct ToDoItem: Codable {
         }
 
         createdAt = try values.decode(Int.self, forKey: .createdAt)
-        updatedAt = try values.decode(Int?.self, forKey: .updatedAt)
 
+        if let updatedAt = try values.decode(Int?.self, forKey: .deadline) {
+            self.updatedAt = updatedAt
+        } else {
+            updatedAt = nil
+        }
         do {
             isDirty = try values.decode(Bool.self, forKey: .isDirty)
         } catch {
