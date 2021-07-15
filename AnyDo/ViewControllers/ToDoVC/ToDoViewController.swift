@@ -11,8 +11,8 @@ class ToDoViewController: UIViewController, UITextViewDelegate {
     
     // MARK: Properties
 
-    private let fileCacheManager: FileCacheService
-    private let networkManager: NetworkService
+    private let storageService: StorageService
+    private let networkService: NetworkService
     var currentToDoItem: ToDoItem?
     var isEditingItem: Bool = false
     
@@ -38,9 +38,9 @@ class ToDoViewController: UIViewController, UITextViewDelegate {
     
     // MARK: Initialization
     
-    init(fileCacheManager: FileCacheService, networkManager: NetworkService, currentToDoItem: ToDoItem?) {
-        self.fileCacheManager = fileCacheManager
-        self.networkManager = networkManager
+    init(storageService: StorageService, networkService: NetworkService, currentToDoItem: ToDoItem?) {
+        self.storageService = storageService
+        self.networkService = networkService
         self.currentToDoItem = currentToDoItem
         super.init(nibName: nil, bundle: nil)
     }
@@ -141,8 +141,9 @@ class ToDoViewController: UIViewController, UITextViewDelegate {
     }
     
     @objc func onDeleteButtonTapped(sender: UIButton) {
-        if (isEditingItem) {
-            self.fileCacheManager.deleteTask(with: currentToDoItem!.id) // Вообще, форс - плохо, но в данной ситуации мы проверяли, что currentToDoItem не nil
+        if isEditingItem,
+           let id = currentToDoItem?.id {
+            self.storageService.deleteToDoItem(with: id)
             NotificationCenter.default.post(name: .toDoListChanged, object: nil)
             self.dismiss(animated: true, completion: nil)
         } else {
@@ -172,13 +173,11 @@ class ToDoViewController: UIViewController, UITextViewDelegate {
                                     deadLine: calendarSwitch.isOn ? datePickerView.date : nil,
                                     status: currentToDoItem.status == .completed ? .completed : index == 2 ? .uncompletedImportant : .uncompleted,
                                     createdAt: currentToDoItem.createdAt,
-                                    updatedAt: Int(Date().timeIntervalSince1970),
-                                    isDirty: false)
+                                    updatedAt: Int(Date().timeIntervalSince1970))
 
-                self.fileCacheManager.deleteTask(with: currentToDoItem.id)
-                self.fileCacheManager.addToDoItem(toDoItem: task)
+                self.storageService.updateToDoItem(todoItem: task)
 
-                self.networkManager.updateToDoItem(item: task) { result in
+                self.networkService.updateToDoItem(item: task) { result in
                     switch result {
                     case .success():
                         print("Successfully updated toDoItem")
@@ -192,8 +191,8 @@ class ToDoViewController: UIViewController, UITextViewDelegate {
                                                  createdAt: task.createdAt,
                                                  updatedAt: task.updatedAt,
                                                  isDirty: true)
-                        self.fileCacheManager.deleteTask(with: currentToDoItem.id)
-                        self.fileCacheManager.addToDoItem(toDoItem: dirtyTask)
+
+                        self.storageService.updateToDoItem(todoItem: dirtyTask)
                         print("Dirty task has been created")
                     }
                     NotificationCenter.default.post(name: .toDoListChanged, object: nil)
@@ -210,9 +209,9 @@ class ToDoViewController: UIViewController, UITextViewDelegate {
                                     updatedAt: nil,
                                     isDirty: false)
 
-                self.fileCacheManager.addToDoItem(toDoItem: task)
+                self.storageService.addToDoItem(toDoItem: task)
 
-                self.networkManager.saveToDoItem(item: task) { result in
+                self.networkService.saveToDoItem(item: task) { result in
                     switch result {
                     case .success():
                         print("Successfully saved ToDoItem")
@@ -225,8 +224,8 @@ class ToDoViewController: UIViewController, UITextViewDelegate {
                                                  status: task.status,
                                                  createdAt: task.createdAt,
                                                  isDirty: true)
-                        self.fileCacheManager.deleteTask(with: task.id)
-                        self.fileCacheManager.addToDoItem(toDoItem: dirtyTask)
+
+                        self.storageService.updateToDoItem(todoItem: dirtyTask)
                         print("Dirty task has been saved")
                     }
                     NotificationCenter.default.post(name: .toDoListChanged, object: nil)

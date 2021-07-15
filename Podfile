@@ -7,6 +7,7 @@ target 'AnyDo' do
 
   # Pods for AnyDo
   pod 'SwiftLint'
+  pod 'SQLite.swift'
 
   target 'AnyDoTests' do
     inherit! :search_paths

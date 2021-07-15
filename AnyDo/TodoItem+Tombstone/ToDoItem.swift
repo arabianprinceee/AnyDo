@@ -41,10 +41,12 @@ struct ToDoItem: Codable {
     }
 
     private enum CodingKeys: String, CodingKey {
-        case id, text, deadline, importance
+
+        case id, text, deadline, importance, isDirty
         case status = "done"
         case createdAt = "created_at"
         case updatedAt = "updated_at"
+        
     }
 
     init(from decoder: Decoder) throws {
@@ -79,8 +81,17 @@ struct ToDoItem: Codable {
         }
 
         createdAt = try values.decode(Int.self, forKey: .createdAt)
-        updatedAt = try values.decode(Int?.self, forKey: .updatedAt)
-        isDirty = false
+
+        if let updatedAt = try values.decode(Int?.self, forKey: .deadline) {
+            self.updatedAt = updatedAt
+        } else {
+            updatedAt = nil
+        }
+        do {
+            isDirty = try values.decode(Bool.self, forKey: .isDirty)
+        } catch {
+            isDirty = false
+        }
     }
 
     func encode(to encoder: Encoder) throws {
@@ -107,11 +118,13 @@ struct ToDoItem: Codable {
         try container.encode(deadline, forKey: .deadline)
         try container.encode(createdAt, forKey: .createdAt)
         try container.encode(updatedAt, forKey: .updatedAt)
+        try container.encode(isDirty, forKey: .isDirty)
     }
 
 }
 
 enum DictKeys {
+
     static let kId: String = "id"
     static let kText: String = "text"
     static let kImportance: String = "importance"
@@ -120,6 +133,7 @@ enum DictKeys {
     static let kCreatedAt: String = "createdAt"
     static let kUpdatedAt: String = "updatedAt"
     static let kIsDirty: String = "isDirty"
+
 }
 
 enum Importance: String, Codable {
@@ -144,7 +158,7 @@ extension Importance {
 }
 
 enum TaskStatus: String, Codable {
-    
+
     case uncompletedImportant
     case uncompleted
     case completed

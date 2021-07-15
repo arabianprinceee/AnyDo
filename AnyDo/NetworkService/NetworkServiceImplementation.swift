@@ -31,7 +31,8 @@ final class NetworkServiceImplementation: NetworkService {
                 guard
                     let data = data,
                     let response = response as? HTTPURLResponse,
-                    response.statusCode == 200,
+                    response.statusCode >= 200,
+                    response.statusCode < 300,
                     error == nil
                 else {
                     completion(.failure(NetworkServiceErrors.networkError))
@@ -69,7 +70,8 @@ final class NetworkServiceImplementation: NetworkService {
             session.dataTask(with: request) { data, response, error in
                 guard
                     let response = response as? HTTPURLResponse,
-                    response.statusCode == 200,
+                    response.statusCode >= 200,
+                    response.statusCode < 300,
                     error == nil
                 else {
                     completion(.failure(NetworkServiceErrors.networkError))
@@ -101,7 +103,8 @@ final class NetworkServiceImplementation: NetworkService {
             session.dataTask(with: request) { data, response, error in
                 guard
                     let response = response as? HTTPURLResponse,
-                    response.statusCode == 200,
+                    response.statusCode >= 200,
+                    response.statusCode < 300,
                     error == nil
                 else {
                     completion(.failure(NetworkServiceErrors.networkError))
@@ -125,7 +128,8 @@ final class NetworkServiceImplementation: NetworkService {
             session.dataTask(with: request) { data, response, error in
                 guard
                     let response = response as? HTTPURLResponse,
-                    response.statusCode == 200,
+                    response.statusCode >= 200,
+                    response.statusCode < 300,
                     error == nil
                 else {
                     completion(.failure(NetworkServiceErrors.networkError))
@@ -139,7 +143,7 @@ final class NetworkServiceImplementation: NetworkService {
     func synchronizeToDoItems(ids: [String], items: [ToDoItem], completion: @escaping ToDoItemsCompletion) {
         guard let url = URL(string: "\(apiUrl)/tasks") else { return }
 
-        print("Started synchronizing...")
+        print("Started synchronizing...\n")
 
         var request = URLRequest(url: url)
         request.timeoutInterval = 30
@@ -167,9 +171,11 @@ final class NetworkServiceImplementation: NetworkService {
                 guard
                     let data = data,
                     let response = response as? HTTPURLResponse,
-                    response.statusCode == 200,
+                    response.statusCode >= 200,
+                    response.statusCode < 300,
                     error == nil
                 else {
+                    print(error)
                     completion(.failure(NetworkServiceErrors.networkError))
                     return
                 }
@@ -178,6 +184,7 @@ final class NetworkServiceImplementation: NetworkService {
                     completion(.success(toDoItems))
                     return
                 } catch {
+                    print(error)
                     completion(.failure(ParsingErrors.decodingError))
                     return
                 }
