@@ -141,8 +141,9 @@ class ToDoViewController: UIViewController, UITextViewDelegate {
     }
     
     @objc func onDeleteButtonTapped(sender: UIButton) {
-        if (isEditingItem) {
-            self.storageService.deleteToDoItem(with: currentToDoItem!.id) // Вообще, форс - плохо, но в данной ситуации мы проверяли, что currentToDoItem не nil
+        if isEditingItem,
+           let id = currentToDoItem?.id {
+            self.storageService.deleteToDoItem(with: id)
             NotificationCenter.default.post(name: .toDoListChanged, object: nil)
             self.dismiss(animated: true, completion: nil)
         } else {
