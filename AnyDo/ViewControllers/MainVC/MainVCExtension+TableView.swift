@@ -25,7 +25,7 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
                 let updItem = ToDoItem(id: id,
                                        text: self.toDoItemsArray[indexPath.row].text,
                                        importance: self.toDoItemsArray[indexPath.row].importance,
-                                       deadLine: self.toDoItemsArray[indexPath.row].deadline,
+                                       deadline: self.toDoItemsArray[indexPath.row].deadline,
                                        status: .completed,
                                        createdAt: self.toDoItemsArray[indexPath.row].createdAt,
                                        updatedAt: Int(Date().timeIntervalSince1970))
@@ -42,7 +42,7 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
                         let dirtyTask = ToDoItem(id: id,
                                                  text: updItem.text,
                                                  importance: updItem.importance,
-                                                 deadLine: updItem.deadline,
+                                                 deadline: updItem.deadline,
                                                  status: .completed,
                                                  createdAt: updItem.createdAt,
                                                  updatedAt: updItem.updatedAt,
@@ -117,7 +117,7 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
                 let task = ToDoItem(id: id,
                                     text: text,
                                     importance: .standart,
-                                    deadLine: nil,
+                                    deadline: nil,
                                     status: .uncompleted,
                                     createdAt: Int(Date().timeIntervalSince1970))
 
@@ -132,7 +132,7 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
                         let dirtyTask = ToDoItem(id: task.id,
                                                  text: task.text,
                                                  importance: task.importance,
-                                                 deadLine: task.deadline,
+                                                 deadline: task.deadline,
                                                  status: task.status,
                                                  createdAt: task.createdAt,
                                                  isDirty: true)

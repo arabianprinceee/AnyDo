@@ -25,7 +25,7 @@ struct ToDoItem: Codable {
     init(id: String = UUID().uuidString,
          text: String,
          importance: Importance,
-         deadLine: Date?,
+         deadline: Date?,
          status: TaskStatus,
          createdAt: Int = Int(Date().timeIntervalSince1970),
          updatedAt: Int? = nil,
@@ -33,7 +33,7 @@ struct ToDoItem: Codable {
         self.id = id
         self.text = text
         self.importance = importance
-        self.deadline = deadLine
+        self.deadline = deadline
         self.status = status
         self.createdAt = createdAt
         self.updatedAt = updatedAt
