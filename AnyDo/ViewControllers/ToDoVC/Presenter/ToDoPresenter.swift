@@ -8,11 +8,14 @@
 import Foundation
 
 protocol ToDoPresenter: AnyObject {
-    init(view: ToDoView)
-    func setupEditScreen(item: ToDoItem?) -> Bool
-    func deleteToDoItem(isEditingItem: Bool,
-                        item: ToDoItem?,
-                        storageService: StorageService,
+
+    var currentToDoItem: ToDoItem? { get }
+    var isEditing: Bool { get }
+
+    init(view: ToDoView, currentToDoItem: ToDoItem?)
+    
+    func setupEditScreen()
+    func deleteToDoItem(storageService: StorageService,
                         networkService: NetworkService)
     func updateToDoItem(id: String,
                       text: String,
@@ -32,18 +35,27 @@ protocol ToDoPresenter: AnyObject {
                       updatedAt: Int?,
                       storageService: StorageService,
                       networkService: NetworkService)
+
 }
 
 class ToDoPresenterImplementation: ToDoPresenter {
 
     private weak var view: ToDoView?
+    var isEditing: Bool
+    var currentToDoItem: ToDoItem?
 
-    required init(view: ToDoView) {
+    required init(view: ToDoView, currentToDoItem: ToDoItem?) {
         self.view = view
+        self.currentToDoItem = currentToDoItem
+        if let _ = currentToDoItem {
+            self.isEditing = true
+        } else {
+            self.isEditing = false
+        }
     }
 
-    func setupEditScreen(item: ToDoItem?) -> Bool {
-        if let currentToDoItem = item {
+    func setupEditScreen() {
+        if let currentToDoItem = self.currentToDoItem {
             let text = currentToDoItem.text
 
             let index: Int
@@ -61,15 +73,12 @@ class ToDoPresenterImplementation: ToDoPresenter {
             } else {
                 view?.onReceivedScreenSetupInfo(text: text, index: index, deadline: nil)
             }
-
-            return true
         }
-        return false
     }
 
-    func deleteToDoItem(isEditingItem: Bool, item: ToDoItem?, storageService: StorageService, networkService: NetworkService) {
-        if isEditingItem,
-           let id = item?.id {
+    func deleteToDoItem(storageService: StorageService, networkService: NetworkService) {
+        if isEditing,
+           let id = currentToDoItem?.id {
             storageService.deleteToDoItem(with: id)
             networkService.deleteToDoItem(with: id) { result in
                 switch result {

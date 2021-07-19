@@ -20,9 +20,6 @@ class ToDoViewController: UIViewController {
     private let storageService: StorageService
     private let networkService: NetworkService
 
-    private let currentToDoItem: ToDoItem?
-    private var isEditingItem: Bool = false
-
     private var presenter: ToDoPresenter!
     
     let dateOfTask: UILabel = UILabel()
@@ -50,9 +47,8 @@ class ToDoViewController: UIViewController {
     init(storageService: StorageService, networkService: NetworkService, currentToDoItem: ToDoItem?) {
         self.storageService = storageService
         self.networkService = networkService
-        self.currentToDoItem = currentToDoItem
         super.init(nibName: nil, bundle: nil)
-        presenter = ToDoPresenterImplementation(view: self)
+        presenter = ToDoPresenterImplementation(view: self, currentToDoItem: currentToDoItem)
     }
     
     required init?(coder: NSCoder) {
@@ -86,7 +82,7 @@ class ToDoViewController: UIViewController {
         calendarSwitch.addTarget(self, action: #selector(onSwitchChanged), for: .valueChanged)
         datePickerView.addTarget(self, action: #selector(onHandleDateChanges), for: .valueChanged)
 
-        isEditingItem = presenter.setupEditScreen(item: currentToDoItem)
+        presenter.setupEditScreen()
 
         // Чтобы прятать клавиатуру
         let tap = UITapGestureRecognizer(target: self, action: #selector(UIInputViewController.dismissKeyboard))
@@ -112,7 +108,7 @@ class ToDoViewController: UIViewController {
     }
     
     @objc func onDeleteButtonTapped(sender: UIButton) {
-        presenter.deleteToDoItem(isEditingItem: isEditingItem, item: currentToDoItem, storageService: storageService, networkService: networkService)
+        presenter.deleteToDoItem(storageService: storageService, networkService: networkService)
     }
     
     @objc func onHandleDateChanges(sender: UIDatePicker) {
@@ -125,12 +121,12 @@ class ToDoViewController: UIViewController {
         if let text = taskTextView.text,
            text != "",
            text != NSLocalizedString("enterTaskName", comment: "") {
-            switch isEditingItem {
+            switch presenter.isEditing {
             case true:
-                guard let currentToDoItem = currentToDoItem else { return }
+                guard let currentToDoItem = presenter.currentToDoItem else { return }
                 let index = taskPrioritySementedControl.selectedSegmentIndex
                 presenter.updateToDoItem(id: currentToDoItem.id,
-                                       text: self.taskTextView.text,
+                                       text: taskTextView.text,
                                        importance: index == 0 ? .unimportant : index == 1 ? .standart : .important,
                                        deadline: calendarSwitch.isOn ? datePickerView.date : nil,
                                        status: currentToDoItem.status == .completed ? .completed : index == 2 ? .uncompletedImportant : .uncompleted,
@@ -142,7 +138,7 @@ class ToDoViewController: UIViewController {
                 let id = UUID().uuidString
                 let index = taskPrioritySementedControl.selectedSegmentIndex
                 presenter.saveToDoItem(id: id,
-                                         text: self.taskTextView.text,
+                                         text: taskTextView.text,
                                          importance: index == 0 ? .unimportant : index == 1 ? .standart : .important,
                                          deadline: calendarSwitch.isOn ? datePickerView.date : nil,
                                          status: index == 2 ? .uncompletedImportant : .uncompleted,
@@ -180,7 +176,7 @@ extension ToDoViewController: ToDoView {
         case true:
             NotificationCenter.default.post(name: .toDoListChanged, object: nil)
             self.dismiss(animated: true, completion: nil)
-        case false:
+        case false:var isEditing: Bool
             let alert = UIAlertController(title: NSLocalizedString("Nothing to delete", comment: ""),
                                           message: NSLocalizedString("Create before delete", comment: ""),
                                           preferredStyle: UIAlertController.Style.alert)
