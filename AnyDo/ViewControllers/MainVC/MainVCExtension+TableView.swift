@@ -28,7 +28,7 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
                                        deadline: self.toDoItemsArray[indexPath.row].deadline,
                                        status: .completed,
                                        createdAt: self.toDoItemsArray[indexPath.row].createdAt,
-                                       updatedAt: Int(Date().timeIntervalSince1970))
+                                       updatedAt: Date().timeIntervalSince1970.toInt())
 
                 self.storageService.updateToDoItem(todoItem: updItem)
 
@@ -119,7 +119,7 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
                                     importance: .standart,
                                     deadline: nil,
                                     status: .uncompleted,
-                                    createdAt: Int(Date().timeIntervalSince1970))
+                                    createdAt: Date().timeIntervalSince1970.toInt() ?? 0)
 
                 self.storageService.addToDoItem(toDoItem: task)
 

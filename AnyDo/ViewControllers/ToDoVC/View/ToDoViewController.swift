@@ -121,31 +121,30 @@ class ToDoViewController: UIViewController {
         if let text = taskTextView.text,
            text != "",
            text != NSLocalizedString("enterTaskName", comment: "") {
+            let index = taskPrioritySementedControl.selectedSegmentIndex
             switch presenter.isEditing {
             case true:
                 guard let currentToDoItem = presenter.currentToDoItem else { return }
-                let index = taskPrioritySementedControl.selectedSegmentIndex
                 presenter.updateToDoItem(id: currentToDoItem.id,
-                                       text: taskTextView.text,
-                                       importance: index == 0 ? .unimportant : index == 1 ? .standart : .important,
-                                       deadline: calendarSwitch.isOn ? datePickerView.date : nil,
-                                       status: currentToDoItem.status == .completed ? .completed : index == 2 ? .uncompletedImportant : .uncompleted,
-                                       createdAt: currentToDoItem.createdAt,
-                                       updatedAt: Int(Date().timeIntervalSince1970),
-                                       storageService: storageService,
-                                       networkService: networkService)
-            case false:
-                let id = UUID().uuidString
-                let index = taskPrioritySementedControl.selectedSegmentIndex
-                presenter.saveToDoItem(id: id,
                                          text: taskTextView.text,
                                          importance: index == 0 ? .unimportant : index == 1 ? .standart : .important,
                                          deadline: calendarSwitch.isOn ? datePickerView.date : nil,
-                                         status: index == 2 ? .uncompletedImportant : .uncompleted,
-                                         createdAt: Int(Date().timeIntervalSince1970),
-                                         updatedAt: nil,
+                                         status: currentToDoItem.status == .completed ? .completed : index == 2 ? .uncompletedImportant : .uncompleted,
+                                         createdAt: currentToDoItem.createdAt,
+                                         updatedAt: Date().timeIntervalSince1970.toInt(),
                                          storageService: storageService,
                                          networkService: networkService)
+            case false:
+                let id = UUID().uuidString
+                presenter.saveToDoItem(id: id,
+                                       text: taskTextView.text,
+                                       importance: index == 0 ? .unimportant : index == 1 ? .standart : .important,
+                                       deadline: calendarSwitch.isOn ? datePickerView.date : nil,
+                                       status: index == 2 ? .uncompletedImportant : .uncompleted,
+                                       createdAt: Date().timeIntervalSince1970.toInt() ?? 0,
+                                       updatedAt: nil,
+                                       storageService: storageService,
+                                       networkService: networkService)
             }
         }
         self.dismiss(animated: true, completion: nil)
@@ -176,7 +175,7 @@ extension ToDoViewController: ToDoView {
         case true:
             NotificationCenter.default.post(name: .toDoListChanged, object: nil)
             self.dismiss(animated: true, completion: nil)
-        case false:var isEditing: Bool
+        case false:
             let alert = UIAlertController(title: NSLocalizedString("Nothing to delete", comment: ""),
                                           message: NSLocalizedString("Create before delete", comment: ""),
                                           preferredStyle: UIAlertController.Style.alert)

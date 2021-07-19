@@ -27,7 +27,7 @@ struct ToDoItem: Codable {
          importance: Importance,
          deadline: Date?,
          status: TaskStatus,
-         createdAt: Int = Int(Date().timeIntervalSince1970),
+         createdAt: Int = Date().timeIntervalSince1970.toInt() ?? 0,
          updatedAt: Int? = nil,
          isDirty: Bool = false) {
         self.id = id
