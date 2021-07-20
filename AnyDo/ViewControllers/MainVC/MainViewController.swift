@@ -136,7 +136,7 @@ class MainViewController: UIViewController {
     // MARK: Objc methods
 
     @objc func onAddItemButtonTapped() {
-        let vc = ToDoViewController(storageService: self.storageService, networkService: self.networkService, currentToDoItem: nil)
+        let vc = ToDoViewController(storageService: storageService, networkService: networkService, currentToDoItem: nil)
         self.present(vc, animated: true, completion: nil)
     }
 

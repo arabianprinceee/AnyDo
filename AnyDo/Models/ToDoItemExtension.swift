@@ -34,15 +34,3 @@ extension ToDoItem {
     }
     
 }
-
-extension Double {
-
-    func toInt() -> Int? {
-        guard (self <= Double(Int.max).nextDown) && (self >= Double(Int.min).nextUp) else {
-            return nil
-        }
-
-        return Int(self)
-    }
-
-}
