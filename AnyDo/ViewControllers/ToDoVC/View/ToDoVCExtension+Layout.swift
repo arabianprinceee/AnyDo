@@ -78,14 +78,9 @@ extension ToDoViewController {
         let leftLabel = UILabel()
         leftLabel.text = leftText
 
-        if (isEditingItem) {
-            taskPrioritySementedControl.selectedSegmentIndex = currentToDoItem?.importance.value ?? 1
-        } else {
-            taskPrioritySementedControl.selectedSegmentIndex = 1
-        }
-
         leftLabel.translatesAutoresizingMaskIntoConstraints = false
         segmentedControl.translatesAutoresizingMaskIntoConstraints = false
+        segmentedControl.selectedSegmentIndex = 1
 
         containerView.addSubview(leftLabel)
         containerView.addSubview(segmentedControl)
@@ -152,6 +147,7 @@ extension ToDoViewController {
         datePickerView.preferredDatePickerStyle = .inline
         datePickerView.minimumDate = Date()
         datePickerView.date = date
+        print(date)
         datePickerView.translatesAutoresizingMaskIntoConstraints = false
 
         taskOptionsView.addArrangedSubview(datePickerView)
